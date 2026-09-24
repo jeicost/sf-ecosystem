@@ -1,5 +1,6 @@
 import { PIEZAS } from "@/lib/piezas";
 import { ICONO_DE, rutaArte } from "@/lib/iconos";
+import { PROPORCION } from "@/lib/proporciones";
 
 /**
  * La botella, dibujada.
@@ -66,7 +67,6 @@ const TEXTO_DE: Record<number, string> = Object.fromEntries(
  * Arriba, sobre la curva del hombro, solo caben piezas sueltas y pequeñas: el
  * cono se cierra y la silueta se las come.
  */
-type Banda = [number, (number | string)[]];
 
 /**
  * El ancho útil de cada banda, en píxeles de la caja de 252.
@@ -110,151 +110,255 @@ type Banda = [number, (number | string)[]];
  * rompe la línea base sin desordenar.
  */
 /**
- * SUPERIOR cubre TODO el cono del hombro (y≈355→460 de la caja de 830): seis
- * filas centradas cuyo ancho crece con la curva. Las dos primeras filas de
- * cada columna viven aquí emparejadas — si las columnas rectas empezaran a
- * esta altura, sus piezas asomarían fuera del vidrio por los costados (pasó:
- * «Ecologetas» cortada sobre el canto).
- */
-const SUPERIOR: Banda[] = [
-  // Alternando tratamientos: la versión anterior apilaba las cuatro cajas
-  // invertidas seguidas bajo el lockup y la escalera blanca pesaba más que
-  // la marca. Caja / dibujo / caja / dibujo / caja / caja.
-  [14, [26, "r-estrella"]],
-  [18, [34, 35]],
-  [16, [22]],
-  [16, [3, 30]],
-  [16, [51]],
-  [16, [44]],
-]
-
-const COL_IZQ: Banda[] = [
-  [20, [36]],
-  [17, [1]],
-  [15, [20, 19]],
-  [21, [42]],
-  [20, [5]],
-  [16, [23, 47]],
-  [20, [40]],
-  [15, [27, "r-cruz"]],
-  [20, [31]],
-  [20, [2]],
-]
-
-const COL_DER: Banda[] = [
-  [15, [10, 45]],
-  [23, [12]],
-  [20, [13, 4]],
-  [22, [38]],
-  [16, [39, 21]],
-  [17, [9, 28, "r-rombos"]],
-  [22, [43]],
-  [20, [6]],
-  [20, [7]],
-]
-
-/**
- * El cierre, más ancho que el vidrio y desplazado a lados alternos: cada
- * fila pierde su pieza EXTERIOR por un canto. Por eso el orden importa:
- * el borde muerde SIEMPRE un pictograma o un código (olas, barras, cuernos,
- * píxeles), nunca decapita un chiste de texto — un código de barras cortado
- * por el canto es la vuelta del cilindro; «HERMANÍSIMO» sin el HER es una
- * errata.
- */
-const CIERRE: Banda[] = [
-  [15, [37, 48, "r-asterisco"]],
-  [17, [41, 8, 15]],
-  [15, [11, 49, 17]],
-  [17, [56, 25, 32]],
-  [15, [29, 50, 18]],
-  [17, [57, 33, 55]],
-  [15, [46, 16, 52, 53]],
-  [16, [24, 14, "r-barras"]],
-]
-
-/**
- * Una pieza del estampado: su SVG real, escalado por el ALTO de su banda.
+ * EL EMPAQUETADOR (24-sep, tras estudiar diseno/referencias/xixarel-2.png).
  *
- * El ancho lo decide el propio arte, porque cada SVG viene ceñido a su dibujo.
- * Eso es justo lo que pasa al maquetar una serigrafía de verdad: las piezas no
- * caben en casillas, se acomodan unas a otras.
+ * Las bandas de altura fija se jubilan. El problema que tenían era de
+ * DENSIDAD: cada banda repartía su espacio sobrante con `justify-between`,
+ * así que una fila con tres piezas anchas quedaba apretada y la de al lado,
+ * con dos estrechas, dejaba dos agujeros. A un metro eso no es tejido, es
+ * una nube con claros — que es exactamente lo que el dueño veía.
+ *
+ * La referencia resuelve la densidad como una galería justificada: cada fila
+ * se estira hasta tocar los dos cantos del vidrio, y su ALTURA sale de esa
+ * cuenta, no al revés. Aquí se hace igual:
+ *
+ *   alto_fila = (ancho_disponible − huecos) / suma_de_proporciones
+ *
+ * Con las proporciones reales del arte (lib/proporciones.ts) se sabe cuánto
+ * ocupa cada pieza ANTES de pintarla, así que el reparto es exacto y la
+ * mancha sale pareja de arriba abajo. La altura se acota para que ninguna
+ * pieza se vuelva un cartel ni un pelo, y el ancho disponible se mide en la
+ * BÉZIER del hombro a la altura de cada fila: arriba caben tres piezas,
+ * abajo siete, igual que en el vidrio real.
  */
-function Pieza({
-  id,
-  alto,
-  tope,
-}: {
-  id: number | string;
-  alto: number;
-  /** Ancho máximo. Sin él, una frase de tres líneas se sale por el canto. */
-  tope: number;
-}) {
-  const slug = typeof id === "number" ? ICONO_DE[id] : id;
-  if (!slug) return null;
-  const rellena = typeof id === "string"; // los remates no dicen nada
+
+/** Medio ancho del vidrio a la altura y, en la caja de 252 × 830. */
+function bordeIzquierdo(y: number): number {
+  if (y >= 452) return 12;
+  if (y <= 244) return 91;
+  // La misma cúbica que la silueta: P0(12,452) P1(12,452) P2(91,330) P3(91,244)
+  let lo = 0, hi = 1;
+  for (let i = 0; i < 30; i++) {
+    const t = (lo + hi) / 2;
+    const yy = 452 * (1 - t) ** 3 + 452 * 3 * t * (1 - t) ** 2 + 330 * 3 * t * t * (1 - t) + 244 * t ** 3;
+    if (yy > y) lo = t; else hi = t;
+  }
+  const t = (lo + hi) / 2;
+  return 12 * (1 - t) ** 3 + 12 * 3 * t * (1 - t) ** 2 + 91 * 3 * t * t * (1 - t) + 91 * t ** 3;
+}
+
+type Colocada = { slug: string; id: number | string; x: number; y: number; w: number; h: number };
+
+/**
+ * El carril del LAGRIMÓMETRO. Como el trompímetre de la referencia: una
+ * columna vertical que parte el bloque, con las filas fluyendo a los lados.
+ */
+// Ancho y alto guardan la proporción REAL del instrumento (0,378): con un
+// carril de otra forma, `object-contain` lo encoge y deja aire a los lados.
+const CARRIL = { x0: 98, x1: 154, y0: 520, y1: 668 };
+
+/** El aire interior. 3,5 px sobre 252 ≈ 1,6 mm impresos: apretado, como la referencia. */
+const HUECO = 3.5;
+/** Cuánto puede sobresalir una fila del canto: la silueta la recorta y la pieza «da la vuelta». */
+const SANGRADO = 5;
+
+/**
+ * Coloca la cola de piezas en filas justificadas entre y0 e y1.
+ * Devuelve las piezas con su caja absoluta en la retícula de 252 × 830.
+ */
+function empaquetar(
+  cola: (number | string)[],
+  y0: number,
+  y1: number,
+  altoIdeal: number,
+  altoMin: number,
+  altoMax: number,
+): Colocada[] {
+  const fuera: Colocada[] = [];
+  const aspecto = (id: number | string) => {
+    const slug = typeof id === "number" ? ICONO_DE[id] : id;
+    return (slug && PROPORCION[slug]) || 1;
+  };
+  /** Los remates son argamasa: ocupan poco y no mandan en el alto de fila. */
+  const escala = (id: number | string) => (typeof id === "string" ? 0.5 : 1);
+  let i = 0;
+  let y = y0;
+  let fila = 0;
+
+  while (i < cola.length && y < y1) {
+    // EL RITMO. Sin él todas las filas salen del mismo alto y el tejido,
+    // aun estando bien repartido, se lee como una tabla. En la referencia
+    // conviven piezas de 4 mm con anclas del triple: ese contraste es la
+    // mitad del carácter. El patrón es fijo (nunca aleatorio: el render
+    // debe repetirse build tras build) y suma 1 de media para no descuadrar
+    // el ajuste de altura.
+    const RITMO = [1.28, 0.84, 1.06, 0.78, 1.34, 0.9, 1.15, 0.8, 1.22, 0.93];
+    const altoIdealFila = altoIdeal * RITMO[fila % RITMO.length];
+    fila++;
+    // El ancho útil se mide en el centro de la fila tentativa, con el
+    // hombro ya abierto: medir arriba dejaba las filas cortas.
+    const medir = (alto: number) => {
+      // El punto MÁS ESTRECHO de la franja, no su centro: en el hombro el
+      // vidrio se abre hacia abajo, así que medir a media altura dejaba la
+      // fila más ancha que el cristal por arriba y el canto decapitaba las
+      // primeras piezas («EBLO PRIMERO», «ALGO AIPORTA»).
+      const borde = Math.max(bordeIzquierdo(y), bordeIzquierdo(y + alto)) + 4;
+      // El sangrado solo en el cilindro: ahí el vidrio gira y una pieza
+      // cortada cuenta la vuelta. En el cono, cortar es un error de registro.
+      const sangra = y > 470 ? SANGRADO : 0;
+      return { x: borde - sangra, ancho: 252 - (borde - sangra) * 2 };
+    };
+    let { x, ancho } = medir(altoIdealFila);
+
+    // Tramos libres: el carril del instrumento parte la fila en dos.
+    const cortaCarril = y + altoIdealFila > CARRIL.y0 && y < CARRIL.y1;
+    const tramos: [number, number][] = cortaCarril
+      ? ([
+          [x, CARRIL.x0 - HUECO],
+          [CARRIL.x1 + HUECO, x + ancho],
+        ] as [number, number][]).filter(([a, b]) => b - a > 26)
+      : [[x, x + ancho]];
+
+    let altoFila = altoIdealFila;
+    let ultimaSuelta = false;
+    const deLaFila: { id: number | string; tramo: number }[] = [];
+
+    for (let t = 0; t < tramos.length && i < cola.length; t++) {
+      const [ta, tb] = tramos[t];
+      const util = tb - ta;
+      let suma = 0;
+      let lleno = false;
+      const mias: (number | string)[] = [];
+      while (i < cola.length) {
+        const id = cola[i];
+        suma += aspecto(id) * escala(id);
+        mias.push(id);
+        i++;
+        // Altura que haría que lo acumulado llenase el tramo exacto.
+        const h = (util - HUECO * (mias.length - 1)) / suma;
+        if (h <= altoIdealFila) { lleno = true; break; }
+      }
+      // La ÚLTIMA fila no se justifica. Si la cola se agota a media fila, la
+      // cuenta de «estírate hasta el canto» pide un alto enorme y la pieza
+      // que queda sale de cartel — MARLASKONA ocupaba media base ella sola.
+      const h = lleno
+        ? (util - HUECO * (mias.length - 1)) / suma
+        : altoIdealFila;
+      altoFila = Math.min(altoFila, Math.max(altoMin, Math.min(altoMax, h)));
+      if (!lleno) ultimaSuelta = true;
+      mias.forEach((id) => deLaFila.push({ id, tramo: t }));
+    }
+
+    // Segunda pasada: con el alto ya decidido, justificar cada tramo.
+    for (let t = 0; t < tramos.length; t++) {
+      const suyas = deLaFila.filter((d) => d.tramo === t).map((d) => d.id);
+      if (!suyas.length) continue;
+      const [ta, tb] = tramos[t];
+      const anchos = suyas.map((id) => aspecto(id) * escala(id) * altoFila);
+      const usado = anchos.reduce((a, b) => a + b, 0);
+      // Fila suelta: hueco fijo y centrada, en vez de estirada al canto.
+      const hueco = ultimaSuelta
+        ? HUECO * 2.5
+        : suyas.length > 1
+          ? (tb - ta - usado) / (suyas.length - 1)
+          : 0;
+      const ocupa = usado + hueco * (suyas.length - 1);
+      let cx = ultimaSuelta || suyas.length === 1 ? ta + (tb - ta - ocupa) / 2 : ta;
+      suyas.forEach((id, k) => {
+        const slug = typeof id === "number" ? ICONO_DE[id] : id;
+        const h = altoFila * escala(id);
+        // Centrado vertical en la fila: un remate a media altura flotaría
+        // pegado al techo de su franja.
+        if (slug) fuera.push({ slug, id, x: cx, y: y + (altoFila - h) / 2, w: anchos[k], h });
+        cx += anchos[k] + hueco;
+      });
+    }
+    y += altoFila + HUECO;
+  }
+  return fuera;
+}
+
+/**
+ * EL ORDEN DE LA COLA, que es la composición.
+ *
+ * No es el inventario: está barajado A MANO para que dos piezas del mismo
+ * registro no caigan juntas (dos frases largas seguidas hacen un párrafo;
+ * dos pictogramas seguidos, un muestrario) y para que las anchas y las
+ * estrechas se turnen — de ahí sale la variedad de tamaño de fila, que es
+ * lo que la referencia tiene y una retícula regular no puede fingir.
+ *
+ * Los remates (`r-*`) van donde el ojo necesita una pausa corta.
+ */
+const COLA: (number | string)[] = [
+  26, 35, 3, "r-estrella", 22, 30,
+  34, "r-puntos", 51, 10, 44, 12, 45,
+  1, 20, "r-flecha-e", 4, 19, 36, 13,
+  5, 42, 38, "r-cruz", 23, 39,
+  47, 21, "r-rombos", 9, 40, 28, 43,
+  27, 31, "r-flecha-ne", 6, 7, 48,
+  37, "r-barras", 41, 49, 8, 15, 11,
+  25, "r-asterisco", 17, 32, 50, 29, 18,
+  46, "r-flecha-n", 57, 33, 55, 52, 16,
+  56, "r-flecha-se", 2, 53, 24, "r-rombos", 14, "r-estrella",
+];
+
+/**
+ * El tejido, calculado UNA vez al cargar el módulo. Va de y=366 (bajo el
+ * lockup) a y=800 (sobre el talón) en la retícula de 830; el componente lo
+ * pinta desplazado 286 px, que es donde arranca su lienzo.
+ */
+// El alto ideal de fila NO es un gusto: sale del área. 60 piezas de
+// proporción media 1,8 repartidas en los ~436 × 228 px del vidrio, contando
+// un 75 % de aprovechamiento, piden ~27 px de alto. Con 17 sobraba media
+// botella vacía; con 40 no cabrían ni la mitad de las piezas.
+/**
+ * Empaqueta AJUSTANDO el alto de fila hasta que el tejido llene su zona.
+ * Adivinar ese número a mano era inútil: cambia con cada pieza que entra o
+ * sale de la cola. Tres iteraciones convergen de sobra.
+ */
+function empaquetarAjustado(
+  cola: (number | string)[],
+  y0: number,
+  y1: number,
+): Colocada[] {
+  let ideal = 30;
+  let salida = empaquetar(cola, y0, y1, ideal, 15, 52);
+  for (let k = 0; k < 4; k++) {
+    const fondo = salida.reduce((m, p) => Math.max(m, p.y + p.h), y0);
+    const factor = (y1 - y0) / (fondo - y0);
+    if (Math.abs(factor - 1) < 0.02) break;
+    ideal = Math.max(15, Math.min(52, ideal * Math.sqrt(factor)));
+    salida = empaquetar(cola, y0, y1, ideal, 15, 52);
+  }
+  return salida;
+}
+
+const TEJIDO: Colocada[] = empaquetarAjustado(COLA, 366, 800).map((p) => ({
+  ...p,
+  y: p.y - 286,
+}));
+
+/** La pieza, ya colocada: posición y tamaño los decide el empaquetador. */
+function PiezaColocada({ p }: { p: Colocada }) {
+  const rellena = typeof p.id === "string";
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={rutaArte(slug)}
-      alt={rellena ? "" : (TEXTO_DE[id as number] ?? "")}
+      src={rutaArte(p.slug)}
+      alt={rellena ? "" : (TEXTO_DE[p.id as number] ?? "")}
       aria-hidden={rellena || undefined}
+      className="absolute"
       style={{
-        height: rellena ? alto * 0.62 : alto,
-        width: "auto",
-        // La referencia no alinea las piezas a una línea base perfecta: cada
-        // una baila un par de milímetros y eso es lo que convierte filas en
-        // tejido. Determinístico por el número de pieza — un build siempre
-        // pinta lo mismo.
-        transform: `translateY(${typeof id === "number" ? ((id * 37) % 7) - 3 : 0}px)`,
-        // `object-contain` + tope: la pieza ancha se reduce manteniendo su
-        // proporción en vez de desbordarse. Antes llevaba `shrink-0` y las
-        // frases largas se salían del vidrio y aparecían cortadas por el
-        // clip de la silueta — que es la peor forma de fallar, porque parece
-        // un error de render y no un problema de composición.
-        maxWidth: tope,
-        // `minWidth: 0` es lo que permite a flexbox encoger una imagen: sin
-        // él, el tamaño intrínseco actúa de suelo y la banda se desborda.
-        minWidth: 0,
+        left: p.x,
+        top: p.y,
+        width: p.w,
+        height: p.h,
+        // El tamaño ya viene del empaquetador (los remates entran con la
+        // mitad de peso), así que aquí no se escala nada más.
       }}
-      className="min-w-0 shrink object-contain"
-      // Sin esto, Next emite un <link rel="preload" as="image"> por cada una:
-      // 67 descargas en prioridad alta peleando con el CSS y las fuentes desde
-      // el primer byte. El estampado no es lo primero que hay que pintar.
       loading="lazy"
       decoding="async"
     />
-  );
-}
-
-/** Una banda justificada de lado a lado. El gap pequeño es la densidad. */
-function Banda({
-  alto,
-  piezas,
-  ancho,
-}: {
-  alto: number;
-  piezas: (number | string)[];
-  ancho: number;
-}) {
-  return (
-    <div
-      className={`mx-auto flex items-center gap-[3px] ${piezas.length > 1 ? "justify-between" : "justify-center"}`}
-      style={{ width: ancho }}
-    >
-      {piezas.map((id, i) => (
-        <Pieza
-          key={`${id}-${i}`}
-          id={id}
-          alto={alto}
-          // Tope generoso: una pieza puede ocupar hasta el 62 % de su banda.
-          // Lo que impide que se salgan no es este número, es que las
-          // imágenes ENCOGEN (flex-shrink) cuando la suma no cabe — repartir
-          // el ancho a partes iguales dejaba las palabras cortas nadando y
-          // hundía la densidad cuatro puntos.
-          tope={ancho * 0.62}
-        />
-      ))}
-    </div>
   );
 }
 
@@ -393,12 +497,12 @@ export function Botella({
             Sobre antico no hay alternativa — es el único dato de producto que
             la página no puede decidir. */}
         <div
-          className="absolute inset-x-0 bottom-[22px] top-[286px] flex flex-col"
+          className="absolute inset-x-0 bottom-[22px] top-[286px]"
           style={{ color: TINTA }}
         >
           {/* El lockup, pequeño y con su aire. Es lo único que se lee a un
               metro, y solo se lee porque no compite con nada. */}
-          <div className="flex flex-col items-center gap-[1px] pb-[8px] pt-[11px]">
+          <div className="absolute inset-x-0 top-0 flex flex-col items-center gap-[1px] pt-[11px]">
             <span className="u-cond text-[5px] tracking-[0.5em]">✦✦✦</span>
             <span className="font-[family-name:var(--font-display)] text-[17px] font-normal leading-none tracking-[0.01em]">
               LÁGRIMAS
@@ -412,67 +516,30 @@ export function Botella({
             </span>
           </div>
 
-          {/* Zona alta, sobre el hombro: filas cortas y centradas, porque el
-              cono aún no ha abierto del todo. */}
-          <div className="flex flex-col items-center gap-[3px]">
-            {SUPERIOR.map(([alto, piezas], i) => (
-              // Los anchos vienen de MEDIR la Bézier del hombro fila a fila
-              // (ancho del vidrio menos zona muerta de serigrafía), no de una
-              // progresión inventada: la aritmética 128+i·14 dejaba la primera
-              // fila 15 px más ancha que el cristal a esa altura.
-              <Banda key={i} alto={alto} piezas={piezas} ancho={[106, 124, 142, 158, 174, 190][i]} />
+          {/* El tejido: 66 piezas empaquetadas en filas justificadas al ancho
+              REAL del vidrio a cada altura, fluyendo alrededor del carril del
+              lagrimómetro. Posiciones absolutas en la retícula de 252 × 830,
+              calculadas una vez al cargar el módulo: el render es idéntico en
+              cada build y no depende de flexbox. */}
+          <div className="pointer-events-none absolute inset-0">
+            {TEJIDO.map((p, i) => (
+              <PiezaColocada key={`${p.slug}-${i}`} p={p} />
             ))}
-          </div>
-
-          {/* El corazón del estampado, como la trasera de la referencia: el
-              LAGRIMÓMETRO parte el bloque como columna-instrumento y las
-              piezas se empaquetan a los lados. */}
-          {/* EL GIRO DEL CILINDRO (24-sep, crítica del dueño: «no solo por
-              delante»). La versión anterior dejaba todas las piezas flotando
-              DENTRO del canto y la botella leía como una pegatina frontal.
-              La referencia real enseña la vuelta: las piezas de los flancos
-              se COMPRIMEN (rotateY) y las que tocan el contorno se CORTAN
-              — el clip de la silueta hace de canto del vidrio. Por eso las
-              columnas giran y el bloque llega hasta el borde. */}
-          <div className="mx-auto flex flex-1 items-stretch justify-center gap-[5px] pt-[3px]" style={{ width: 240 }}>
-            <div
-              className="flex w-[92px] flex-col justify-between"
-              style={{ transform: "perspective(620px) rotateY(30deg)", transformOrigin: "right center" }}
-            >
-              {COL_IZQ.map(([alto, piezas], i) => (
-                <Banda key={i} alto={alto} piezas={piezas} ancho={92} />
-              ))}
-            </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={rutaArte(ICONO_DE[54])}
               alt={TEXTO_DE[54] ?? "Lagrimómetro"}
+              className="absolute"
+              style={{
+                left: CARRIL.x0,
+                top: CARRIL.y0 - 286,
+                width: CARRIL.x1 - CARRIL.x0,
+                height: CARRIL.y1 - CARRIL.y0,
+                objectFit: "contain",
+              }}
               loading="lazy"
               decoding="async"
-              // Ancho FIJO de carril: con `w-auto`, la altura completa del
-              // bloque hacía crecer el instrumento hasta comerse las columnas.
-              className="h-full w-[46px] shrink-0 object-contain"
             />
-            <div
-              className="flex w-[92px] flex-col justify-between"
-              style={{ transform: "perspective(620px) rotateY(-30deg)", transformOrigin: "left center" }}
-            >
-              {COL_DER.map(([alto, piezas], i) => (
-                <Banda key={i} alto={alto} piezas={piezas} ancho={92} />
-              ))}
-            </div>
-          </div>
-
-          {/* El cierre: filas MÁS ANCHAS que el vidrio, desplazadas a lados
-              alternos — cada fila pierde una pieza a medias por un canto,
-              como en la foto de la referencia. El corte no es un error: es
-              la vuelta del cilindro. */}
-          <div className="flex flex-col items-center gap-[3px] pt-[4px]">
-            {CIERRE.map(([alto, piezas], i) => (
-              <div key={i} style={{ transform: `translateX(${i % 2 ? 9 : -9}px)` }}>
-                <Banda alto={alto} piezas={piezas} ancho={240} />
-              </div>
-            ))}
           </div>
         </div>
       </div>

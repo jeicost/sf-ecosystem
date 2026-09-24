@@ -79,31 +79,32 @@ const RESERVAS = [CONTRA, COL54];
  * seguidas. Están las 56 piezas de banda; la 57.ª es el lagrimómetro, que no
  * va en banda: cruza el cilindro en vertical por su carril reservado (COL54).
  */
-// Las piezas con CIFRA DE PÍXEL (25, 28, 46) van en las bandas altas: sus
-// celdas miden ~u/7 y en una banda de 11 mm caen a 0,3 mm — ni la malla
-// fina las salva. En las de 16-17 mm respiran.
-const BANDAS = [
-  [11, [20, 17, 19, 49, 37, 53]],
-  [17, [12, 1, 42, 25, 28]],
-  [12, [10, 4, 55, 29, 45]],
-  [13, [23, 40, 2, 18, 33]],
-  [11, [36, 47, 6, 50]],
-  [16, [13, 5, 38, 56, 46]],
-  [11, [11, 21, 7, 31]],
-  [12, [14, 43, 9, 39, 32, 24]],
-  [11, [16, 27, 52, 15, 57, 8, 48, 41]],
+/**
+ * LA COLA, en el mismo orden que la web (components/Botella.tsx). Los dos
+ * soportes empaquetan igual: filas justificadas de canto a canto con un
+ * ritmo fijo de alturas. Si aquí el orden fuera otro, la lámina del taller y
+ * la botella que ve el comprador contarían composiciones distintas.
+ */
+const COLA = [
+  26, 35, 3, "r-estrella", 22, 30,
+  34, "r-puntos", 51, 10, 44, 12, 45,
+  1, 20, "r-flecha-e", 4, 19, 36, 13,
+  5, 42, 38, "r-cruz", 23, 39,
+  47, 21, "r-rombos", 9, 40, 28, 43,
+  27, 31, "r-flecha-ne", 6, 7, 48,
+  37, "r-barras", 41, 49, 8, 15, 11,
+  25, "r-asterisco", 17, 32, 50, 29, 18,
+  46, "r-flecha-n", 57, 33, 55, 52, 16,
+  56, "r-flecha-se", 2, 53, 24, "r-rombos", 14, "r-estrella",
 ];
+const RITMO = [1.28, 0.84, 1.06, 0.78, 1.34, 0.9, 1.15, 0.8, 1.22, 0.93];
 
-/** Las filas del HOMBRO, espejo de SUPERIOR en components/Botella.tsx:
- * [alto mm, ancho mm de fila, piezas]. Centradas, el ancho crece con el cono. */
-const HOMBRO_FILAS = [
-  [5.5, 48, [26]],
-  [7.0, 58, [34, 35]],
-  [6.0, 66, [22]],
-  [6.0, 74, [3, 30]],
-  [6.0, 82, [51]],
-  [6.0, 90, [44]],
-];
+/**
+ * Cuántas piezas se lleva el HOMBRO. La cola es una sola y se parte aquí: si
+ * el hombro tuviera su propia tabla, las mismas piezas saldrían dos veces en
+ * la lámina (pasó: FACHA, FANGO y BULOS aparecían arriba y abajo).
+ */
+const PIEZAS_HOMBRO = 12;
 
 const arteDe = (n) => {
   const slug = mapa[n];
@@ -150,66 +151,123 @@ let out = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width
   + `<text x="8" y="${H_HOMBRO + 14}" fill="#9FB07A" font-family="monospace" font-size="9" letter-spacing="1">`
   + `CUERPO CILÍNDRICO · 330 × 140 mm · 360° · la única zona recta</text>`;
 
-// ── Las filas del hombro, espejo de la botella ──────────────────────────
-// Sin baile de línea base: en el cono la referencia va limpia y centrada.
-let yH = 57 * MM;
-for (const [altoMM, anchoMM, ns] of HOMBRO_FILAS) {
-  const alto = altoMM * MM, anchoFila = anchoMM * MM;
-  const arte = ns.map(n => ({ n, a: arteDe(n) })).filter(x => x.a);
-  ns.forEach(n => { if (!arteDe(n)) saltadas.add(nombreDe[n] || n); });
-  const items = arte.map(g => {
-    const k = Math.min(alto / g.a.h, anchoFila * 0.62 / g.a.w);
-    return { ...g, k, w: g.a.w * k, h: g.a.h * k };
-  });
-  const usado = items.reduce((s, i) => s + i.w, 0);
-  let x = items.length === 1
-    ? W / 2 - usado / 2
-    : (W - anchoFila) / 2;
-  const hueco = items.length > 1 ? (anchoFila - usado) / (items.length - 1) : 0;
-  for (const it of items) {
-    out += `<g transform="translate(${x.toFixed(1)} ${(yH + (alto - it.h) / 2).toFixed(1)}) `
-         + `scale(${it.k.toFixed(4)}) translate(${-it.a.x} ${-it.a.y})" fill="#F6F1E6">${it.a.cuerpo}</g>`;
-    x += it.w + hueco; colocadas++;
-  }
-  yH += alto + 1.2 * MM;
-}
+const arteRemate = (slug) => {
+  const f = join(WEB, "public/iconos", slug + ".svg");
+  if (!existsSync(f)) return null;
+  const t = readFileSync(f, "utf8");
+  const vb = t.match(/viewBox="([-\d.]+) ([-\d.]+) ([\d.]+) ([\d.]+)"/);
+  if (!vb) return null;
+  return { x: +vb[1], y: +vb[2], w: +vb[3], h: +vb[4], cuerpo: t.replace(/<\/?svg[^>]*>/g, "") };
+};
+const arteDeId = (id) => (typeof id === "string" ? arteRemate(id) : arteDe(id));
+const pesoDe = (id) => (typeof id === "string" ? 0.5 : 1);
 
-for (const [altoMM, ns] of BANDAS) {
-  const alto = altoMM * MM;
-  const libres = segmentos(y, alto);
-  const arte = ns.map(n => ({ n, a: arteDe(n) })).filter(x => x.a);
-  ns.forEach(n => { if (!arteDe(n)) saltadas.add(nombreDe[n] || n); });
-  if (!arte.length || !libres.length) { y += alto + 2 * MM; continue; }
-
-  const anchoTotal = libres.reduce((s, [a, b]) => s + (b - a), 0);
-  let idx = 0;
-  libres.forEach(([xa, xb], si) => {
-    const cuota = si === libres.length - 1
-      ? arte.length - idx
-      : Math.max(1, Math.round(arte.length * ((xb - xa) / anchoTotal)));
-    const grupo = arte.slice(idx, idx + cuota); idx += cuota;
-    if (!grupo.length) return;
-    // El alto de banda manda; el ancho solo pone un techo holgado.
-    const items = grupo.map(g => {
-      const k = Math.min(alto / g.a.h, ((xb - xa) * 0.9) / grupo.length / g.a.w);
-      return { ...g, k, w: g.a.w * k, h: g.a.h * k };
-    });
-    const usado = items.reduce((s, i) => s + i.w, 0);
-    const hueco = Math.max(3 * MM, ((xb - xa) - usado) / (items.length + 1));
-    let x = xa + hueco;
-    for (const it of items) {
-      // El mismo baile de línea base que la web (components/Botella.tsx):
-      // determinístico por número de pieza, ±3 px. Es lo que convierte una
-      // retícula en tejido — y al ser la misma fórmula, la lámina y la
-      // botella de la web cuentan la misma historia.
-      const dy = ((it.n * 37) % 7) - 3;
-      out += `<g transform="translate(${x.toFixed(1)} ${(y + (alto - it.h) / 2 + dy).toFixed(1)}) `
-           + `scale(${it.k.toFixed(4)}) translate(${-it.a.x} ${-it.a.y})" fill="#F6F1E6">${it.a.cuerpo}</g>`;
-      x += it.w + hueco; colocadas++;
+/** Empaqueta la cola en filas justificadas dentro del cilindro. */
+function empaquetar(cola, yIni, yFin, altoIdeal) {
+  const piezas = [];
+  let i = 0, y = yIni, fila = 0;
+  while (i < cola.length && y < yFin) {
+    const alto = altoIdeal * RITMO[fila % RITMO.length];
+    fila++;
+    const libres = segmentos(y, alto);
+    if (!libres.length) { y += alto + 2; continue; }
+    let altoFila = alto;
+    const enFila = [];
+    for (let t = 0; t < libres.length && i < cola.length; t++) {
+      const [ta, tb] = libres[t];
+      const util = tb - ta;
+      let suma = 0, lleno = false;
+      const mias = [];
+      while (i < cola.length) {
+        const id = cola[i];
+        const a = arteDeId(id);
+        if (!a) { i++; continue; }
+        suma += (a.w / a.h) * pesoDe(id);
+        mias.push({ id, a });
+        i++;
+        if ((util - 6 * (mias.length - 1)) / suma <= alto) { lleno = true; break; }
+      }
+      // Fila incompleta: NO se justifica (si no, la última pieza sale de cartel).
+      const h = lleno ? (util - 6 * (mias.length - 1)) / suma : alto;
+      altoFila = Math.min(altoFila, Math.max(alto * 0.55, Math.min(alto * 1.9, h)));
+      mias.forEach((m) => enFila.push({ ...m, tramo: t, lleno }));
     }
-  });
-  y += alto + 2 * MM;
+    for (let t = 0; t < libres.length; t++) {
+      const suyas = enFila.filter((m) => m.tramo === t);
+      if (!suyas.length) continue;
+      const [ta, tb] = libres[t];
+      const anchos = suyas.map((m) => (m.a.w / m.a.h) * pesoDe(m.id) * altoFila);
+      const usado = anchos.reduce((a, b) => a + b, 0);
+      const suelta = !suyas[0].lleno;
+      const hueco = suelta || suyas.length < 2 ? 15 : (tb - ta - usado) / (suyas.length - 1);
+      const ocupa = usado + hueco * (suyas.length - 1);
+      let x = suelta || suyas.length < 2 ? ta + (tb - ta - ocupa) / 2 : ta;
+      suyas.forEach((m, k) => {
+        const h = altoFila * pesoDe(m.id);
+        piezas.push({ ...m, x, y: y + (altoFila - h) / 2, w: anchos[k], h });
+        x += anchos[k] + hueco;
+      });
+    }
+    y += altoFila + 2 * MM;
+  }
+  return piezas;
 }
+
+// ── El HOMBRO: la cabecera de la cola, en filas centradas que se ensanchan
+// con el cono. Sin justificar a los cantos: ahí el perímetro se cierra.
+{
+  let y = 56 * MM, i = 0, fila = 0;
+  const anchos = [52, 62, 72, 82, 92, 102].map((m) => m * MM);
+  while (i < PIEZAS_HOMBRO && fila < anchos.length) {
+    const alto = 7.2 * MM * RITMO[fila % RITMO.length];
+    const util = anchos[fila];
+    let suma = 0;
+    const mias = [];
+    while (i < PIEZAS_HOMBRO) {
+      const id = COLA[i];
+      const a = arteDeId(id);
+      if (!a) { i++; continue; }
+      suma += (a.w / a.h) * pesoDe(id);
+      mias.push({ id, a });
+      i++;
+      if ((util - 5 * (mias.length - 1)) / suma <= alto) break;
+    }
+    const h = Math.min(alto * 1.5, (util - 5 * (mias.length - 1)) / suma);
+    const ws = mias.map((m) => (m.a.w / m.a.h) * pesoDe(m.id) * h);
+    const usado = ws.reduce((a, b) => a + b, 0);
+    const hueco = mias.length > 1 ? (util - usado) / (mias.length - 1) : 0;
+    let x = W / 2 - util / 2;
+    mias.forEach((m, k) => {
+      const hh = h * pesoDe(m.id);
+      const kk = hh / m.a.h;
+      out += `<g transform="translate(${x.toFixed(1)} ${(y + (h - hh) / 2).toFixed(1)}) `
+           + `scale(${kk.toFixed(4)}) translate(${-m.a.x} ${-m.a.y})" fill="#F6F1E6">${m.a.cuerpo}</g>`;
+      colocadas++;
+      x += ws[k] + hueco;
+    });
+    y += h + 1.5 * MM;
+    fila++;
+  }
+}
+
+const COLA_CUERPO = COLA.slice(PIEZAS_HOMBRO);
+const Y_INI = H_HOMBRO + 4 * MM, Y_FIN = H - 6 * MM;
+let ideal = 13 * MM;
+let puestas = empaquetar(COLA_CUERPO, Y_INI, Y_FIN, ideal);
+for (let k = 0; k < 4; k++) {
+  const fondo = puestas.reduce((m, p) => Math.max(m, p.y + p.h), Y_INI);
+  const f = (Y_FIN - Y_INI) / (fondo - Y_INI);
+  if (Math.abs(f - 1) < 0.02) break;
+  ideal = ideal * Math.sqrt(f);
+  puestas = empaquetar(COLA_CUERPO, Y_INI, Y_FIN, ideal);
+}
+for (const p of puestas) {
+  const k = p.h / p.a.h;
+  out += `<g transform="translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) `
+       + `scale(${k.toFixed(4)}) translate(${-p.a.x} ${-p.a.y})" fill="#F6F1E6">${p.a.cuerpo}</g>`;
+  colocadas++;
+}
+COLA.forEach((id) => { if (typeof id === "number" && !arteDe(id)) saltadas.add(nombreDe[id] || id); });
 
 // La columna-instrumento, centrada en su carril y a toda su altura.
 const a54 = arteDe(54);

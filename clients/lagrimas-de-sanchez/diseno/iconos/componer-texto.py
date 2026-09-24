@@ -107,11 +107,13 @@ PIEZAS = [
     (20, "t-mema",              ["MEMA"],                                 "hueca",   "cond"),
     (21, "t-patxi-verguenza-ajena", ["PATXI", "VERGÜENZA", "AJENA"],      "desnuda", "cond"),
     (22, "t-al-menos-no-gobierna-la-ultraderecha",
-         ["AL MENOS NO", "GOBIERNA LA", "ULTRADERECHA"],                  "caja",    "cond"),
+         ["AL MENOS NO", "GOBIERNA LA", "ULTRADERECHA"],                  "desnuda", "cond"),
     (23, "t-no-dormiria-tranquilo", ["NO DORMIRÍA", "TRANQUILO"],         "desnuda", "cond"),
     (24, "t-espana-va-como-un-cohete", ["ESPAÑA VA", "COMO UN COHETE"],   "desnuda", "cond"),
     (25, "t-son-las-5-y-no-he-comido", ["SON LAS", "5", "Y NO HE COMIDO"], "cifra",  "cond"),
-    (26, "t-facha",             ["FACHA"],                                "caja",    "cond"),
+    # La referencia NO tiene placas macizas: sus masas blancas son iconos.
+    # FACHA pasa de caja a TAMPÓN de contorno, como su banderín TABALOT.
+    (26, "t-facha",             ["FACHA"],                                "tampon",  "cond"),
     (27, "t-yo-estoy-bien",     ["YO ESTOY", "BIEN"],                     "desnuda", "cond"),
     (28, "t-por-7-votos",       ["POR", "7", "VOTOS"],                    "cifra",   "cond"),
     (29, "t-fiscal-soplon",     ["FISCAL", "SOPLÓN"],                     "sello",   "cond"),
@@ -119,7 +121,7 @@ PIEZAS = [
     (31, "t-soy-feminista-porque-soy-socialista",
          ["SOY FEMINISTA", "PORQUE SOY", "SOCIALISTA"],                   "desnuda", "cond"),
     (44, "t-alma-socialista-mente-de-tiburon",
-         ["ALMA SOCIALISTA,", "MENTE DE TIBURÓN"],                        "caja",    "cond"),
+         ["ALMA SOCIALISTA,", "MENTE DE TIBURÓN"],                        "desnuda", "cond"),
     (45, "t-transversal-como-el-iva", ["TRANSVERSAL,", "COMO EL IVA"],    "regla",   "cond"),
     (46, "t-horizonte-2030-legislatura-2027",
          ["HORIZONTE", "2030", "LEGISLATURA", "2027"],                    "contador","cond"),
@@ -135,12 +137,145 @@ PIEZAS = [
     (50, "t-transparencia-total-previa-cita",
          ["TRANSPARENCIA", "TOTAL,", "PREVIA CITA"],                      "desnuda", "cond"),
     (51, "t-el-pueblo-primero-despues-de-mi",
-         ["EL PUEBLO PRIMERO.", "DESPUÉS DE MÍ."],                        "caja",    "cond"),
+         ["EL PUEBLO PRIMERO.", "DESPUÉS DE MÍ."],                        "desnuda", "cond"),
     (52, "t-cambio-de-opinion-no-de-sueldo",
          ["CAMBIO DE", "OPINIÓN,", "NO DE SUELDO"],                       "desnuda", "cond"),
     (53, "t-vocacion-de-servicio-nomina-de-por-vida",
          ["Vocación de servicio,", "nómina de por vida"],                 "solemne", "serif-it"),
 ]
+
+
+
+# ── Los pictogramas de las frases ─────────────────────────────────────────
+# (24-sep, tras estudiar diseno/referencias/xixarel-2.png con lupa.) En la
+# referencia CADA palabra lleva dibujo: barco sobre FILIBUSTER, percha sobre
+# PENJAT, la palabra dentro de la cabeza, tijeras al lado, el € dentro de
+# GARR€PA. Y NO HAY placas macizas: las masas blancas son los ICONOS, nunca
+# cajas de texto. Cada dibujo vive en su caja local (ancho, alto, svg) y se
+# coloca ENCIMA, AL LADO o FLANQUEANDO el texto ya medido.
+def _dibujos(T):
+    R = {}
+    # 16 HERMANÍSIMO — cadena de muñecos de papel cogidos de las manos
+    R[16] = ("arriba", 150, 74, f'''<g fill="{T}">
+      <circle cx="30" cy="18" r="14"/><circle cx="75" cy="18" r="14"/><circle cx="120" cy="18" r="14"/>
+      <path d="M14 74 l6 -34 q10 -6 20 0 l6 34 Z"/><path d="M59 74 l6 -34 q10 -6 20 0 l6 34 Z"/>
+      <path d="M104 74 l6 -34 q10 -6 20 0 l6 34 Z"/>
+      <rect x="40" y="46" width="24" height="7" rx="3.5"/><rect x="86" y="46" width="24" height="7" rx="3.5"/></g>''')
+    # 21 PATXI — facepalm: la palma por delante de la cara
+    R[21] = ("lado-izq", 88, 86, f'''
+      <path fill="{T}" fill-rule="evenodd" d="M44 2 a40 40 0 1 1 -0.1 0 Z
+        M28 26 a5.5 5.5 0 1 0 0.1 0 Z M60 26 a5.5 5.5 0 1 0 0.1 0 Z"/>
+      <path fill="{T}" stroke="#141708" stroke-width="0" fill-rule="evenodd"
+        d="M10 50 q0 -10 10 -11 l0 -6 q0 -7 7 -7 q6 0 7 6 q1 -7 8 -7 q7 0 8 7 q1 -6 7 -6 q7 0 7 7 l0 6 q10 1 10 11 l0 14 q0 22 -32 22 q-32 0 -32 -22 Z
+        M24 40 l5 0 0 20 -5 0 Z M37 38 l5 0 0 22 -5 0 Z M50 40 l5 0 0 20 -5 0 Z"/>''')
+    # 22 AL MENOS NO GOBIERNA… — extintor, por si acaso
+    R[22] = ("lado-izq", 74, 96, f'''<g fill="{T}">
+      <path fill-rule="evenodd" d="M18 38 q0 -12 12 -12 l10 0 q12 0 12 12 l0 38 q0 12 -12 12 l-10 0 q-12 0 -12 -12 Z
+        M26 44 l18 0 0 24 -18 0 Z"/>
+      <rect x="26" y="14" width="18" height="10" rx="4"/>
+      <path d="M44 8 q22 -6 26 12 l-9 3 q-4 -12 -17 -8 Z"/>
+      <rect x="8" y="4" width="26" height="8" rx="4" transform="rotate(-18 21 8)"/></g>''')
+    # 23 NO DORMIRÍA TRANQUILO — el ojo que no se cierra
+    R[23] = ("arriba", 132, 64, f'''<g fill="none" stroke="{T}" stroke-width="8" stroke-linecap="round">
+      <path d="M10 40 Q66 -4 122 40 Q66 78 10 40 Z" fill="{T}"/>
+      <line x1="30" y1="12" x2="24" y2="2"/><line x1="66" y1="8" x2="66" y2="-4"/><line x1="102" y1="12" x2="108" y2="2"/></g>
+      <circle cx="66" cy="38" r="16" fill="#22260F"/><circle cx="66" cy="38" r="7" fill="{T}"/>''')
+    # 24 ESPAÑA VA COMO UN COHETE — el cohete, claro
+    R[24] = ("lado-der", 80, 98, f'''<g transform="rotate(38 40 49)"><g fill="{T}">
+      <path fill-rule="evenodd" d="M40 2 q20 18 20 48 l0 14 -40 0 0 -14 q0 -30 20 -48 Z
+        M40 30 a10 10 0 1 0 0.1 0 Z"/>
+      <path d="M20 56 l-14 18 14 4 Z"/><path d="M60 56 l14 18 -14 4 Z"/>
+      <path d="M28 72 q12 8 24 0 l-6 20 q-6 6 -12 0 Z"/></g></g>''')
+    # 25 SON LAS 5 — tenedor y cuchillo flanqueando la cifra
+    R[25] = ("flancos", 30, 96, f'''<g fill="{T}">
+      <rect x="11" y="34" width="8" height="60" rx="4"/>
+      <rect x="2" y="2" width="6" height="30" rx="3"/><rect x="12" y="2" width="6" height="30" rx="3"/>
+      <rect x="22" y="2" width="6" height="30" rx="3"/><path d="M2 28 q13 12 26 0 l0 8 -26 0 Z"/></g>|||<g fill="{T}">
+      <rect x="8" y="34" width="8" height="60" rx="4"/>
+      <path d="M8 2 q14 8 14 26 l0 6 -14 0 Z"/></g>''')
+    # 27 YO ESTOY BIEN — la taza humeante entre llamitas (todo bien)
+    R[27] = ("lado-der", 100, 86, f'''<g fill="{T}">
+      <path fill-rule="evenodd" d="M18 34 l54 0 -6 44 q-2 8 -10 8 l-22 0 q-8 0 -10 -8 Z"/>
+      <path fill-rule="evenodd" d="M72 40 q18 -2 18 14 q0 16 -20 14 l2 -9 q10 1 10 -6 q0 -7 -9 -5 Z"/>
+      <path d="M32 26 q-5 -8 1 -14 M46 26 q-5 -8 1 -14 M60 26 q-5 -8 1 -14" stroke="{T}" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M2 72 q8 -14 3 -26 q12 8 10 26 q-2 12 -13 0 Z"/>
+      <path d="M92 74 q7 -12 3 -22 q10 7 9 22 q-2 11 -12 0 Z"/></g>''')
+    # 28 POR 7 VOTOS — la papeleta entrando en la urna
+    R[28] = ("lado-der", 84, 80, f'''<g fill="{T}">
+      <path fill-rule="evenodd" d="M6 40 q0 -8 8 -8 l56 0 q8 0 8 8 l0 30 q0 8 -8 8 l-56 0 q-8 0 -8 -8 Z
+        M22 38 l40 0 0 8 -40 0 Z"/>
+      <rect x="28" y="2" width="30" height="20" rx="3" transform="rotate(14 43 12)"/></g>''')
+    # 29 FISCAL SOPLÓN — el silbato colgando junto al sello
+    R[29] = ("lado-der", 78, 74, f'''
+      <path fill="{T}" fill-rule="evenodd" d="M8 28 q0 -12 12 -12 l34 0 0 16 12 0 q6 0 5 7 l-2 10 q-13 22 -34 13 q-27 -8 -27 -34 Z
+        M26 36 a9 9 0 1 0 0.1 0 Z"/>
+      <path d="M52 6 q14 -4 20 8" stroke="{T}" stroke-width="5" fill="none" stroke-linecap="round"/>''')
+    # 30 Ecologetas — la hoja con enchufe
+    R[30] = ("lado-izq", 84, 90, f'''<g fill="{T}">
+      <path fill-rule="evenodd" transform="rotate(-24 40 34)" d="M40 0 q34 18 28 50 q-5 22 -28 22 q-23 0 -28 -22 q-6 -32 28 -50 Z
+        M37 14 l6 0 0 50 -6 0 Z"/>
+      <path d="M46 66 q10 14 22 16 l-2 9 q-16 -2 -26 -18 Z"/>
+      <rect x="64" y="78" width="16" height="12" rx="3"/></g>
+      <g stroke="{T}" stroke-width="6" stroke-linecap="round"><line x1="70" y1="96" x2="70" y2="106"/><line x1="80" y1="96" x2="80" y2="106"/></g>''')
+    # 31 SOY FEMINISTA… — el puño en alto
+    R[31] = ("arriba", 76, 94, f'''<g fill="{T}">
+      <path fill-rule="evenodd" d="M10 46 q0 -8 8 -10 l0 -8 q0 -8 8 -8 q6 0 8 5 l0 -3 q0 -8 8 -8 q7 0 8 7 l0 3 q2 -6 9 -5 q7 1 7 9 l0 8 q8 2 8 10 l0 18 q0 26 -32 26 q-32 0 -32 -26 Z
+        M24 34 l6 0 0 16 -6 0 Z M38 30 l6 0 0 20 -6 0 Z M52 34 l6 0 0 16 -6 0 Z"/>
+      <path d="M6 58 q-8 -14 4 -22 l5 8 q-7 5 -1 13 Z"/>
+      <rect x="12" y="82" width="52" height="10" rx="5"/></g>''')
+    # 44 ALMA SOCIALISTA, MENTE DE TIBURÓN — la aleta asomando
+    R[44] = ("arriba", 132, 66, f'''<g fill="{T}">
+      <path d="M62 2 q30 12 34 46 l-56 0 q4 -30 22 -46 Z"/>
+      <path d="M2 58 q10 -10 22 0 q10 10 22 0 q10 -10 22 0 q10 10 22 0 q10 -10 22 0 l0 8 -110 0 Z" opacity="0.9"/></g>''')
+    # 45 TRANSVERSAL, COMO EL IVA — el ticket de caja
+    R[45] = ("lado-der", 62, 92, f'''
+      <path fill="{T}" fill-rule="evenodd" d="M8 6 l46 0 0 78 -7 -6 -8 6 -8 -6 -8 6 -8 -6 -7 6 Z
+        M18 20 l26 0 0 6 -26 0 Z M18 34 l26 0 0 6 -26 0 Z M18 48 l18 0 0 6 -18 0 Z
+        M20 60 l6 -1 14 15 -6 1 Z M40 60 l6 1 -14 15 -6 -1 Z"/>''')
+    # 46 HORIZONTE 2030 — el sol pixelado saliendo (¿o poniéndose?)
+    R[46] = ("abajo", 120, 40, f'''<g fill="{T}">
+      <rect x="44" y="8" width="10" height="10"/><rect x="55" y="2" width="10" height="10"/><rect x="66" y="8" width="10" height="10"/>
+      <rect x="33" y="14" width="10" height="10"/><rect x="77" y="14" width="10" height="10"/>
+      <rect x="0" y="28" width="120" height="8"/></g>''')
+    # 47 COMPROMISO FIRME… — los dedos cruzados a la espalda
+    R[47] = ("lado-der", 70, 92, f'''<g fill="{T}" transform="rotate(14 35 46)">
+      <path fill-rule="evenodd" d="M14 22 q0 -18 21 -18 q21 0 21 18 q0 12 -10 14 l0 10 q14 2 14 12 l-50 0 q0 -10 14 -12 l0 -10 q-10 -2 -10 -14 Z
+        M22 16 q4 -6 12 -6 l0 6 q-6 0 -8 4 Z"/>
+      <path d="M32 58 l6 0 -2 26 q-1 6 -2 0 Z"/></g>''')
+    # 48 ESCUCHA ACTIVA… — la oreja
+    R[48] = ("lado-izq", 64, 88, f'''<g fill="none" stroke="{T}" stroke-width="9" stroke-linecap="round">
+      <path d="M14 30 q0 -22 20 -22 q22 0 22 24 q0 14 -12 24 q-10 8 -10 18 q0 10 -10 10 q-10 0 -12 -10"/>
+      <path d="M28 34 q0 -10 8 -10 q10 0 10 12"/></g>''')
+    # 49 RESILIENTE… — el muelle con su pesa
+    R[49] = ("lado-der", 78, 88, f'''<rect x="14" y="2" width="50" height="12" rx="4" fill="{T}"/>
+      <g fill="none" stroke="{T}" stroke-width="8" stroke-linecap="round">
+      <path d="M16 24 l46 8 M62 32 l-46 10 M16 42 l46 10 M62 52 l-46 10 M16 62 l46 10"/></g>
+      <rect x="6" y="78" width="66" height="10" rx="4" fill="{T}"/>''')
+    # 50 TRANSPARENCIA TOTAL, PREVIA CITA — la máquina de turnos
+    R[50] = ("arriba", 88, 86, f'''<g fill="{T}">
+      <path fill-rule="evenodd" d="M4 4 l80 0 0 58 -80 0 Z
+        M14 14 l60 0 0 22 -60 0 Z M22 44 l44 0 0 8 -44 0 Z"/>
+      <path fill-rule="evenodd" d="M30 66 l28 0 0 20 -28 0 Z
+        M36 72 l16 0 0 3 -16 0 Z M36 79 l10 0 0 3 -10 0 Z"/></g>''')
+    # 51 EL PUEBLO PRIMERO… — la cola, y uno colándose
+    R[51] = ("arriba", 150, 70, f'''<g fill="{T}" opacity="0.85">
+      <circle cx="96" cy="16" r="11"/><path d="M84 70 l3 -30 q9 -6 18 0 l3 30 Z"/>
+      <circle cx="122" cy="16" r="11"/><path d="M110 70 l3 -30 q9 -6 18 0 l3 30 Z"/></g>
+      <g fill="{T}">
+      <circle cx="24" cy="12" r="13"/><path d="M8 70 l4 -34 q12 -8 24 0 l4 34 Z"/>
+      <path d="M40 30 l16 -8 M8 30 l-6 -10" stroke="{T}" stroke-width="7" stroke-linecap="round"/></g>''')
+    # 52 CAMBIO DE OPINIÓN… — la veleta
+    R[52] = ("arriba", 104, 84, f'''
+      <path fill="{T}" d="M20 84 l0 -40 q0 -26 30 -26 q30 0 30 26 l0 6 14 0 -22 26 -22 -26 14 0 0 -6 q0 -12 -14 -12 q-14 0 -14 12 l0 40 Z"/>''')
+    # 53 Vocación de servicio… — el sobre de la nómina, lacrado con euro
+    R[53] = ("lado-izq", 94, 66, f'''
+      <path fill="{T}" fill-rule="evenodd" d="M2 4 q0 -2 2 -2 l86 0 q2 0 2 2 l0 56 q0 4 -4 4 l-82 0 q-4 0 -4 -4 Z
+        M8 8 l39 24 -39 24 Z M86 8 l-39 24 39 24 Z"/>
+      <path fill="{T}" d="M47 22 a17 17 0 1 1 -0.1 0 Z"/>
+      <text x="47" y="47" text-anchor="middle" fill="#22260F" font-family="Barlow Condensed" font-weight="700" font-size="26">€</text>''')
+    return R
+
+DIBUJOS_POR_PIEZA = _dibujos(TINTA)
 
 CUERPO = 66          # tamaño base de letra
 INTERLINEA = 0.88    # las frases van APRETADAS: es lo que hace bloque
@@ -170,7 +305,7 @@ def saltos_de(lineas: list, t: float) -> list:
     return pasos
 
 
-def compon(lineas, trato, voz, medida=None, slug="x") -> str:
+def compon(lineas, trato, voz, medida=None, slug="x", n=None) -> str:
     """Interior del SVG. `medida` es el bbox REAL del texto ya renderizado:
     los contenedores (caja, sello, corchetes, filetes) se ciñen a él en una
     segunda pasada, porque un contenedor de tamaño fijo baila según la
@@ -211,18 +346,46 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
             for i, l in enumerate(ls)
         )
 
+    def con_dibujo_con(cuerpo_svg, caja):
+        """Coloca el pictograma de la pieza (si lo tiene) respecto a la caja
+        dada — encima, al lado, debajo o flanqueando, como la referencia."""
+        if n not in DIBUJOS_POR_PIEZA or caja is None:
+            return cuerpo_svg
+        pos, aw, ah, frag = DIBUJOS_POR_PIEZA[n]
+        mx, my, mw, mh = caja["x"], caja["y"], caja["w"], caja["h"]
+        SEP = 16
+        if pos == "arriba":
+            dx, dy = cx - aw / 2, my - SEP - ah
+        elif pos == "abajo":
+            dx, dy = cx - aw / 2, my + mh + SEP
+        elif pos == "lado-izq":
+            dx, dy = mx - SEP - aw, my + mh / 2 - ah / 2
+        elif pos == "lado-der":
+            dx, dy = mx + mw + SEP, my + mh / 2 - ah / 2
+        elif pos == "flancos":
+            izq, der = frag.split("|||")
+            return (f'<g transform="translate({mx - SEP - aw:.1f} {my + mh / 2 - ah / 2:.1f})">{izq}</g>'
+                    + cuerpo_svg
+                    + f'<g transform="translate({mx + mw + SEP:.1f} {my + mh / 2 - ah / 2:.1f})">{der}</g>')
+        else:
+            return cuerpo_svg
+        return cuerpo_svg + f'<g transform="translate({dx:.1f} {dy:.1f})">{frag}</g>'
+
+    def con_dibujo(cuerpo_svg):
+        return con_dibujo_con(cuerpo_svg, medida)
+
     if trato == "desnuda":
-        return texto(lineas)
+        return con_dibujo(texto(lineas))
 
     if trato == "hueca":
         # Contorno sin relleno: ocupa su sitio en la retícula pero deja pasar
         # el vidrio. Es el respiro que no deja hueco.
-        return texto(
+        return con_dibujo(texto(
             lineas,
             fill="none",
             extra=f'stroke="{TINTA}" stroke-width="3.4" '
                   f'stroke-linejoin="round" stroke-linecap="round"',
-        )
+        ))
 
     if trato == "caja":
         # Masa blanca con el texto CALADO: el acento oscuro del conjunto. En
@@ -260,10 +423,31 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         # Doble aro CEÑIDO: con radio fijo, una palabra corta nada dentro de
         # un círculo enorme y la pieza pierde densidad.
         r = max(medida["w"], medida["h"]) / 2 + 34
-        return (
+        sello = (
             f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="none" stroke="{TINTA}" stroke-width="9"/>'
             f'<circle cx="{cx}" cy="{cy}" r="{r-26}" fill="none" stroke="{TINTA}" stroke-width="3"/>'
             + texto(lineas)
+        )
+        # El dibujo se coloca respecto al ARO, no al texto: con la caja del
+        # texto, el silbato aterrizaba ENCIMA del anillo.
+        medida_aro = {"x": cx - r, "y": cy - r, "w": 2 * r, "h": 2 * r}
+        medida_texto, med2 = medida, medida_aro
+        return con_dibujo_con(sello, med2)
+
+    if trato == "tampon":
+        # Sello de goma inclinado: DOBLE marco de contorno (nada macizo) con
+        # la palabra dentro, ligeramente girado — la tinta del funcionario.
+        ancho = medida["w"] + 52
+        alto = medida["h"] + 40
+        x, y = cx - ancho / 2, medida["y"] - 20
+        cyt = y + alto / 2
+        return (
+            f'<g transform="rotate(-4 {cx} {cyt})">'
+            f'<rect x="{x:.1f}" y="{y:.1f}" width="{ancho:.1f}" height="{alto:.1f}" rx="8" '
+            f'fill="none" stroke="{TINTA}" stroke-width="9"/>'
+            f'<rect x="{x+14:.1f}" y="{y+14:.1f}" width="{ancho-28:.1f}" height="{alto-28:.1f}" rx="4" '
+            f'fill="none" stroke="{TINTA}" stroke-width="3"/>'
+            + texto(lineas) + "</g>"
         )
 
     if trato == "diccio":
@@ -283,10 +467,10 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
     if trato == "regla":
         # Subrayado grueso: da peso sin ocupar otra línea.
         w = medida["w"] * 0.98
-        return texto(lineas) + (
+        return con_dibujo(texto(lineas) + (
             f'<rect x="{cx - w/2:.1f}" y="{y0 + sum(pasos) + 20:.1f}" '
             f'width="{w:.1f}" height="9" rx="4.5" fill="{TINTA}"/>'
-        )
+        ))
 
     if trato == "acta":
         # Registro burocrático: mono, tracking ancho y corchetes de expediente.
@@ -296,7 +480,7 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         g = f'<g fill="none" stroke="{TINTA}" stroke-width="6">'
         g += f'<path d="M{xi+30:.0f} {y1:.0f} h-30 v{y2-y1:.0f} h30"/>'
         g += f'<path d="M{xd-30:.0f} {y1:.0f} h30 v{y2-y1:.0f} h-30"/></g>'
-        return cuerpo + g
+        return con_dibujo(cuerpo + g)
 
     if trato == "solemne":
         # Cursiva con filetes: la solemnidad es el chiste.
@@ -304,7 +488,7 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
         y1 = y0 - t * 1.25
         y2 = y0 + sum(pasos) + t * 0.6
         w = medida["w"] * 1.02
-        return (
+        return con_dibujo(
             cuerpo
             + f'<rect x="{cx - w/2:.1f}" y="{y1:.0f}" width="{w:.1f}" height="3" fill="{TINTA}"/>'
             + f'<rect x="{cx - w/2:.1f}" y="{y2:.0f}" width="{w:.1f}" height="3" fill="{TINTA}"/>'
@@ -337,7 +521,7 @@ def compon(lineas, trato, voz, medida=None, slug="x") -> str:
                     f'{fam} font-size="{chico:.1f}" letter-spacing="1">{l}</text>'
                 )
                 y += chico * 1.02
-        return "".join(partes)
+        return con_dibujo("".join(partes))
 
     raise ValueError(f"tratamiento desconocido: {trato}")
 
@@ -390,7 +574,7 @@ def main() -> int:
                 print(f"  ✗ {slug}: no se pudo medir el texto")
                 continue
             # Pasada 2: la pieza con sus contenedores ajustados a esa medida.
-            cuerpo = compon(lineas, trato, voz, medida=medida, slug=slug)
+            cuerpo = compon(lineas, trato, voz, medida=medida, slug=slug, n=n)
             bruto = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">{cuerpo}</svg>'
 
             caja = pag.evaluate(
