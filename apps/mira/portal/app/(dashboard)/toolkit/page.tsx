@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { Syne } from 'next/font/google'
 import { Loader2, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { TOOLKIT_TOOLS, getVisibleTools } from '@/lib/toolkit-tools'
+import BusinessIntelligenceSection from '@/components/reports/BusinessIntelligenceSection'
 import { useActiveClient } from '@/lib/client-context'
 import { useActiveProject } from '@/lib/project-context'
 import { t, type Locale } from '@/lib/i18n'
@@ -488,6 +489,17 @@ export default function ToolkitHub() {
               </div>
             )
           })}
+        </div>
+      )}
+
+      {/* ─── Business Intelligence ────────────────────────── */}
+      {/* Los informes de Power BI viven DENTRO de Business Reports, no como un
+          producto aparte: la analítica sigue siendo de Power BI y MIRA pone la
+          navegación y el contexto. Si la marca no tiene ninguno configurado, la
+          sección no se pinta. */}
+      {activeClient && (
+        <div className="relative z-10">
+          <BusinessIntelligenceSection clientId={activeClient.id} locale={locale} brand={brandColor} />
         </div>
       )}
 

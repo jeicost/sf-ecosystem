@@ -42,20 +42,35 @@ export default function PackagesEditor({ packages, locale, onChange }: {
 
       {packages.length > 0 && (
         <div className="space-y-2">
-          <div className="hidden gap-2 px-1 text-[10px] uppercase tracking-wide text-ink-muted sm:grid sm:grid-cols-[3rem_5rem_1fr_1fr_1fr_1fr_1.5rem]">
+          <div className="hidden gap-2 px-1 text-[10px] uppercase tracking-wide text-ink-muted sm:grid sm:grid-cols-[3rem_6rem_1fr_1fr_1fr_1fr_1.5rem]">
             <span>id</span><span>{t('quotes.packages.qty', locale)}</span>
             <span>{t('quotes.packages.length', locale)}</span><span>{t('quotes.packages.width', locale)}</span>
             <span>{t('quotes.packages.height', locale)}</span><span>{t('quotes.packages.weight', locale)}</span><span />
           </div>
           {packages.map((p, i) => (
-            <div key={i} className="grid grid-cols-2 items-center gap-2 rounded-xl border border-line-subtle p-2 sm:grid-cols-[3rem_5rem_1fr_1fr_1fr_1fr_1.5rem] sm:border-0 sm:p-0">
-              <input value={p.id} onChange={(e) => set(i, 'id', e.target.value)} className={N} aria-label="id" />
-              <input value={val(p.quantity)} onChange={(e) => set(i, 'quantity', e.target.value)} inputMode="numeric" className={N} aria-label={t('quotes.packages.qty', locale)} />
-              <input value={val(p.lengthCm)} onChange={(e) => set(i, 'lengthCm', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.length', locale)} />
-              <input value={val(p.widthCm)} onChange={(e) => set(i, 'widthCm', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.width', locale)} />
-              <input value={val(p.heightCm)} onChange={(e) => set(i, 'heightCm', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.height', locale)} />
-              <input value={val(p.weightKg)} onChange={(e) => set(i, 'weightKg', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.weight', locale)} />
-              <button onClick={() => remove(i)} className="justify-self-end rounded-lg p-1 text-ink-muted transition-colors hover:text-red-400" aria-label="remove">
+            <div key={i} className="grid grid-cols-2 items-end gap-2 rounded-xl border border-line-subtle p-2 sm:grid-cols-[3rem_6rem_1fr_1fr_1fr_1fr_1.5rem] sm:items-center sm:border-0 sm:p-0">
+              {/* La cabecera de columnas solo existe a partir de sm. En móvil,
+                  sin estas etiquetas, la fila eran seis cajas con números y
+                  nadie podía saber cuál era el ancho y cuál el alto. */}
+              <Field label="id" locale={locale}>
+                <input value={p.id} onChange={(e) => set(i, 'id', e.target.value)} className={N} aria-label="id" />
+              </Field>
+              <Field label={t('quotes.packages.qty', locale)} locale={locale}>
+                <input value={val(p.quantity)} onChange={(e) => set(i, 'quantity', e.target.value)} inputMode="numeric" className={N} aria-label={t('quotes.packages.qty', locale)} />
+              </Field>
+              <Field label={t('quotes.packages.length', locale)} locale={locale}>
+                <input value={val(p.lengthCm)} onChange={(e) => set(i, 'lengthCm', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.length', locale)} />
+              </Field>
+              <Field label={t('quotes.packages.width', locale)} locale={locale}>
+                <input value={val(p.widthCm)} onChange={(e) => set(i, 'widthCm', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.width', locale)} />
+              </Field>
+              <Field label={t('quotes.packages.height', locale)} locale={locale}>
+                <input value={val(p.heightCm)} onChange={(e) => set(i, 'heightCm', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.height', locale)} />
+              </Field>
+              <Field label={t('quotes.packages.weight', locale)} locale={locale}>
+                <input value={val(p.weightKg)} onChange={(e) => set(i, 'weightKg', e.target.value)} inputMode="decimal" className={N} aria-label={t('quotes.packages.weight', locale)} />
+              </Field>
+              <button onClick={() => remove(i)} className="col-span-2 justify-self-end rounded-lg p-1 text-ink-tertiary transition-colors hover:text-red-400 sm:col-span-1" aria-label="remove">
                 <Trash2 size={12} />
               </button>
             </div>
@@ -63,5 +78,15 @@ export default function PackagesEditor({ packages, locale, onChange }: {
         </div>
       )}
     </div>
+  )
+}
+
+/** Etiqueta visible solo en móvil: en escritorio manda la fila de cabecera. */
+function Field({ label, children }: { label: string; locale: Locale; children: React.ReactNode }) {
+  return (
+    <label className="flex flex-col gap-0.5">
+      <span className="text-[10px] uppercase tracking-wide text-ink-muted sm:hidden">{label}</span>
+      {children}
+    </label>
   )
 }

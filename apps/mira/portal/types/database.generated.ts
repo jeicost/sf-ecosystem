@@ -9,7 +9,7 @@
 //   SUPABASE_ACCESS_TOKEN=<token> npx supabase gen types typescript \
 //     --project-id nnevhtfxuawexliwlbmh --schema public > types/database.generated.ts
 //
-// 93 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
+// 94 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
 export type Json =
   | string
   | number
@@ -2335,6 +2335,83 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "email_training_examples_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      external_reports: {
+        Row: {
+          access_mode: string
+          category: string
+          client_id: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          display_order: number
+          embed_url: string | null
+          external_url: string | null
+          id: string
+          owner: string | null
+          powerbi_workspace_id: string | null
+          provider: string
+          report_id: string | null
+          slug: string
+          status: string
+          title: string
+          updated_at: string
+          updated_by: string | null
+          workspace_label: string | null
+        }
+        Insert: {
+          access_mode?: string
+          category?: string
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          embed_url?: string | null
+          external_url?: string | null
+          id?: string
+          owner?: string | null
+          powerbi_workspace_id?: string | null
+          provider?: string
+          report_id?: string | null
+          slug: string
+          status?: string
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+          workspace_label?: string | null
+        }
+        Update: {
+          access_mode?: string
+          category?: string
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          display_order?: number
+          embed_url?: string | null
+          external_url?: string | null
+          id?: string
+          owner?: string | null
+          powerbi_workspace_id?: string | null
+          provider?: string
+          report_id?: string | null
+          slug?: string
+          status?: string
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+          workspace_label?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "external_reports_client_id_fkey"
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
