@@ -153,15 +153,22 @@ const COL_DER: Banda[] = [
   [20, [7]],
 ]
 
-/** El cierre, a todo lo ancho bajo las columnas. */
+/**
+ * El cierre, más ancho que el vidrio y desplazado a lados alternos: cada
+ * fila pierde su pieza EXTERIOR por un canto. Por eso el orden importa:
+ * el borde muerde SIEMPRE un pictograma o un código (olas, barras, cuernos,
+ * píxeles), nunca decapita un chiste de texto — un código de barras cortado
+ * por el canto es la vuelta del cilindro; «HERMANÍSIMO» sin el HER es una
+ * errata.
+ */
 const CIERRE: Banda[] = [
-  [15, [48, 37, "r-asterisco"]],
+  [15, [37, 48, "r-asterisco"]],
   [17, [41, 8, 15]],
-  [15, [49, 11, 17]],
+  [15, [11, 49, 17]],
   [17, [56, 25, 32]],
-  [15, [50, 29, 18]],
+  [15, [29, 50, 18]],
   [17, [57, 33, 55]],
-  [15, [16, 52, 46, 53]],
+  [15, [46, 16, 52, 53]],
   [16, [24, 14, "r-barras"]],
 ]
 
@@ -420,10 +427,20 @@ export function Botella({
           {/* El corazón del estampado, como la trasera de la referencia: el
               LAGRIMÓMETRO parte el bloque como columna-instrumento y las
               piezas se empaquetan a los lados. */}
-          <div className="mx-auto flex flex-1 items-stretch justify-center gap-[7px] pt-[3px]" style={{ width: 216 }}>
-            <div className="flex w-[78px] flex-col justify-between">
+          {/* EL GIRO DEL CILINDRO (24-sep, crítica del dueño: «no solo por
+              delante»). La versión anterior dejaba todas las piezas flotando
+              DENTRO del canto y la botella leía como una pegatina frontal.
+              La referencia real enseña la vuelta: las piezas de los flancos
+              se COMPRIMEN (rotateY) y las que tocan el contorno se CORTAN
+              — el clip de la silueta hace de canto del vidrio. Por eso las
+              columnas giran y el bloque llega hasta el borde. */}
+          <div className="mx-auto flex flex-1 items-stretch justify-center gap-[5px] pt-[3px]" style={{ width: 240 }}>
+            <div
+              className="flex w-[92px] flex-col justify-between"
+              style={{ transform: "perspective(620px) rotateY(30deg)", transformOrigin: "right center" }}
+            >
               {COL_IZQ.map(([alto, piezas], i) => (
-                <Banda key={i} alto={alto} piezas={piezas} ancho={78} />
+                <Banda key={i} alto={alto} piezas={piezas} ancho={92} />
               ))}
             </div>
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -436,17 +453,25 @@ export function Botella({
               // bloque hacía crecer el instrumento hasta comerse las columnas.
               className="h-full w-[46px] shrink-0 object-contain"
             />
-            <div className="flex w-[78px] flex-col justify-between">
+            <div
+              className="flex w-[92px] flex-col justify-between"
+              style={{ transform: "perspective(620px) rotateY(-30deg)", transformOrigin: "left center" }}
+            >
               {COL_DER.map(([alto, piezas], i) => (
-                <Banda key={i} alto={alto} piezas={piezas} ancho={78} />
+                <Banda key={i} alto={alto} piezas={piezas} ancho={92} />
               ))}
             </div>
           </div>
 
-          {/* El cierre, a todo lo ancho del cilindro. */}
+          {/* El cierre: filas MÁS ANCHAS que el vidrio, desplazadas a lados
+              alternos — cada fila pierde una pieza a medias por un canto,
+              como en la foto de la referencia. El corte no es un error: es
+              la vuelta del cilindro. */}
           <div className="flex flex-col items-center gap-[3px] pt-[4px]">
             {CIERRE.map(([alto, piezas], i) => (
-              <Banda key={i} alto={alto} piezas={piezas} ancho={206} />
+              <div key={i} style={{ transform: `translateX(${i % 2 ? 9 : -9}px)` }}>
+                <Banda alto={alto} piezas={piezas} ancho={240} />
+              </div>
             ))}
           </div>
         </div>
