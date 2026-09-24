@@ -91,15 +91,16 @@ export async function testImapConnection(c: ImapCredentials): Promise<ImapTestRe
   }
 }
 
-/** Mensaje de error legible y SIN credenciales dentro. */
+/** Mensaje de error legible y SIN credenciales dentro. En inglés: se guarda
+ *  tal cual en imap_last_error y el portal se usa en inglés. */
 export function cleanImapError(err: unknown): string {
   const raw = err instanceof Error ? err.message : String(err)
   const msg = raw.replace(/\bLOGIN\b.*/i, 'LOGIN [omitido]').slice(0, 300)
   if (/authenticationfailed|invalid credentials|login failed/i.test(msg)) {
-    return `Credenciales rechazadas por el servidor: ${msg}`
+    return `Server rejected the credentials: ${msg}`
   }
   if (/basic authentication|disabled|not enabled/i.test(msg)) {
-    return `El servidor NO admite acceso por contraseña para IMAP (hace falta activarlo o usar OAuth): ${msg}`
+    return `This server does NOT allow password access for IMAP (it must be enabled, or use OAuth): ${msg}`
   }
   return msg
 }

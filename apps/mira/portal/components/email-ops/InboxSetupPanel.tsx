@@ -89,7 +89,12 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact, refr
         {loading && <Loader2 size={14} className="animate-spin text-ink-muted" />}
       </div>
       {!compact && <p className="mb-4 text-xs text-ink-tertiary">{t('emailops.setup.desc', locale)}</p>}
-      {!domain && !loading && <p className="mb-3 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-400">{t('emailops.setup.no-domain', locale)}</p>}
+      {/* El aviso del dominio de reenvío solo importa si este cliente va a usar
+          reenvío. Con un buzón leído por IMAP, salía un aviso ámbar que parecía
+          una avería y no lo era. */}
+      {!domain && !loading && !inboxes.some((ib) => ib.source === 'imap') && (
+        <p className="mb-3 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-400">{t('emailops.setup.no-domain', locale)}</p>
+      )}
 
       {inboxes.length === 0 && !loading ? (
         <p className="text-xs text-ink-muted">{t('emailops.empty.no-inbox', locale)}</p>
@@ -100,8 +105,10 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact, refr
             return (
             <div key={ib.id} className={clsx('rounded-xl border border-line-subtle px-3 py-2', !ib.active && 'opacity-50')}>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="w-32 shrink-0 truncate text-xs font-medium text-ink">{ib.department}</span>
-                <code className="flex-1 truncate rounded bg-surface px-2 py-1 text-[12px] text-ink-secondary">{ib.address}</code>
+                {/* En móvil el departamento y la dirección van en líneas propias:
+                    apretados en una sola, la dirección quedaba en "lo…". */}
+                <span className="w-full shrink-0 truncate text-xs font-medium text-ink sm:w-32">{ib.department}</span>
+                <code className="w-full min-w-0 truncate rounded bg-surface px-2 py-1 text-[12px] text-ink-secondary sm:w-auto sm:flex-1">{ib.address}</code>
                 <span className={clsx('inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px]',
                   isImap ? 'bg-emerald-500/10 text-emerald-400' : 'bg-surface text-ink-tertiary')}>
                   {isImap ? <Plug size={10} /> : <Mail size={10} />}

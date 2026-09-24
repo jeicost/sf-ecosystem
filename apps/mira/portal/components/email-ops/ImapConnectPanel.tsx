@@ -11,15 +11,17 @@ import { t, type Locale } from '@/lib/i18n'
 // ejemplo, que Microsoft 365 rechaza el acceso por contraseña — en vez de
 // enterarse cuando no llegue ningún correo.
 
-interface Preset { label: string; host: string; port: number; hint?: string }
+// El nombre del proveedor y su aviso pasan por i18n: el portal se usa en
+// inglés y estos textos salían en español dentro de una pantalla inglesa.
+interface Preset { labelKey: string; host: string; port: number; hintKey?: string }
 
 // Servidores habituales. El usuario puede escribir otro.
 const PRESETS: Preset[] = [
-  { label: 'Microsoft 365 / Outlook', host: 'outlook.office365.com', port: 993, hint: 'Microsoft suele tener desactivado el acceso por contraseña; si falla, su administrador debe activarlo.' },
-  { label: 'Servicio de correo (Hostalia)', host: 'imap.serviciodecorreo.es', port: 993 },
-  { label: 'IONOS', host: 'imap.ionos.es', port: 993 },
-  { label: 'Gmail / Google Workspace', host: 'imap.gmail.com', port: 993, hint: 'Requiere contraseña de aplicación, no la del usuario.' },
-  { label: 'Otro servidor', host: '', port: 993 },
+  { labelKey: 'emailops.imap.preset-microsoft', host: 'outlook.office365.com', port: 993, hintKey: 'emailops.imap.hint-microsoft' },
+  { labelKey: 'emailops.imap.preset-hostalia', host: 'imap.serviciodecorreo.es', port: 993 },
+  { labelKey: 'emailops.imap.preset-ionos', host: 'imap.ionos.es', port: 993 },
+  { labelKey: 'emailops.imap.preset-gmail', host: 'imap.gmail.com', port: 993, hintKey: 'emailops.imap.hint-gmail' },
+  { labelKey: 'emailops.imap.preset-other', host: '', port: 993 },
 ]
 
 type Status = { kind: 'ok' | 'error' | 'saved'; text: string } | null
@@ -85,7 +87,7 @@ export default function ImapConnectPanel({ clientId, locale, brand, onSaved }: {
           {t('emailops.imap.provider', locale)}
           <select value={preset} onChange={(e) => pickPreset(Number(e.target.value))}
             className="rounded-lg border border-line bg-page px-2.5 py-1.5 text-sm text-ink outline-none">
-            {PRESETS.map((p, i) => <option key={p.label} value={i}>{p.label}</option>)}
+            {PRESETS.map((p, i) => <option key={p.labelKey} value={i}>{t(p.labelKey, locale)}</option>)}
           </select>
         </label>
 
@@ -118,9 +120,9 @@ export default function ImapConnectPanel({ clientId, locale, brand, onSaved }: {
         </label>
       </div>
 
-      {PRESETS[preset].hint && (
+      {PRESETS[preset].hintKey && (
         <p className="mt-3 flex items-start gap-1.5 text-[11px] text-ink-tertiary">
-          <AlertTriangle size={12} className="mt-0.5 shrink-0 text-amber-500" aria-hidden /> {PRESETS[preset].hint}
+          <AlertTriangle size={12} className="mt-0.5 shrink-0 text-amber-500" aria-hidden /> {t(PRESETS[preset].hintKey, locale)}
         </p>
       )}
 
