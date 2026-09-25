@@ -22,6 +22,9 @@ export default function IntegrationsPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const [driveConnected, setDriveConnected] = useState(false)
+  // Power BI está "conectado" para esta marca cuando tiene al menos un informe
+  // con URL de incrustación. No es un estado global del producto.
+  const [powerBiConnected, setPowerBiConnected] = useState(false)
   const [driveNeedsReauth, setDriveNeedsReauth] = useState(false)
 
   useEffect(() => {
@@ -70,9 +73,25 @@ export default function IntegrationsPage() {
       .catch(() => {})
   }, [clientId])
 
+  // Estado real de Power BI para esta marca: hay informes incrustables o no.
+  useEffect(() => {
+    if (!clientId) return
+    fetch(`/api/external-reports?clientId=${clientId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        const reports: { status?: string; embed_url?: string | null }[] = j?.reports || []
+        setPowerBiConnected(reports.some((r) => r.status === 'connected' && !!r.embed_url))
+      })
+      .catch(() => {})
+  }, [clientId])
+
   const selectedTool = MARKETPLACE_TOOLS.find((t) => t.id === selectedToolId)
 
   const handleToolConnect = async (toolId: string) => {
+    // Power BI no tiene nada que "conectar" desde aquí: se configuran las URL
+    // de los informes. Llevar a esa pantalla es más honesto que un botón que
+    // finge un OAuth inexistente.
+    if (toolId === 'powerbi') { window.location.href = '/toolkit/bi'; return }
     // Google Drive: OAuth propio por cliente (la conexión que consumen Brand Brain y agentes)
     if (toolId === 'google-drive') {
       if (!clientId) return
@@ -205,7 +224,11 @@ export default function IntegrationsPage() {
         {clientId && <UsageCard clientId={clientId} />}
 
         <ToolsMarketplace
-          connectedTools={driveConnected ? [...connectedTools, 'google-drive'] : connectedTools}
+          connectedTools={[
+            ...connectedTools,
+            ...(driveConnected ? ['google-drive'] : []),
+            ...(powerBiConnected ? ['powerbi'] : []),
+          ]}
           platformTools={platformTools}
           platformNotes={platformNotes}
           userSubscriptionPlan={userSubscriptionPlan}

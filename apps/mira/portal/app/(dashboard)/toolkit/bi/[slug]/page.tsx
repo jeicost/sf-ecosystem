@@ -49,8 +49,14 @@ export default function BiReportPage({ params }: { params: Promise<{ slug: strin
             {report.description && <p className="mt-1 text-xs text-ink-tertiary">{report.description}</p>}
           </div>
 
-          {/* Sin URL no se pinta un marco vacío: se dice qué falta. */}
-          {!report.embed_url || report.status === 'not_configured' ? (
+          {/* Un informe desactivado NO enseña su iframe aunque conserve la URL:
+              apagarlo tiene que apagarlo de verdad, no solo quitarlo de la
+              lista. La URL sigue en la base de datos para poder reactivarlo. */}
+          {report.status === 'disabled' ? (
+            <p className="flex items-start gap-1.5 rounded-2xl bg-surface px-4 py-3 text-xs text-ink-tertiary">
+              <AlertTriangle size={13} className="mt-0.5 shrink-0" /> {t('bi.status.disabled', locale)}
+            </p>
+          ) : !report.embed_url || report.status === 'not_configured' ? (
             <p className="flex items-start gap-1.5 rounded-2xl bg-amber-500/10 px-4 py-3 text-xs text-amber-400">
               <AlertTriangle size={13} className="mt-0.5 shrink-0" /> {t('bi.not-configured', locale)}
             </p>

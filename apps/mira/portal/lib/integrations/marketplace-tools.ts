@@ -30,6 +30,28 @@ export const AUTH_TYPE_LABELS = {
 } as const
 
 export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
+  // Microsoft Power BI (25-sep-2026). 'native' porque MIRA no guarda ninguna
+  // credencial suya: incrusta el informe y quien decide si se ve es Power BI
+  // con sus propios permisos. Su estado NO es estático — se calcula por marca
+  // en /integrations, igual que Google Drive: está conectado cuando esa marca
+  // tiene al menos un informe con URL de incrustación.
+  {
+    id: 'powerbi',
+    name: 'Microsoft Power BI',
+    emoji: '📊',
+    category: 'Analytics',
+    description: 'Business Intelligence reports embedded inside MIRA. Power BI stays the analytics engine and the permission authority.',
+    pricing: 'paid',
+    setupUrl: '/toolkit/bi',
+    agentsUnlocked: [],
+    departments: ['operations', 'finance'],
+    isCritical: false,
+    // 'paid' = las licencias de Power BI las paga el cliente a Microsoft, no
+    // MIRA. Ponerlo como 'via_subscription' lo bloquearía tras un "Upgrade
+    // Plan" — exactamente el fallo que ya costó caro con Apollo y Hunter.
+    status: 'disconnected',
+    authType: 'native',
+  },
   // Design Tools
   {
     id: 'canva',

@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import { Loader2, Save, Calculator, MapPin, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { Loader2, Save, Calculator, MapPin, AlertTriangle, CheckCircle2, Copy } from 'lucide-react'
 import { clsx } from 'clsx'
 import { t, type Locale } from '@/lib/i18n'
 import type { QuotePackage, RatingAreasResult } from '@/lib/cotizador/contract'
@@ -95,6 +95,19 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
     if (!res.ok) setMsg({ kind: 'error', text: data.message || data.error || 'Error' })
     await load()
     setBusy(null)
+  }
+
+  // Manifiesto con varios destinos: mismo origen y mismos bultos, otro destino.
+  const duplicate = async () => {
+    setBusy('save'); setMsg(null)
+    const res = await fetch('/api/cotizador/shipments', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, duplicateOf: shipment.id }),
+    })
+    const data = await res.json()
+    setBusy(null)
+    if (res.ok) window.location.href = `/quotes/${data.shipment.id}`
+    else setMsg({ kind: 'error', text: data.error || 'Error' })
   }
 
   const side = (which: 'origin' | 'destination') => {
@@ -193,6 +206,10 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
               {busy === 'quote' ? <Loader2 size={12} className="animate-spin" /> : <Calculator size={12} />}
               {busy === 'quote' ? t('quotes.quoting', locale) : t('quotes.quote', locale)}
             </button>
+            <button onClick={duplicate} disabled={busy !== null} title={t('quotes.duplicate.help', locale)}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-1.5 text-xs text-ink-tertiary transition-colors hover:text-ink disabled:opacity-50">
+              <Copy size={12} /> {t('quotes.duplicate', locale)}
+            </button>
             {msg && (
               <span className={clsx('text-xs', msg.kind === 'error' ? 'text-red-400' : 'text-emerald-400')}>{msg.text}</span>
             )}
@@ -236,11 +253,47 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
               <span>{t('quotes.result.none', locale)} — <code className="text-ink-secondary">{last.error_code || last.status}</code></span>
             </p>
           )}
+          {/* Los avisos llegan también con status OK — un precio con avisos no
+              es un precio limpio, y el operador tiene que verlos. */}
+          {Array.isArray(last.warnings) && last.warnings.length > 0 && (
+            <div className="mt-4">
+              <p className="mb-1.5 text-[11px] uppercase tracking-wide text-ink-muted">{t('quotes.result.warnings', locale)}</p>
+              <ul className="space-y-1">
+                {(last.warnings as unknown[]).map((w, i) => (
+                  <li key={i} className="rounded-lg bg-amber-500/10 px-2.5 py-1.5 text-[11px] text-amber-400">
+                    {typeof w === 'string' ? w : JSON.stringify(w)}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <p className="mt-4 flex flex-wrap gap-x-4 gap-y-1 border-t border-line-subtle pt-3 text-[10px] text-ink-muted">
             {last.trace_id && <span>{t('quotes.result.trace', locale)}: <code>{last.trace_id}</code></span>}
             {last.data_version && <span>{t('quotes.result.data-version', locale)}: {last.data_version}</span>}
-            {quotes.length > 1 && <span>{t('quotes.result.history', locale)}: {quotes.length}</span>}
           </p>
+        </div>
+      )}
+
+      {/* Histórico: una cotización vieja sigue siendo la respuesta que dio el
+          motor ese día, con su traza. No se borra al pedir otra. */}
+      {quotes.length > 1 && (
+        <div className="rounded-2xl border border-line bg-card p-5">
+          <p className="mb-2 text-[11px] uppercase tracking-wide text-ink-muted">{t('quotes.history.title', locale)}</p>
+          <ul className="space-y-1">
+            {quotes.slice(1).map((q) => {
+              const rec = (q.recommended ?? null) as Record<string, unknown> | null
+              const total = q.status === 'OK' ? money(rec?.total, q.currency) : null
+              return (
+                <li key={q.id} className="flex flex-wrap items-baseline justify-between gap-2 rounded-lg bg-surface px-2.5 py-1.5 text-[11px]">
+                  <span className="text-ink-tertiary">{new Date(q.created_at).toLocaleString(locale === 'es' ? 'es-ES' : 'en-GB')}</span>
+                  <span className={total ? 'tabular-nums text-ink' : 'text-ink-muted'}>
+                    {total ?? `${t('quotes.history.not-usable', locale)} · ${q.error_code || q.status}`}
+                  </span>
+                </li>
+              )
+            })}
+          </ul>
         </div>
       )}
     </div>

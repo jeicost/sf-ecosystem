@@ -34,10 +34,30 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json().catch(() => ({}))) as { clientId?: string; ticketId?: string; patch?: unknown }
+    const body = (await req.json().catch(() => ({}))) as { clientId?: string; ticketId?: string; patch?: unknown; duplicateOf?: string }
     const access = await requireTool('quotes', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const db = adminClient()
+
+    // Manifiesto con varios destinos: se duplica el envío y se vacía el
+    // destino. El motor no recibe lotes — son N cotizaciones independientes.
+    if (typeof body.duplicateOf === 'string') {
+      const source = await getShipment(db, access.clientId, body.duplicateOf)
+      if (!source) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+      const copy = await createShipment(db, access.clientId, access.userId, {
+        origin_country: source.origin_country,
+        origin_postal_code: source.origin_postal_code,
+        origin_rating_area: source.origin_rating_area,
+        // El destino y SU área se quedan vacíos: son justo lo que cambia.
+        destination_country: null, destination_postal_code: null, destination_rating_area: null,
+        palletized: source.palletized,
+        service: source.service,
+        packages: source.packages,
+        extras: source.extras,
+        declared_value_eur: source.declared_value_eur,
+      }, source.ticket_id)
+      return NextResponse.json({ shipment: copy, prefill: null })
+    }
 
     // Desde un ticket de Email Ops se PROPONE lo que se puede leer sin
     // inventar; el operador lo confirma o lo corrige antes de que valga.
