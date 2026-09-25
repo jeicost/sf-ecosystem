@@ -108,11 +108,15 @@ const COLA = [
 const RITMO = [1.28, 0.84, 1.06, 0.78, 1.34, 0.9, 1.15, 0.8, 1.22, 0.93];
 
 /**
- * Cuántas piezas se lleva el HOMBRO. La cola es una sola y se parte aquí: si
- * el hombro tuviera su propia tabla, las mismas piezas saldrían dos veces en
- * la lámina (pasó: FACHA, FANGO y BULOS aparecían arriba y abajo).
+ * Qué se lleva el HOMBRO, por NOMBRE y no por posición en la cola.
+ *
+ * El cono se cierra al subir: ahí las piezas imprimen a 5-7 mm. Una frase de
+ * tres líneas a 5,1 mm tiene renglones de 1,7 mm y no se lee ni existe —
+ * pasó con «AL MENOS NO GOBIERNA LA ULTRADERECHA» y «EL PUEBLO PRIMERO»,
+ * que cayeron ahí por ser de las primeras de la cola. Al hombro solo suben
+ * pictogramas y palabras de UNA línea.
  */
-const PIEZAS_HOMBRO = 12;
+const HOMBRO_PIEZAS = [26, 35, "r-estrella", 3, 34, "r-puntos", 10, 12, 4, 39, "r-cruz", 37];
 
 const arteDe = (n) => {
   const slug = mapa[n];
@@ -225,15 +229,17 @@ function empaquetar(cola, yIni, yFin, altoIdeal) {
 // con el cono. Sin justificar a los cantos: ahí el perímetro se cierra.
 const hombro = [];
 {
-  let y = 56 * MM, i = 0, fila = 0;
-  const anchos = [52, 62, 72, 82, 92, 102].map((m) => m * MM);
-  while (i < PIEZAS_HOMBRO && fila < anchos.length) {
-    const alto = 7.2 * MM * RITMO[fila % RITMO.length];
+  let y = 52 * MM, i = 0, fila = 0;
+  // Filas un punto más altas (9 mm de base): a 7,2 las piezas del cono
+  // quedaban en 5 mm y ahí no aguanta ni una palabra corta.
+  const anchos = [54, 64, 74, 84, 94, 104].map((m) => m * MM);
+  while (i < HOMBRO_PIEZAS.length && fila < anchos.length) {
+    const alto = 9 * MM * RITMO[fila % RITMO.length];
     const util = anchos[fila];
     let suma = 0;
     const mias = [];
-    while (i < PIEZAS_HOMBRO) {
-      const id = COLA[i];
+    while (i < HOMBRO_PIEZAS.length) {
+      const id = HOMBRO_PIEZAS[i];
       const a = arteDeId(id);
       if (!a) { i++; continue; }
       suma += (a.w / a.h) * pesoDe(id);
@@ -260,7 +266,8 @@ const hombro = [];
   }
 }
 
-const COLA_CUERPO = COLA.slice(PIEZAS_HOMBRO);
+// El cuerpo se lleva todo lo que no subió al hombro.
+const COLA_CUERPO = COLA.filter((id) => !HOMBRO_PIEZAS.includes(id));
 const Y_INI = H_HOMBRO + 4 * MM, Y_FIN = H - 6 * MM;
 let ideal = 13 * MM;
 let puestas = empaquetar(COLA_CUERPO, Y_INI, Y_FIN, ideal);

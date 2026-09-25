@@ -51,6 +51,11 @@ VOCES = {
     "serif-it":('font-family="Bodoni Moda, Didot, Georgia, serif" font-style="italic"', 0.92),
     "redonda": ('font-family="Libre Franklin, Helvetica Neue, Arial, sans-serif" font-weight="800"', 0.80),
     "mono":    ('font-family="IBM Plex Mono, ui-monospace, monospace" font-weight="600"', 0.78),
+    # El registro de ROTULISTA, para las palabras ancla. Es lo que separa una
+    # palabra DIBUJADA de una palabra COMPUESTA, y era la diferencia de fondo
+    # con la referencia: sus astas tienen flare y sus formas están apretadas
+    # como un letrero pintado; Barlow es limpia y moderna.
+    "cartel":  ('font-family="Staatliches" font-weight="400"', 1.12),
 }
 
 # ── Dígitos de píxeles ────────────────────────────────────────────────────
@@ -102,27 +107,27 @@ def pixeles(texto: str, x: float, y: float, u: float) -> tuple[str, float]:
 PIEZAS = [
     # Era "sello" y la palabra quedaba a 1,2 mm dentro del aro: ilegible en
     # cualquier malla (medido). En hueca va a toda caja, como MEMA.
-    (16, "t-hermanisimo",       ["HERMANÍSIMO"],                          "hueca",   "cond"),
+    (16, "t-hermanisimo",       ["HERMANÍSIMO"],                          "arco",    "cartel"),
     (19, "t-rufian",            ["rufián", "s. m."],                      "diccio",  "serif"),
-    (20, "t-mema",              ["MEMA"],                                 "hueca",   "cond"),
+    (20, "t-mema",              ["MEMA"],                                 "revuelto","cartel"),
     (21, "t-patxi-verguenza-ajena", ["PATXI", "VERGÜENZA", "AJENA"],      "desnuda", "cond"),
     (22, "t-al-menos-no-gobierna-la-ultraderecha",
          ["AL MENOS NO", "GOBIERNA LA", "ULTRADERECHA"],                  "desnuda", "cond"),
-    (23, "t-no-dormiria-tranquilo", ["NO DORMIRÍA", "TRANQUILO"],         "desnuda", "cond"),
-    (24, "t-espana-va-como-un-cohete", ["ESPAÑA VA", "COMO UN COHETE"],   "desnuda", "cond"),
+    (23, "t-no-dormiria-tranquilo", ["NO DORMIRÍA", "TRANQUILO"],         "desnuda", "cartel"),
+    (24, "t-espana-va-como-un-cohete", ["ESPAÑA VA", "COMO UN COHETE"],   "desnuda", "cartel"),
     (25, "t-son-las-5-y-no-he-comido", ["SON LAS", "5", "Y NO HE COMIDO"], "cifra",  "cond"),
     # La referencia NO tiene placas macizas: sus masas blancas son iconos.
     # FACHA pasa de caja a TAMPÓN de contorno, como su banderín TABALOT.
-    (26, "t-facha",             ["FACHA"],                                "tampon",  "cond"),
-    (27, "t-yo-estoy-bien",     ["YO ESTOY", "BIEN"],                     "desnuda", "cond"),
+    (26, "t-facha",             ["FACHA"],                                "tampon",  "cartel"),
+    (27, "t-yo-estoy-bien",     ["YO ESTOY", "BIEN"],                     "desnuda", "cartel"),
     (28, "t-por-7-votos",       ["POR", "7", "VOTOS"],                    "cifra",   "cond"),
-    (29, "t-fiscal-soplon",     ["FISCAL", "SOPLÓN"],                     "sello",   "cond"),
+    (29, "t-fiscal-soplon",     ["FISCAL", "SOPLÓN"],                     "sello",   "cartel"),
     (30, "t-ecologetas",        ["Ecologetas"],                           "desnuda", "redonda"),
     (31, "t-soy-feminista-porque-soy-socialista",
          ["SOY FEMINISTA", "PORQUE SOY", "SOCIALISTA"],                   "desnuda", "cond"),
     (44, "t-alma-socialista-mente-de-tiburon",
-         ["ALMA SOCIALISTA,", "MENTE DE TIBURÓN"],                        "desnuda", "cond"),
-    (45, "t-transversal-como-el-iva", ["TRANSVERSAL,", "COMO EL IVA"],    "regla",   "cond"),
+         ["ALMA SOCIALISTA,", "MENTE DE TIBURÓN"],                        "desnuda", "cartel"),
+    (45, "t-transversal-como-el-iva", ["TRANSVERSAL,", "COMO EL IVA"],    "regla",   "cartel"),
     (46, "t-horizonte-2030-legislatura-2027",
          ["HORIZONTE", "2030", "LEGISLATURA", "2027"],                    "contador","cond"),
     (47, "t-compromiso-firme-hasta-nueva-orden",
@@ -133,11 +138,11 @@ PIEZAS = [
          # Era "hueca" y a tres líneas el contorno (inflado por el mínimo de
          # trazo impreso) soldaba las líneas entre sí. La hueca solo vive en
          # MEMA: una línea y pintada grande.
-         ["RESILIENTE,", "O SEA, QUE", "AGUANTAS"],                       "desnuda", "cond"),
+         ["RESILIENTE,", "O SEA, QUE", "AGUANTAS"],                       "desnuda", "cartel"),
     (50, "t-transparencia-total-previa-cita",
          ["TRANSPARENCIA", "TOTAL,", "PREVIA CITA"],                      "desnuda", "cond"),
     (51, "t-el-pueblo-primero-despues-de-mi",
-         ["EL PUEBLO PRIMERO.", "DESPUÉS DE MÍ."],                        "desnuda", "cond"),
+         ["EL PUEBLO PRIMERO.", "DESPUÉS DE MÍ."],                        "desnuda", "cartel"),
     (52, "t-cambio-de-opinion-no-de-sueldo",
          ["CAMBIO DE", "OPINIÓN,", "NO DE SUELDO"],                       "desnuda", "cond"),
     (53, "t-vocacion-de-servicio-nomina-de-por-vida",
@@ -277,6 +282,11 @@ def _dibujos(T):
 
 DIBUJOS_POR_PIEZA = _dibujos(TINTA)
 
+# EL REPARTO DE VOCES es una decisión de composición, no de gusto: las
+# piezas ANCLA (una o dos líneas, las que se leen a un metro) van en la voz
+# de rotulista; las frases de tres líneas se quedan en la condensada, que
+# aguanta mejor el bloque y —sobre todo— mantiene la VARIEDAD. Si todo
+# fuera cartel, el estampado volvería a ser monótono por el otro lado.
 CUERPO = 66          # tamaño base de letra
 INTERLINEA = 0.88    # las frases van APRETADAS: es lo que hace bloque
 MARGEN = 14
@@ -305,13 +315,16 @@ def saltos_de(lineas: list, t: float) -> list:
     return pasos
 
 
-def compon(lineas, trato, voz, medida=None, slug="x", n=None) -> str:
+def compon(lineas, trato, voz, medida=None, slug="x", n=None, avances=None) -> str:
     """Interior del SVG. `medida` es el bbox REAL del texto ya renderizado:
     los contenedores (caja, sello, corchetes, filetes) se ciñen a él en una
     segunda pasada, porque un contenedor de tamaño fijo baila según la
     longitud de la frase y eso se ve a la primera."""
     fam, ajuste = VOCES[voz]
-    refuerza = voz in ("serif", "serif-it", "mono", "cond-lig")
+    # "cartel" entra aquí: Staatliches es una display de peso Regular y sobre
+    # el vidrio sale más fina que la condensada bold — al cambiar la voz de
+    # las piezas ancla, cinco de ellas cayeron por debajo del mínimo.
+    refuerza = voz in ("serif", "serif-it", "mono", "cond-lig", "cartel")
     t = CUERPO * ajuste
     pasos = saltos_de(lineas, t)
     cx, cy = 500, 300
@@ -433,6 +446,60 @@ def compon(lineas, trato, voz, medida=None, slug="x", n=None) -> str:
         medida_aro = {"x": cx - r, "y": cy - r, "w": 2 * r, "h": 2 * r}
         medida_texto, med2 = medida, medida_aro
         return con_dibujo_con(sello, med2)
+
+    if trato == "arco":
+        # La palabra montada en un ARCO, con cada letra girada a su tangente.
+        # Es la maniobra de TROMPÍMETRE y de XULO en la referencia, y es de
+        # las que más separan una palabra dibujada de una compuesta: una
+        # línea base recta se lee como tipografía; una curva, como rótulo.
+        if not avances:
+            return texto(lineas)
+        # 0,78: lo que se mide por diferencia de prefijos es la TINTA de cada
+        # letra, no su avance, y en una condensada la tinta de una M es casi
+        # su avance pero la de una I es mucho menor — al sumarlas el arco
+        # sale un tercio más largo y las letras nadan.
+        anchos = [a * 0.78 for a in avances[0]]
+        total = sum(anchos)
+        radio = max(total * 0.78, 90)
+        partes = []
+        recorrido = -total / 2
+        for ch, av in zip(lineas[0], anchos):
+            ang = (recorrido + av / 2) / radio          # radianes
+            import math as _m
+            px = cx + radio * _m.sin(ang)
+            py = cy + radio - radio * _m.cos(ang)
+            partes.append(
+                f'<g transform="rotate({_m.degrees(ang):.2f} {px:.1f} {py:.1f})">'
+                f'<text x="{px:.1f}" y="{py:.1f}" text-anchor="middle" fill="{TINTA}" '
+                f'{fam} font-size="{t:.1f}">{ch}</text></g>'
+            )
+            recorrido += av
+        return con_dibujo("".join(partes))
+
+    if trato == "revuelto":
+        # Cada letra con su cuerpo, su giro y su línea base, alternando caja
+        # alta y baja: la maniobra de «SaPaSTre!». El patrón es FIJO (nunca
+        # aleatorio: el render debe repetirse build tras build) y lo que hace
+        # es que la palabra parezca escrita a mano, no tecleada.
+        if not avances:
+            return texto(lineas)
+        CUERPOS = [1.0, 0.74, 1.14, 0.82, 1.06, 0.78, 1.18, 0.88]
+        GIROS = [-6, 4, -3, 7, -5, 3, -7, 5]
+        SALTOS = [0, 5, -4, 6, -3, 4, -6, 2]
+        partes = []
+        x = cx - sum(avances[0]) / 2
+        for i, (ch, av) in enumerate(zip(lineas[0], avances[0])):
+            k = CUERPOS[i % len(CUERPOS)]
+            # La caja alta y baja se turnan; si la letra no tiene minúscula
+            # (un signo, una cifra) se queda como está.
+            letra = ch.lower() if i % 2 and ch.lower() != ch.upper() else ch
+            partes.append(
+                f'<g transform="rotate({GIROS[i % len(GIROS)]} {x + av / 2:.1f} {cy:.1f})">'
+                f'<text x="{x + av / 2:.1f}" y="{cy + SALTOS[i % len(SALTOS)]:.1f}" '
+                f'text-anchor="middle" fill="{TINTA}" {fam} font-size="{t * k:.1f}">{letra}</text></g>'
+            )
+            x += av * (0.88 + 0.12 * k)
+        return con_dibujo("".join(partes))
 
     if trato == "tampon":
         # Sello de goma inclinado: DOBLE marco de contorno (nada macizo) con
@@ -573,8 +640,23 @@ def main() -> int:
             if medida is None:
                 print(f"  ✗ {slug}: no se pudo medir el texto")
                 continue
+            # Para las maniobras de rotulación hace falta el AVANCE DE CADA
+            # LETRA, no el ancho del bloque: se mide en el navegador, con la
+            # fuente cargada, pidiendo prefijos cada vez más largos (así el
+            # kerning real entra en la cuenta).
+            avances = None
+            if trato in ("arco", "revuelto"):
+                anchos = []
+                previo = 0.0
+                for k in range(1, len(lineas[0]) + 1):
+                    m = medir(compon([lineas[0][:k]], "desnuda", voz))
+                    ancho = m["w"] if m else 0.0
+                    anchos.append(max(ancho - previo, CUERPO * 0.18))
+                    previo = ancho
+                avances = [anchos]
+
             # Pasada 2: la pieza con sus contenedores ajustados a esa medida.
-            cuerpo = compon(lineas, trato, voz, medida=medida, slug=slug, n=n)
+            cuerpo = compon(lineas, trato, voz, medida=medida, slug=slug, n=n, avances=avances)
             bruto = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">{cuerpo}</svg>'
 
             caja = pag.evaluate(

@@ -15,7 +15,7 @@
   </g>
   <!-- los dos arcos del balancín -->
   <g stroke="#F6F1E6" fill="none" stroke-linecap="round">
-    <path d="M40 252 q120 52 240 0" stroke-width="13.81"/>
-    <path d="M62 240 q98 40 196 0" stroke-width="13.81"/>
+    <path d="M40 252 q120 52 240 0" stroke-width="17.92"/>
+    <path d="M62 240 q98 40 196 0" stroke-width="17.92"/>
   </g>
 </svg>

@@ -48,6 +48,12 @@ const CARGA = {
   // fina en la botella por esto — pedía un logotipo gordo y llegó UI text.
   "franklin-800": "LibreFranklin-ExtraBold.ttf",
   "plex-600": "IBMPlexMono-SemiBold.ttf",
+  // El registro de ROTULISTA (24-sep). Comparada al lado de Barlow, Fjalla y
+  // Big Shoulders sobre las palabras ancla, es la única con el trazo de
+  // cartel de la referencia: astas con flare, formas apretadas, carácter de
+  // letrero pintado. Barlow es limpia y moderna, que es justo lo que hacía
+  // que nuestras palabras parecieran compuestas y las suyas dibujadas.
+  "cartel": "Staatliches-Regular.ttf",
 };
 
 const fuentes = {};
@@ -69,6 +75,7 @@ function eligeFuente(attrs) {
   if (fam.includes("bodoni")) clave = italica ? "bodoni-italic" : peso === "700" ? "bodoni-700" : "bodoni-400";
   else if (fam.includes("franklin")) clave = "franklin-800";
   else if (fam.includes("plex")) clave = "plex-600";
+  else if (fam.includes("staatliches")) clave = "cartel";
   else clave = peso === "700" ? "barlow-700" : "barlow-400";
   const f = fuentes[clave];
   if (!f) {

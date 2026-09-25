@@ -87,7 +87,7 @@ export const ICONO_DE: Record<number, string> = {
  * La query rompe la caché sin renombrar 67 ficheros: se sube cuando se
  * vuelve a pasar `diseno/iconos/` y cambia cualquier pieza.
  */
-export const VERSION_ARTE = 7;
+export const VERSION_ARTE = 8;
 
 export const rutaIcono = (n: number): string | null =>
   ICONO_DE[n] ? rutaArte(ICONO_DE[n]) : null;
