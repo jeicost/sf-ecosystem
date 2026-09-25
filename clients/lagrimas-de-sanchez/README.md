@@ -37,6 +37,12 @@ dentro. **La botella vacía es el negocio; el vino es la prensa.**
 
 ## RETOMAR AQUÍ
 
+> **¿Vas a trabajar el diseño de la botella?** Empieza por
+> **`diseno/TRASPASO-DISENO-BOTELLA.md`**: es el traspaso completo —producto,
+> reglas que no se tocan, cómo funciona la tubería de arte, las trampas que
+> ya mordieron, qué está medido y qué queda por hacer— escrito para alguien
+> que no ha estado en esto.
+
 ### Cierre de fase 24-sep — qué pasó en el sprint final
 - **El arte quedó MEDIDO e imprimible**: `diseno/INFORME-IMPRIMIBILIDAD.md`
   (morfología a 2 escenarios de malla) dejó 22 piezas rotas en **8 pátinas de
