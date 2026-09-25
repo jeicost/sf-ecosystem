@@ -2358,6 +2358,7 @@ export type Database = {
           powerbi_workspace_id: string | null
           provider: string
           report_id: string | null
+          shared_client_ids: string[]
           slug: string
           status: string
           title: string
@@ -2380,6 +2381,7 @@ export type Database = {
           powerbi_workspace_id?: string | null
           provider?: string
           report_id?: string | null
+          shared_client_ids?: string[]
           slug: string
           status?: string
           title: string
@@ -2402,6 +2404,7 @@ export type Database = {
           powerbi_workspace_id?: string | null
           provider?: string
           report_id?: string | null
+          shared_client_ids?: string[]
           slug?: string
           status?: string
           title?: string

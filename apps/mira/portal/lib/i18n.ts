@@ -2165,6 +2165,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'emailops.dash.table.view': 'Ver datos en tabla',
     'emailops.dash.table.more': 'clientes más',
     // Conectar buzón por IMAP (lectura directa, sin reenvíos)
+    'bi.manage.shared': 'Marcas que también lo ven',
+    'bi.manage.shared-help': 'El informe se configura una vez aquí y aparece en las marcas marcadas. Solo se edita desde la marca dueña.',
+    'bi.shared-from': 'Compartido por {brand}',
     'bi.section': 'Business Intelligence',
     'bi.provider': 'Microsoft Power BI',
     'bi.open': 'Abrir informe',
@@ -4510,6 +4513,9 @@ const translations: Record<Locale, Record<string, string>> = {
     'emailops.dash.table.view': 'View data as table',
     'emailops.dash.table.more': 'more clients',
     // Connect a mailbox over IMAP (direct read, no forwarding)
+    'bi.manage.shared': 'Brands that also see it',
+    'bi.manage.shared-help': 'The report is configured once here and shows up in the ticked brands. It can only be edited from the owning brand.',
+    'bi.shared-from': 'Shared by {brand}',
     'bi.section': 'Business Intelligence',
     'bi.provider': 'Microsoft Power BI',
     'bi.open': 'Open report',

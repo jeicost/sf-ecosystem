@@ -5,7 +5,7 @@ import { errorMessage } from '@/lib/email-ops/auth'
 import { writable } from '@/lib/db-json'
 import {
   EXTERNAL_REPORT_COLS, validateEmbedUrl, validateExternalUrl, deriveStatus,
-  type ExternalReport, type ExternalReportStatus,
+  type ExternalReport, type ExternalReportForClient, type ExternalReportStatus,
 } from '@/lib/reports/external'
 
 // Informes externos de una marca. Leer: cualquier miembro (Reports entra con
@@ -20,16 +20,36 @@ export async function GET(req: NextRequest) {
     const access = await requireTool('reports', q.get('clientId'))
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const db = adminClient()
-    let query = db.from('external_reports').select(EXTERNAL_REPORT_COLS)
-      .eq('client_id', access.clientId)
-      .order('display_order', { ascending: true }).order('created_at', { ascending: true })
     const slug = q.get('slug')
-    if (slug) query = query.eq('slug', slug)
-    const { data, error } = await query
-    if (error) throw error
-    const reports = (data || []) as unknown as ExternalReport[]
+
+    // Dos consultas en vez de un OR: los informes de esta marca y los que otra
+    // marca le comparte. Separadas a propósito — un filtro OR mal escrito sobre
+    // un array es justo la forma de enseñarle a un cliente el informe de otro.
+    const base = () => {
+      let qy = db.from('external_reports').select(EXTERNAL_REPORT_COLS)
+        .order('display_order', { ascending: true }).order('created_at', { ascending: true })
+      if (slug) qy = qy.eq('slug', slug)
+      return qy
+    }
+    const [ownRes, sharedRes] = await Promise.all([
+      base().eq('client_id', access.clientId),
+      base().contains('shared_client_ids', [access.clientId]),
+    ])
+    if (ownRes.error) throw ownRes.error
+    if (sharedRes.error) throw sharedRes.error
+
+    const own = (ownRes.data || []) as unknown as ExternalReport[]
+    const shared = (sharedRes.data || []) as unknown as ExternalReport[]
+    const seen = new Set(own.map((r) => r.id))
+    const merged: ExternalReportForClient[] = [
+      ...own.map((r) => ({ ...r, owned: true })),
+      // Un informe puede ser suyo Y estar en su propia lista de compartidos:
+      // no se cuenta dos veces.
+      ...shared.filter((r) => !seen.has(r.id)).map((r) => ({ ...r, owned: false })),
+    ].sort((a, b) => a.display_order - b.display_order || a.created_at.localeCompare(b.created_at))
+
     // El cliente no ve informes apagados; la agencia sí, para poder arreglarlos.
-    const visible = access.isAgency ? reports : reports.filter((r) => r.status !== 'disabled')
+    const visible = access.isAgency ? merged : merged.filter((r) => r.status !== 'disabled')
     return NextResponse.json({ reports: visible, canManage: access.isAgency })
   } catch (error) {
     console.error('external-reports GET error:', error)
@@ -50,6 +70,22 @@ interface Body {
   workspaceLabel?: string | null
   owner?: string | null
   displayOrder?: number
+  sharedClientIds?: string[]
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
+/**
+ * Marcas con las que se comparte. Solo la agencia llega hasta aquí (las dos
+ * rutas de escritura lo exigen antes), así que basta con sanear la forma y
+ * quitar a la propia dueña, que ya lo ve por ser suya.
+ */
+function cleanShared(input: unknown, ownerId: string): string[] | undefined {
+  if (!Array.isArray(input)) return undefined
+  const ids = input
+    .filter((v): v is string => typeof v === 'string' && UUID_RE.test(v))
+    .filter((v) => v !== ownerId)
+  return Array.from(new Set(ids)).slice(0, 50)
 }
 
 /** Valida y normaliza las dos URL. Devuelve el motivo exacto del rechazo. */
@@ -103,6 +139,7 @@ export async function POST(req: NextRequest) {
       workspace_label: typeof body.workspaceLabel === 'string' ? body.workspaceLabel.slice(0, 120) : null,
       owner: typeof body.owner === 'string' ? body.owner.slice(0, 120) : null,
       display_order: Number.isFinite(body.displayOrder) ? Number(body.displayOrder) : 0,
+      shared_client_ids: cleanShared(body.sharedClientIds, access.clientId) ?? [],
       created_by: access.userId,
       updated_by: access.userId,
     })).select(EXTERNAL_REPORT_COLS).single()
@@ -148,6 +185,8 @@ export async function PATCH(req: NextRequest) {
     if (body.workspaceLabel !== undefined) patch.workspace_label = typeof body.workspaceLabel === 'string' ? body.workspaceLabel.slice(0, 120) : null
     if (body.owner !== undefined) patch.owner = typeof body.owner === 'string' ? body.owner.slice(0, 120) : null
     if (Number.isFinite(body.displayOrder)) patch.display_order = Number(body.displayOrder)
+    const shared = cleanShared(body.sharedClientIds, access.clientId)
+    if (shared !== undefined) patch.shared_client_ids = shared
 
     const { data, error } = await db.from('external_reports').update(writable(patch))
       .eq('id', body.id).eq('client_id', access.clientId).select(EXTERNAL_REPORT_COLS).single()

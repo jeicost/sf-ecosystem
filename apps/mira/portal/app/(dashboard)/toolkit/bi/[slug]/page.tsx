@@ -6,13 +6,13 @@ import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import PowerBIReportEmbed from '@/components/reports/PowerBIReportEmbed'
-import type { ExternalReport } from '@/lib/reports/external'
+import type { ExternalReportForClient } from '@/lib/reports/external'
 
 export default function BiReportPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = use(params)
   const { locale } = useLocaleContext()
   const { activeClient } = useActiveClient()
-  const [report, setReport] = useState<ExternalReport | null>(null)
+  const [report, setReport] = useState<ExternalReportForClient | null>(null)
   const [loading, setLoading] = useState(true)
 
   const clientId = activeClient?.id

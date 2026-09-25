@@ -23,13 +23,20 @@ export interface ExternalReport {
   display_order: number
   report_id: string | null
   powerbi_workspace_id: string | null
+  /** Marcas que además VEN este informe. Editarlo solo puede la dueña. */
+  shared_client_ids: string[]
   created_at: string
   updated_at: string
 }
 
+/** Vista de un informe para una marca concreta: si no es suya, no se edita. */
+export interface ExternalReportForClient extends ExternalReport {
+  owned: boolean
+}
+
 export const EXTERNAL_REPORT_COLS =
   'id,client_id,slug,title,description,provider,category,embed_url,external_url,status,access_mode,' +
-  'workspace_label,owner,display_order,report_id,powerbi_workspace_id,created_at,updated_at'
+  'workspace_label,owner,display_order,report_id,powerbi_workspace_id,shared_client_ids,created_at,updated_at'
 
 /** Hosts admitidos para incrustar. Cualquier otro se rechaza al guardar. */
 const POWERBI_HOSTS = ['app.powerbi.com', 'app.powerbigov.us']

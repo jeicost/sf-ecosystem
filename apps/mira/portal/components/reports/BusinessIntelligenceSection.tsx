@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { BarChart3, ExternalLink, Settings2, Loader2 } from 'lucide-react'
 import { clsx } from 'clsx'
 import { t, type Locale } from '@/lib/i18n'
-import type { ExternalReport, ExternalReportStatus } from '@/lib/reports/external'
+import type { ExternalReportForClient, ExternalReportStatus } from '@/lib/reports/external'
 
 // Business Intelligence dentro de Business Reports, no como producto aparte.
 // Si la marca no tiene ningún informe configurado, la sección no existe: una
@@ -20,7 +20,7 @@ const BADGE: Record<ExternalReportStatus, string> = {
 export default function BusinessIntelligenceSection({ clientId, locale, brand }: {
   clientId: string; locale: Locale; brand: string
 }) {
-  const [reports, setReports] = useState<ExternalReport[]>([])
+  const [reports, setReports] = useState<ExternalReportForClient[]>([])
   const [canManage, setCanManage] = useState(false)
   const [loading, setLoading] = useState(true)
 

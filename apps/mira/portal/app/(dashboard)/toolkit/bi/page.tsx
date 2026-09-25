@@ -5,7 +5,9 @@ import { ArrowLeft, BarChart3, Plus, Loader2, Save, AlertTriangle } from 'lucide
 import { useActiveClient } from '@/lib/client-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
-import type { ExternalReport } from '@/lib/reports/external'
+import type { ExternalReportForClient } from '@/lib/reports/external'
+
+interface BrandOption { id: string; name: string }
 
 // Donde se pegan las URL de Power BI. Solo la agencia.
 //
@@ -18,7 +20,9 @@ const LBL = 'flex flex-col gap-1 text-[11px] text-ink-tertiary'
 export default function BiManagePage() {
   const { locale } = useLocaleContext()
   const { activeClient } = useActiveClient()
-  const [reports, setReports] = useState<ExternalReport[]>([])
+  const [reports, setReports] = useState<ExternalReportForClient[]>([])
+  const [brands, setBrands] = useState<BrandOption[]>([])
+  const [draftShared, setDraftShared] = useState<string[]>([])
   const [canManage, setCanManage] = useState(false)
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState<string | null>(null)
@@ -36,6 +40,15 @@ export default function BiManagePage() {
     setLoading(false)
   }, [clientId])
   useEffect(() => { load() }, [load])
+
+  // Las demás marcas a las que este usuario llega: son las candidatas a ver el
+  // informe. Un informe del grupo Aldea se configura una vez y se marca aquí.
+  useEffect(() => {
+    fetch('/api/me/clients')
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setBrands((j?.clients || []).map((c: { id: string; name: string }) => ({ id: c.id, name: c.name }))))
+      .catch(() => {})
+  }, [])
 
   if (!activeClient) return null
   const brand = activeClient.primaryColor || '#6366F1'
@@ -59,8 +72,9 @@ export default function BiManagePage() {
       description: draft.description.trim() || null,
       embedUrl: draft.embedUrl.trim() || null, externalUrl: draft.externalUrl.trim() || null,
       owner: draft.owner.trim() || null, displayOrder: reports.length + 1,
+      sharedClientIds: draftShared,
     }, 'add')
-    if (created) setDraft({ slug: '', title: '', description: '', embedUrl: '', externalUrl: '', owner: '' })
+    if (created) { setDraft({ slug: '', title: '', description: '', embedUrl: '', externalUrl: '', owner: '' }); setDraftShared([]) }
   }
 
   return (
@@ -82,6 +96,7 @@ export default function BiManagePage() {
         <div className="space-y-4">
           {reports.map((r) => (
             <ReportRow key={r.id} report={r} locale={locale} brand={brand} busy={busy}
+              brands={brands} activeClientId={activeClient.id}
               onSave={(patch) => call('PATCH', { id: r.id, ...patch }, r.id)} />
           ))}
 
@@ -107,6 +122,9 @@ export default function BiManagePage() {
               <label className={LBL}>{t('bi.manage.owner', locale)}
                 <input value={draft.owner} onChange={(e) => setDraft({ ...draft, owner: e.target.value })} className={F} />
               </label>
+              <div className="sm:col-span-2">
+                <BrandPicker brands={brands} exclude={activeClient.id} selected={draftShared} onChange={setDraftShared} locale={locale} />
+              </div>
             </div>
             <button onClick={add} disabled={busy !== null || !draft.slug.trim() || !draft.title.trim()}
               className="mt-4 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50" style={{ background: brand }}>
@@ -126,12 +144,27 @@ export default function BiManagePage() {
   )
 }
 
-function ReportRow({ report, locale, brand, busy, onSave }: {
-  report: ExternalReport; locale: ReturnType<typeof useLocaleContext>['locale']; brand: string
-  busy: string | null; onSave: (patch: Record<string, unknown>) => void
+function ReportRow({ report, locale, brand, busy, brands, activeClientId, onSave }: {
+  report: ExternalReportForClient; locale: ReturnType<typeof useLocaleContext>['locale']; brand: string
+  busy: string | null; brands: BrandOption[]; activeClientId: string
+  onSave: (patch: Record<string, unknown>) => void
 }) {
   const [embedUrl, setEmbedUrl] = useState(report.embed_url || '')
   const [externalUrl, setExternalUrl] = useState(report.external_url || '')
+  const [shared, setShared] = useState<string[]>(report.shared_client_ids || [])
+
+  // Un informe que llega compartido de otra marca se ve, pero no se edita
+  // desde aquí: se edita donde vive. La API lo vuelve a impedir.
+  if (!report.owned) {
+    return (
+      <div className="rounded-2xl border border-line-subtle bg-card p-4 opacity-70">
+        <div className="flex items-center justify-between gap-2">
+          <h2 className="text-sm font-medium text-ink">{report.title}</h2>
+          <code className="text-[11px] text-ink-muted">/toolkit/bi/{report.slug}</code>
+        </div>
+      </div>
+    )
+  }
   return (
     <div className="rounded-2xl border border-line bg-card p-5">
       <div className="mb-3 flex items-center justify-between gap-2">
@@ -146,11 +179,41 @@ function ReportRow({ report, locale, brand, busy, onSave }: {
           <input value={externalUrl} onChange={(e) => setExternalUrl(e.target.value)} className={F} />
         </label>
       </div>
-      <button onClick={() => onSave({ embedUrl: embedUrl.trim() || null, externalUrl: externalUrl.trim() || null })}
+      <div className="mt-3">
+        <BrandPicker brands={brands} exclude={activeClientId} selected={shared} onChange={setShared} locale={locale} />
+      </div>
+      <button onClick={() => onSave({ embedUrl: embedUrl.trim() || null, externalUrl: externalUrl.trim() || null, sharedClientIds: shared })}
         disabled={busy !== null}
         className="mt-3 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50" style={{ background: brand }}>
         {busy === report.id ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />} {t('bi.manage.save', locale)}
       </button>
+    </div>
+  )
+}
+
+/** Qué otras marcas ven este informe. Nada de "todas": se marcan una a una. */
+function BrandPicker({ brands, exclude, selected, onChange, locale }: {
+  brands: BrandOption[]; exclude: string; selected: string[]
+  onChange: (ids: string[]) => void; locale: ReturnType<typeof useLocaleContext>['locale']
+}) {
+  const options = brands.filter((b) => b.id !== exclude)
+  if (options.length === 0) return null
+  const toggle = (id: string) =>
+    onChange(selected.includes(id) ? selected.filter((x) => x !== id) : [...selected, id])
+  return (
+    <div>
+      <p className="mb-1 text-[11px] text-ink-tertiary">{t('bi.manage.shared', locale)}</p>
+      <div className="flex flex-wrap gap-1.5">
+        {options.map((b) => (
+          <button key={b.id} onClick={() => toggle(b.id)} type="button"
+            className={`rounded-lg px-2.5 py-1 text-[11px] transition-colors ${
+              selected.includes(b.id) ? 'bg-emerald-500/15 text-emerald-400' : 'bg-surface text-ink-tertiary hover:text-ink'
+            }`}>
+            {b.name}
+          </button>
+        ))}
+      </div>
+      <p className="mt-1.5 text-[11px] text-ink-muted">{t('bi.manage.shared-help', locale)}</p>
     </div>
   )
 }
