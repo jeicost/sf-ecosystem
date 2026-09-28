@@ -161,11 +161,16 @@ PIEZAS = [
 def _dibujos(T):
     R = {}
     # 16 HERMANÍSIMO — cadena de muñecos de papel cogidos de las manos
-    R[16] = ("arriba", 150, 74, f'''<g fill="{T}">
-      <circle cx="30" cy="18" r="14"/><circle cx="75" cy="18" r="14"/><circle cx="120" cy="18" r="14"/>
-      <path d="M14 74 l6 -34 q10 -6 20 0 l6 34 Z"/><path d="M59 74 l6 -34 q10 -6 20 0 l6 34 Z"/>
-      <path d="M104 74 l6 -34 q10 -6 20 0 l6 34 Z"/>
-      <rect x="40" y="46" width="24" height="7" rx="3.5"/><rect x="86" y="46" width="24" height="7" rx="3.5"/></g>''')
+    # un cable que se bifurca en dos clavijas idénticas — «enchufado», y hermanísimo
+    R[16] = ("arriba", 124, 78, f'''<path fill="{T}" fill-rule="evenodd" d="M52 13 C58 7 64 6 72 6 H89 C95 6 99 9 99 14 V26 C99 31 95 34 89 34 H72 C64 34 58 33 52 27 Z M82 12 h6 a3 3 0 0 1 3 3 v10 a3 3 0 0 1 -3 3 h-6 a3 3 0 0 1 -3 -3 v-10 a3 3 0 0 1 3 -3 z"/>
+<rect x="97" y="12" width="19" height="6" rx="3" fill="{T}"/>
+<rect x="97" y="23" width="19" height="6" rx="3" fill="{T}"/>
+<path fill="{T}" fill-rule="evenodd" d="M50 49 C56 43 62 42 70 42 H91 C97 42 101 45 101 50 V66 C101 71 97 74 91 74 H70 C62 74 56 73 50 67 Z M83 50 h6 a3 3 0 0 1 3 3 v10 a3 3 0 0 1 -3 3 h-6 a3 3 0 0 1 -3 -3 v-10 a3 3 0 0 1 3 -3 z"/>
+<rect x="99" y="49" width="20" height="6.5" rx="3.2" fill="{T}"/>
+<rect x="99" y="61" width="20" height="6.5" rx="3.2" fill="{T}"/>
+<path fill="none" stroke="{T}" stroke-width="6.5" stroke-linecap="round" d="M53 20 C42 20 37 28 31 34 C27 38 24 39 20 39.5"/>
+<path fill="none" stroke="{T}" stroke-width="6.5" stroke-linecap="round" d="M51 58 C41 58 36 50 30 44 C26 40 24 39.5 20 39.5"/>
+<path fill="none" stroke="{T}" stroke-width="6.5" stroke-linecap="round" d="M21 39.5 C12 39.5 4 42 4 33 C4 25 12 23 16 28"/>''')
     # 21 PATXI — facepalm: la palma por delante de la cara
     R[21] = ("lado-izq", 88, 86, f'''
       <path fill="{T}" fill-rule="evenodd" d="M44 2 a40 40 0 1 1 -0.1 0 Z
@@ -181,10 +186,8 @@ def _dibujos(T):
       <path d="M44 8 q22 -6 26 12 l-9 3 q-4 -12 -17 -8 Z"/>
       <rect x="8" y="4" width="26" height="8" rx="4" transform="rotate(-18 21 8)"/></g>''')
     # 23 NO DORMIRÍA TRANQUILO — el ojo que no se cierra
-    R[23] = ("arriba", 132, 64, f'''<g fill="none" stroke="{T}" stroke-width="8" stroke-linecap="round">
-      <path d="M10 40 Q66 -4 122 40 Q66 78 10 40 Z" fill="{T}"/>
-      <line x1="30" y1="12" x2="24" y2="2"/><line x1="66" y1="8" x2="66" y2="-4"/><line x1="102" y1="12" x2="108" y2="2"/></g>
-      <circle cx="66" cy="38" r="16" fill="#22260F"/><circle cx="66" cy="38" r="7" fill="{T}"/>''')
+    # antifaz de dormir con dos ojazos abiertos pintados encima
+    R[23] = ("arriba", 132, 66, f'''<path fill="{T}" fill-rule="evenodd" d="M 18 30 C 18 16 36 8 66 8 C 96 8 114 16 114 31 C 114 46 104 58 92 58 C 82 58 76 45 66 45 C 56 45 50 58 40 58 C 28 58 18 45 18 30 Z M 35 30.5 C 38 21.5 42.5 18.5 46.8 18.5 C 51.2 18.5 55 21.5 57.5 30.5 C 55 38.5 51.2 42 46.8 42 C 42.5 42 38 38.5 35 30.5 Z M 46.8 21.6 C 49.6 21.6 51.9 23.9 51.9 26.7 C 51.9 29.5 49.6 31.8 46.8 31.8 C 44 31.8 41.7 29.5 41.7 26.7 C 41.7 23.9 44 21.6 46.8 21.6 Z M 74 30 C 77 20.5 82 17.5 86.8 17.5 C 91.6 17.5 95.7 21 98 30 C 95.7 38.5 91.6 42.5 86.8 42.5 C 82 42.5 77 39 74 30 Z M 87.4 20.4 C 90.5 20.4 93 22.9 93 26 C 93 29.1 90.5 31.6 87.4 31.6 C 84.3 31.6 81.8 29.1 81.8 26 C 81.8 22.9 84.3 20.4 87.4 20.4 Z"/><path fill="none" stroke="{T}" stroke-width="7.5" stroke-linecap="round" d="M 21 26 C 13 20 8 21 4.2 27"/><path fill="none" stroke="{T}" stroke-width="7.5" stroke-linecap="round" d="M 111 30 C 121 26 127 30 127.8 39"/>''')
     # 24 ESPAÑA VA COMO UN COHETE — el cohete, claro
     R[24] = ("lado-der", 80, 98, f'''<g transform="rotate(38 40 49)"><g fill="{T}">
       <path fill-rule="evenodd" d="M40 2 q20 18 20 48 l0 14 -40 0 0 -14 q0 -30 20 -48 Z
@@ -206,10 +209,8 @@ def _dibujos(T):
       <path d="M2 72 q8 -14 3 -26 q12 8 10 26 q-2 12 -13 0 Z"/>
       <path d="M92 74 q7 -12 3 -22 q10 7 9 22 q-2 11 -12 0 Z"/></g>''')
     # 28 POR 7 VOTOS — la papeleta entrando en la urna
-    R[28] = ("lado-der", 84, 80, f'''<g fill="{T}">
-      <path fill-rule="evenodd" d="M6 40 q0 -8 8 -8 l56 0 q8 0 8 8 l0 30 q0 8 -8 8 l-56 0 q-8 0 -8 -8 Z
-        M22 38 l40 0 0 8 -40 0 Z"/>
-      <rect x="28" y="2" width="30" height="20" rx="3" transform="rotate(14 43 12)"/></g>''')
+    # la urna convertida en tragaperras: sale 777
+    R[28] = ("lado-der", 100, 84, f'''<path fill="{T}" fill-rule="evenodd" d="M 10 16 H 68 C 70 16 70 18 70 20 V 30 H 8 V 20 C 8 18 8 16 10 16 Z M 12 30 H 66 C 73 30 76 34 76 40 V 66 C 76 72 73 76 66 76 H 12 C 5 76 2 72 2 66 V 40 C 2 34 5 30 12 30 Z M 9 76 H 27 V 82 H 9 Z M 51 76 H 69 V 82 H 51 Z M 24 21 H 60 A 3 3 0 0 1 60 27 H 24 A 3 3 0 0 1 24 21 Z M 15 35 H 63 C 66 35 68 37 68 41 V 58 C 68 62 66 64 63 64 H 15 C 12 64 10 62 10 58 V 41 C 10 37 12 35 15 35 Z M 14 40 H 28 V 46 L 21.7 58 H 15.1 L 24.4 47 H 14 Z M 32 40 H 46 V 46 L 39.7 58 H 33.1 L 42.4 47 H 32 Z M 50 40 H 64 V 46 L 57.7 58 H 51.1 L 60.4 47 H 50 Z"/><path fill="{T}" d="M 36 6 L 49 3 L 52 8 L 53 27 L 37 27 Z"/><path fill="none" stroke="{T}" stroke-width="6" stroke-linecap="round" d="M 76 46 C 87 46 91 40 92 31"/><circle cx="92" cy="22" r="8" fill="{T}"/>''')
     # 29 FISCAL SOPLÓN — el silbato colgando junto al sello
     R[29] = ("lado-der", 78, 74, f'''
       <path fill="{T}" fill-rule="evenodd" d="M8 28 q0 -12 12 -12 l34 0 0 16 12 0 q6 0 5 7 l-2 10 q-13 22 -34 13 q-27 -8 -27 -34 Z
@@ -229,19 +230,14 @@ def _dibujos(T):
       <path d="M6 58 q-8 -14 4 -22 l5 8 q-7 5 -1 13 Z"/>
       <rect x="12" y="82" width="52" height="10" rx="5"/></g>''')
     # 44 ALMA SOCIALISTA, MENTE DE TIBURÓN — la aleta asomando
-    R[44] = ("arriba", 132, 66, f'''<g fill="{T}">
-      <path d="M62 2 q30 12 34 46 l-56 0 q4 -30 22 -46 Z"/>
-      <path d="M2 58 q10 -10 22 0 q10 10 22 0 q10 -10 22 0 q10 10 22 0 q10 -10 22 0 l0 8 -110 0 Z" opacity="0.9"/></g>''')
+    # cabeza de perfil con un tiburón donde va el cerebro (la maniobra de CAP de FAVA)
+    R[44] = ("arriba", 104, 100, f'''<path fill="{T}" fill-rule="evenodd" d="M56 4 C74 5 84 16 86 29 C86 33 85 35 84 37 C88 40 93 44 93 47 C93 50 88 52 84 52 C86 55 86 57 83 58 C85 61 87 63 86 67 C82 74 73 79 63 82 L61 84 L61 100 L33 100 L33 80 C31 79 30 78 29 77 C19 69 12 56 13 40 C16 16 34 4 56 4 Z M24 34 C22 20 37 10 55 10 C72 10 80 19 80 32 C80 45 68 51 52 51 C36 51 26 45 24 34 Z"/><path fill="{T}" d="M75 28 C71 23 65 21 57 22 L55 24 L52 14 L48 27 C46 28 44 28 43 29 L31 24 L40 33 L34 43 L44 36 C45 37 46 37 48 38 L48 46 L57 37 C61 37 64 37 66 37 C70 36 73 32 75 28 Z"/>''')
     # 45 TRANSVERSAL, COMO EL IVA — el ticket de caja
-    R[45] = ("lado-der", 62, 92, f'''
-      <path fill="{T}" fill-rule="evenodd" d="M8 6 l46 0 0 78 -7 -6 -8 6 -8 -6 -8 6 -8 -6 -7 6 Z
-        M18 20 l26 0 0 6 -26 0 Z M18 34 l26 0 0 6 -26 0 Z M18 48 l18 0 0 6 -18 0 Z
-        M20 60 l6 -1 14 15 -6 1 Z M40 60 l6 1 -14 15 -6 -1 Z"/>''')
+    # ticket rasgado con un % descomunal en el total
+    R[45] = ("lado-der", 56, 92, f'''<path fill="none" stroke="{T}" stroke-width="4.6" stroke-linejoin="round" stroke-linecap="round" d="M5.4,10.2 L11.2,5.2 L17,10 L23.2,4.2 L29,9.6 L35.4,4.8 L41,10.2 L46.8,4.4 L51.6,9.4 C53.4,30 53.2,60 51.8,87 C43.5,90.2 37,84.8 28.5,88 C20,91.2 12,85.8 5,88 C3.4,60 3.2,30 5.6,10.6 Z"/><path fill="none" stroke="{T}" stroke-width="5" stroke-linecap="round" d="M11,20.4 C18,19.6 32,21.2 41.5,20.2"/><path fill="none" stroke="{T}" stroke-width="5" stroke-linecap="round" d="M11,31.4 C16.5,30.8 22,32 27,31.2"/><path fill="{T}" fill-rule="evenodd" d="M52.6,43 C53,58 52.6,74 51.8,87 C43.5,90.2 37,84.8 28.5,88 C20,91.2 12,85.8 5,88 C4.1,74 3.9,58 4.3,43 Z M17.6,48 a6.6,6.6 0 1,0 0.05,0 z M39.4,68 a6.6,6.6 0 1,0 0.05,0 z M41.63,49.47 L45.57,53.73 L16.57,80.53 L12.63,76.27 Z"/>''')
     # 46 HORIZONTE 2030 — el sol pixelado saliendo (¿o poniéndose?)
-    R[46] = ("abajo", 120, 40, f'''<g fill="{T}">
-      <rect x="44" y="8" width="10" height="10"/><rect x="55" y="2" width="10" height="10"/><rect x="66" y="8" width="10" height="10"/>
-      <rect x="33" y="14" width="10" height="10"/><rect x="77" y="14" width="10" height="10"/>
-      <rect x="0" y="28" width="120" height="8"/></g>''')
+    # el sol y un horizonte que se va deshilachando en rayas y puntos
+    R[46] = ("abajo", 120, 40, f'''<g fill="none" stroke="{T}" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="5.4" d="M2.9,33.6 C22,32.2 40,34.4 62,32.9 C68,32.5 71,33.2 74,32.8"/><path stroke-width="5" d="M84,32.6 C87.5,32.2 90,32.9 93,32.5"/><path stroke-width="5" d="M102.5,32.2 L108,32.6"/><path stroke-width="5" d="M117,32.1 L117.3,32.1"/><path stroke-width="4.9" d="M23.8,33.4 C22.2,22.8 29.6,18 39.8,17.8 C50.6,17.6 58.2,23 57,33.2"/></g><path fill="{T}" stroke="{T}" stroke-width="1.6" stroke-linejoin="round" d="M27.04,23.62 L17,20.72 L15.77,23.24 L24.24,29.37 Z M31.49,19.57 L20.42,10.34 L18.38,12.25 L26.81,23.93 Z M37.67,17.28 L32.79,9.16 L30.16,10.12 L31.65,19.47 Z M43.96,17.52 L42.68,2.67 L39.88,2.57 L37.57,17.3 Z M50.18,20.44 L53.29,9.95 L50.78,8.72 L44.43,17.64 Z M54.38,25.14 L63.06,14.9 L61.19,12.82 L50.1,20.38 Z M56.16,29.37 L63.28,23.9 L62.06,21.38 L53.36,23.62 Z"/>''')
     # 47 COMPROMISO FIRME… — los dedos cruzados a la espalda
     R[47] = ("lado-der", 70, 92, f'''<g fill="{T}" transform="rotate(14 35 46)">
       <path fill-rule="evenodd" d="M14 22 q0 -18 21 -18 q21 0 21 18 q0 12 -10 14 l0 10 q14 2 14 12 l-50 0 q0 -10 14 -12 l0 -10 q-10 -2 -10 -14 Z
@@ -252,26 +248,32 @@ def _dibujos(T):
       <path d="M14 30 q0 -22 20 -22 q22 0 22 24 q0 14 -12 24 q-10 8 -10 18 q0 10 -10 10 q-10 0 -12 -10"/>
       <path d="M28 34 q0 -10 8 -10 q10 0 10 12"/></g>''')
     # 49 RESILIENTE… — el muelle con su pesa
-    R[49] = ("lado-der", 78, 88, f'''<rect x="14" y="2" width="50" height="12" rx="4" fill="{T}"/>
-      <g fill="none" stroke="{T}" stroke-width="8" stroke-linecap="round">
-      <path d="M16 24 l46 8 M62 32 l-46 10 M16 42 l46 10 M62 52 l-46 10 M16 62 l46 10"/></g>
-      <rect x="6" y="78" width="66" height="10" rx="4" fill="{T}"/>''')
+    # un tío sin cabeza aguantando una casa entera encima
+    R[49] = ("lado-der", 84, 94, f'''<path fill="{T}" d="M42 0 L80 22 L4 22 Z"/>
+<path fill="{T}" d="M56 4 L66 4 L66 16 L56 16 Z"/>
+<path fill="{T}" fill-rule="evenodd" d="M16 20 L68 20 L68 42 L16 42 Z M24 26 L36 26 L36 36 L24 36 Z"/>
+<path fill="{T}" fill-rule="evenodd" d="M26 41 L58 41 C61 47 62 53 62 59 C62 64 59 68 55 70 L29 70 C25 68 22 64 22 59 C22 53 23 47 26 41 Z M28 57 L56 57 L56 62 L28 62 Z"/>
+<path fill="{T}" d="M29 68 L39 68 L38 78 L28 86 L30 93 L10 93 L15 84 L24 76 Z"/>
+<path fill="{T}" d="M45 68 L55 68 L58 77 L68 85 L71 93 L51 93 L53 86 L45 78 Z"/>''')
     # 50 TRANSPARENCIA TOTAL, PREVIA CITA — la máquina de turnos
-    R[50] = ("arriba", 88, 86, f'''<g fill="{T}">
-      <path fill-rule="evenodd" d="M4 4 l80 0 0 58 -80 0 Z
-        M14 14 l60 0 0 22 -60 0 Z M22 44 l44 0 0 8 -44 0 Z"/>
-      <path fill-rule="evenodd" d="M30 66 l28 0 0 20 -28 0 Z
-        M36 72 l16 0 0 3 -16 0 Z M36 79 l10 0 0 3 -10 0 Z"/></g>''')
+    # la persiana echada del todo — transparencia, previa cita
+    R[50] = ("arriba", 90, 92, f'''<rect fill="{T}" x="3" y="0" width="84" height="11" rx="3"/>
+<rect fill="{T}" x="7" y="11" width="6" height="44"/>
+<rect fill="{T}" x="77" y="11" width="6" height="44"/>
+<path fill="{T}" d="M13 15 L78 14 Q80 19 78 23 L13 24 Q11 19 13 15 Z"/>
+<path fill="{T}" d="M13 28 L76 27 Q78 32 76 36 L13 37 Q11 32 13 28 Z"/>
+<path fill="{T}" d="M13 41 L78 40.5 Q80 45 78 49 L13 50 Q11 45 13 41 Z"/>
+<path fill="{T}" fill-rule="evenodd" d="M6 54 L84 53 A4 4 0 0 1 84 66 L6 65 A4 4 0 0 1 6 54 Z M17 57 L37 56.5 L37 62 L17 62.5 Z"/>
+<g transform="rotate(6 45 78)">
+  <path fill="{T}" fill-rule="evenodd" d="M33 82 L33 71 A12 12 0 0 1 57 71 L57 82 L50 82 L50 71 A5 5 0 0 0 40 71 L40 82 Z"/>
+  <rect fill="{T}" x="29" y="77" width="32" height="17" rx="3"/>
+</g>''')
     # 51 EL PUEBLO PRIMERO… — la cola, y uno colándose
-    R[51] = ("arriba", 150, 70, f'''<g fill="{T}" opacity="0.85">
-      <circle cx="96" cy="16" r="11"/><path d="M84 70 l3 -30 q9 -6 18 0 l3 30 Z"/>
-      <circle cx="122" cy="16" r="11"/><path d="M110 70 l3 -30 q9 -6 18 0 l3 30 Z"/></g>
-      <g fill="{T}">
-      <circle cx="24" cy="12" r="13"/><path d="M8 70 l4 -34 q12 -8 24 0 l4 34 Z"/>
-      <path d="M40 30 l16 -8 M8 30 l-6 -10" stroke="{T}" stroke-width="7" stroke-linecap="round"/></g>''')
+    # un trajeado apartando la cola con la manaza
+    R[51] = ("arriba", 162, 82, f'''<path fill="{T}" d="M5.2,49 a5.8,5.8 0 1,0 11.6,0 a5.8,5.8 0 1,0 -11.6,0 Z"/><path fill="{T}" d="M2.2,80 C1.9,67 5.54,59 11,59 C16.46,59 20.1,67 19.8,80 Z"/><path fill="{T}" d="M28.6,49 a5.4,5.4 0 1,0 10.8,0 a5.4,5.4 0 1,0 -10.8,0 Z"/><path fill="{T}" d="M25.7,80 C25.4,67 28.85,59 34,59 C39.15,59 42.6,67 42.3,80 Z"/><path fill="{T}" d="M51.3,49 a5.7,5.7 0 1,0 11.4,0 a5.7,5.7 0 1,0 -11.4,0 Z"/><path fill="{T}" d="M48.4,80 C48.1,67 51.67,59 57,59 C62.33,59 65.9,67 65.6,80 Z"/><path fill="{T}" d="M74.7,49 a5.3,5.3 0 1,0 10.6,0 a5.3,5.3 0 1,0 -10.6,0 Z"/><path fill="{T}" d="M71.8,80 C71.5,67 74.92,59 80,59 C85.08,59 88.5,67 88.2,80 Z"/><path fill="{T}" fill-rule="evenodd" d="M113,0 L134,0 C143,3 148,9 149,17 L151,32 C155,37 156,47 154,54 L152,82 L137,82 L135,57 C130,53 125,53 120,57 L118,82 L103,82 L101,54 C99,46 97,40 96,33 L58,33 C51,36 40,38 31,37 C24,36.5 20,33 20,28 L20,13 C20,8 25,4.8 32,4.4 L43,4 C43.5,0.8 47,0 50,1 C53.5,2.4 54.5,7.5 53,11.5 L57,12.5 L96,17 C96,9 104,3 113,0 Z M117,6 L133,6 L135,15.5 L129.5,19.5 L136,34 L126,45 L116,33 L122.5,19.5 L115,15.5 Z M26.8,12.6 L44.2,12.6 A2.3,2.3 0 0,1 44.2,17.2 L26.8,17.2 A2.3,2.3 0 0,1 26.8,12.6 Z M26.8,22.6 L44.2,22.6 A2.3,2.3 0 0,1 44.2,27.2 L26.8,27.2 A2.3,2.3 0 0,1 26.8,22.6 Z"/>''')
     # 52 CAMBIO DE OPINIÓN… — la veleta
-    R[52] = ("arriba", 104, 84, f'''
-      <path fill="{T}" d="M20 84 l0 -40 q0 -26 30 -26 q30 0 30 26 l0 6 14 0 -22 26 -22 -26 14 0 0 -6 q0 -12 -14 -12 q-14 0 -14 12 l0 40 Z"/>''')
+    # veleta de gallo sobre la flecha, con el € clavado en la peana
+    R[52] = ("lado-izq", 90, 112, f'''<g transform="translate(6,0) scale(0.86)"><path fill="{T}" d="M88,18 C83,13 79,12 76,12 C76,8 74,5 71,6 C71,2 66,1.5 65,6 C64,2 59,2 58,7 C57,3 52,4.5 51,10 C48,14 46,18 43,23 C37,21 30,22 26,26 C24,17 18,8 8,2 C5,6 4,14 7,21 C12,29 19,34 27,37 C31,36.5 35,36 38,38 C29,41 17,39 8,33 C5,41 14,51 26,53 C29,55 36,57 44,56 C53,54 60,47 61,38 C62,31 61,26 59,22 C62,21 66,23 68,21 C71,20 74,19 76,18 Z"/></g><path fill="{T}" d="M37,43 L42.5,43 L42.5,56 L37,56 Z"/><path fill="{T}" d="M48,42 L53.5,42 L52.5,56 L47,56 Z"/><path fill="{T}" d="M2,45 L17,58 L2,71 L20,63 L60,63 L60,71 L88,58 L60,45 L60,53 L20,53 Z"/><path fill="{T}" d="M41,62 L49,62 L50,80 L40,80 Z"/><mask id="m52" maskUnits="userSpaceOnUse" x="0" y="0" width="90" height="112"><rect x="0" y="0" width="90" height="112" fill="#fff"/><path fill="none" stroke="#000" stroke-width="5" stroke-linecap="butt" d="M52.7,87.6 A10,10 0 1 0 52.7,100.4"/><rect x="28" y="86.9" width="24" height="4.6" fill="#000"/><rect x="28" y="96.5" width="24" height="4.6" fill="#000"/></mask><path fill="{T}" mask="url(#m52)" d="M13,76 L77,76 L77,107 C77,110 74.5,112 71,112 L19,112 C15.5,112 13,110 13,107 Z"/>''')
     # 53 Vocación de servicio… — el sobre de la nómina, lacrado con euro
     R[53] = ("lado-izq", 94, 66, f'''
       <path fill="{T}" fill-rule="evenodd" d="M2 4 q0 -2 2 -2 l86 0 q2 0 2 2 l0 56 q0 4 -4 4 l-82 0 q-4 0 -4 -4 Z
@@ -334,7 +336,7 @@ def saltos_de(lineas: list, t: float) -> list:
     return pasos
 
 
-def compon(lineas, trato, voz, medida=None, slug="x", n=None, avances=None) -> str:
+def compon(lineas, trato, voz, medida=None, slug="x", n=None, avances=None, caja_dib=None) -> str:
     """Interior del SVG. `medida` es el bbox REAL del texto ya renderizado:
     los contenedores (caja, sello, corchetes, filetes) se ciñen a él en una
     segunda pasada, porque un contenedor de tamaño fijo baila según la
@@ -385,6 +387,18 @@ def compon(lineas, trato, voz, medida=None, slug="x", n=None, avances=None) -> s
             return cuerpo_svg
         pos, aw, ah, frag = DIBUJOS_POR_PIEZA[n]
         mx, my, mw, mh = caja["x"], caja["y"], caja["w"], caja["h"]
+        # La caja REAL del fragmento, medida en el navegador, manda sobre la
+        # declarada: un dibujo que se sale de su caja se monta encima del
+        # texto (pasó con «EL PUEBLO PRIMERO», cuya multitud pisaba la
+        # primera línea). Se corrige desplazando y escalando al hueco
+        # declarado, que es el que la composición tiene reservado.
+        ox = oy = 0.0
+        if caja_dib and caja_dib.get("w") and caja_dib.get("h"):
+            k = min(aw / caja_dib["w"], ah / caja_dib["h"], 1.0)
+            if k < 0.999 or caja_dib["x"] < -0.5 or caja_dib["y"] < -0.5:
+                ox, oy = -caja_dib["x"] * k, -caja_dib["y"] * k
+                frag = f'<g transform="translate({ox:.2f} {oy:.2f}) scale({k:.4f})">{frag}</g>'
+                aw, ah = caja_dib["w"] * k, caja_dib["h"] * k
         SEP = 16
         if pos == "arriba":
             dx, dy = cx - aw / 2, my - SEP - ah
@@ -692,6 +706,20 @@ def main() -> int:
             # LETRA, no el ancho del bloque: se mide en el navegador, con la
             # fuente cargada, pidiendo prefijos cada vez más largos (así el
             # kerning real entra en la cuenta).
+            # La caja real del pictograma, si lo tiene.
+            caja_dib = None
+            if n in DIBUJOS_POR_PIEZA:
+                _pos, _aw, _ah, _frag = DIBUJOS_POR_PIEZA[n]
+                for trozo in _frag.split("|||"):
+                    m = medir(trozo)
+                    if m:
+                        caja_dib = m if caja_dib is None else {
+                            "x": min(caja_dib["x"], m["x"]),
+                            "y": min(caja_dib["y"], m["y"]),
+                            "w": max(caja_dib["w"], m["w"]),
+                            "h": max(caja_dib["h"], m["h"]),
+                        }
+
             avances = None
             if trato in ("arco", "revuelto", "sustituida"):
                 anchos = []
@@ -704,7 +732,7 @@ def main() -> int:
                 avances = [anchos]
 
             # Pasada 2: la pieza con sus contenedores ajustados a esa medida.
-            cuerpo = compon(lineas, trato, voz, medida=medida, slug=slug, n=n, avances=avances)
+            cuerpo = compon(lineas, trato, voz, medida=medida, slug=slug, n=n, avances=avances, caja_dib=caja_dib)
             bruto = f'<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 600">{cuerpo}</svg>'
 
             caja = pag.evaluate(
