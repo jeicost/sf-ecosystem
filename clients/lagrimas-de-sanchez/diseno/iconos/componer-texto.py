@@ -172,6 +172,8 @@ def _dibujos(T):
 <path fill="none" stroke="{T}" stroke-width="6.5" stroke-linecap="round" d="M51 58 C41 58 36 50 30 44 C26 40 24 39.5 20 39.5"/>
 <path fill="none" stroke="{T}" stroke-width="6.5" stroke-linecap="round" d="M21 39.5 C12 39.5 4 42 4 33 C4 25 12 23 16 28"/>''')
     # 21 PATXI — facepalm: la palma por delante de la cara
+    # el facepalm de verdad: la mano POR DELANTE de la cara, dedos separados y un ojo mirando por la rendija
+    # 21 PATXI — facepalm: la palma por delante de la cara
     R[21] = ("lado-izq", 88, 86, f'''
       <path fill="{T}" fill-rule="evenodd" d="M44 2 a40 40 0 1 1 -0.1 0 Z
         M28 26 a5.5 5.5 0 1 0 0.1 0 Z M60 26 a5.5 5.5 0 1 0 0.1 0 Z"/>
@@ -179,12 +181,22 @@ def _dibujos(T):
         d="M10 50 q0 -10 10 -11 l0 -6 q0 -7 7 -7 q6 0 7 6 q1 -7 8 -7 q7 0 8 7 q1 -6 7 -6 q7 0 7 7 l0 6 q10 1 10 11 l0 14 q0 22 -32 22 q-32 0 -32 -22 Z
         M24 40 l5 0 0 20 -5 0 Z M37 38 l5 0 0 22 -5 0 Z M50 40 l5 0 0 20 -5 0 Z"/>''')
     # 22 AL MENOS NO GOBIERNA… — extintor, por si acaso
-    R[22] = ("lado-izq", 74, 96, f'''<g fill="{T}">
-      <path fill-rule="evenodd" d="M18 38 q0 -12 12 -12 l10 0 q12 0 12 12 l0 38 q0 12 -12 12 l-10 0 q-12 0 -12 -12 Z
-        M26 44 l18 0 0 24 -18 0 Z"/>
-      <rect x="26" y="14" width="18" height="10" rx="4"/>
-      <path d="M44 8 q22 -6 26 12 l-9 3 q-4 -12 -17 -8 Z"/>
-      <rect x="8" y="4" width="26" height="8" rx="4" transform="rotate(-18 21 8)"/></g>''')
+    # una tirita: la herida sigue ahí, pero al menos hay tirita — el mal menor hecho objeto
+    # una tirita: la herida sigue ahí, pero al menos hay tirita. Sin
+    # escotaduras en el talle (parecía papel rasgado) y con RANURAS en vez
+    # una tirita: la herida sigue ahí, pero al menos hay tirita. Lo que la
+    # hace legible no es el detalle, es la PROPORCIÓN: cuadrada leía un dado
+    # y con escotaduras en el talle, un papel rasgado. Larga y estrecha, con
+    # la gasa calada en el centro y dos ranuras a cada lado.
+    R[22] = ("lado-izq", 60, 108, f'''<g transform="rotate(-30 30 54)">
+      <path fill="{T}" fill-rule="evenodd"
+        d="M2 16 q0 -14 15 -14 l14 0 q15 0 15 14 l0 72 q0 14 -15 14 l-14 0 q-15 0 -15 -14 Z
+           M11 36 l26 0 0 32 -26 0 Z"/>
+      <g fill="{T}">
+        <rect x="15" y="41" width="4" height="9" rx="2"/><rect x="29" y="41" width="4" height="9" rx="2"/>
+        <rect x="15" y="54" width="4" height="9" rx="2"/><rect x="29" y="54" width="4" height="9" rx="2"/>
+      </g>
+    </g>''')
     # 23 NO DORMIRÍA TRANQUILO — el ojo que no se cierra
     # antifaz de dormir con dos ojazos abiertos pintados encima
     R[23] = ("arriba", 132, 66, f'''<path fill="{T}" fill-rule="evenodd" d="M 18 30 C 18 16 36 8 66 8 C 96 8 114 16 114 31 C 114 46 104 58 92 58 C 82 58 76 45 66 45 C 56 45 50 58 40 58 C 28 58 18 45 18 30 Z M 35 30.5 C 38 21.5 42.5 18.5 46.8 18.5 C 51.2 18.5 55 21.5 57.5 30.5 C 55 38.5 51.2 42 46.8 42 C 42.5 42 38 38.5 35 30.5 Z M 46.8 21.6 C 49.6 21.6 51.9 23.9 51.9 26.7 C 51.9 29.5 49.6 31.8 46.8 31.8 C 44 31.8 41.7 29.5 41.7 26.7 C 41.7 23.9 44 21.6 46.8 21.6 Z M 74 30 C 77 20.5 82 17.5 86.8 17.5 C 91.6 17.5 95.7 21 98 30 C 95.7 38.5 91.6 42.5 86.8 42.5 C 82 42.5 77 39 74 30 Z M 87.4 20.4 C 90.5 20.4 93 22.9 93 26 C 93 29.1 90.5 31.6 87.4 31.6 C 84.3 31.6 81.8 29.1 81.8 26 C 81.8 22.9 84.3 20.4 87.4 20.4 Z"/><path fill="none" stroke="{T}" stroke-width="7.5" stroke-linecap="round" d="M 21 26 C 13 20 8 21 4.2 27"/><path fill="none" stroke="{T}" stroke-width="7.5" stroke-linecap="round" d="M 111 30 C 121 26 127 30 127.8 39"/>''')
@@ -192,27 +204,34 @@ def _dibujos(T):
     # un CARACOL bajo «España va como un cohete» — el desmentido mudo del titular
     R[24] = ("abajo", 72.6, 49, f'''<g transform="translate(-19.5,-2.5)"><path fill="{T}" fill-rule="evenodd" d="M28.5,21a19.5,18.4 0 1,1 39.0,0a19.5,18.4 0 1,1 -39.0,0ZM40.1,17.1L40.5,16.0L41.1,14.9L41.9,13.9L42.8,13.0L43.9,12.3L45.1,11.8L46.4,11.4L47.8,11.3L49.2,11.3L50.6,11.6L51.9,12.2L53.2,12.9L54.3,13.8L55.3,14.9L56.1,16.2L56.7,17.6L57.1,19.1L57.3,20.7L57.1,22.3L56.8,23.9L56.2,25.4L55.3,26.8L54.2,28.1L53.0,29.2L51.5,30.1L49.9,30.8L48.2,31.2L46.4,31.4L44.6,31.2L42.8,30.8L41.1,30.1L39.5,29.1L38.1,27.9L36.9,26.5L35.9,24.8L35.1,23.0L34.7,21.1L34.5,19.1L34.7,17.1L35.2,15.1L36.0,13.2L37.1,11.5L38.4,9.9L40.0,8.5L41.9,7.4L43.9,6.6L46.0,6.1L48.2,6.0L50.4,6.2L52.6,6.7A2.1,2.1 0 0 1 51.0,10.6L49.4,10.3L47.9,10.2L46.4,10.3L44.9,10.7L43.5,11.3L42.3,12.1L41.2,13.1L40.3,14.2L39.6,15.4L39.1,16.7L38.8,18.1L38.7,19.4L38.8,20.7L39.2,22.0L39.7,23.2L40.4,24.2L41.3,25.2L42.2,25.9L43.3,26.5L44.4,26.9L45.6,27.1L46.7,27.2L47.8,27.0L48.9,26.7L49.9,26.3L50.7,25.7L51.5,24.9L52.1,24.1L52.6,23.2L52.9,22.3L53.1,21.4L53.1,20.4L52.9,19.5L52.6,18.6L52.2,17.9L51.7,17.2L51.1,16.6L50.5,16.1L49.8,15.8L49.0,15.5L48.3,15.4L47.5,15.5L46.8,15.6L46.2,15.8L45.6,16.2L45.1,16.6L44.6,17.1L44.3,17.6L44.1,18.1L44.0,18.7A2.1,2.1 0 0 1 40.1,17.1Z"/><path fill="{T}" d="M19.8,45.2 C23.2,39.9 32.5,37.9 44,37.9 L63,37.9 C69,37.9 72,35.4 75,31.9 C78,27.9 84,26.3 87.6,28.9 C91,31.5 90.6,35.9 88,39.3 C85.6,42.5 84.6,45.3 84.6,47.9 C84.6,49.9 83,51.1 81,51.1 L31,51.4 C25.4,51.4 18.4,50.4 19.8,45.2 Z"/><path fill="{T}" d="M85.4,29.6L85.9,28.0L86.4,26.6L86.9,25.1L87.4,23.7L87.9,22.4L88.3,21.0L88.8,19.7L89.3,18.3L89.7,17.0L90.2,15.6L90.6,14.3L89.1,12.2L89.1,12.2L86.6,12.9L86.1,14.2L85.7,15.6L85.2,16.9L84.7,18.2L84.2,19.5L83.7,20.9L83.2,22.2L82.7,23.6L82.1,25.0L81.6,26.5L81.0,28.0Z"/><path fill="{T}" d="M79.9,30.5L79.7,29.0L79.5,27.5L79.3,26.1L79.1,24.7L79.0,23.3L78.8,22.0L78.7,20.7L78.5,19.3L78.4,18.0L78.3,16.7L78.1,15.4L75.9,14.2L75.9,14.2L73.9,15.7L74.0,17.1L74.1,18.4L74.2,19.7L74.3,21.1L74.4,22.4L74.6,23.8L74.7,25.2L74.8,26.6L75.0,28.1L75.1,29.6L75.3,31.1Z"/><circle cx="89.1" cy="12.2" r="2.9" fill="{T}"/><circle cx="75.9" cy="14.2" r="2.9" fill="{T}"/></g>''')
     # 25 SON LAS 5 — tenedor y cuchillo flanqueando la cifra
-    R[25] = ("flancos", 30, 96, f'''<g fill="{T}">
-      <rect x="11" y="34" width="8" height="60" rx="4"/>
-      <rect x="2" y="2" width="6" height="30" rx="3"/><rect x="12" y="2" width="6" height="30" rx="3"/>
-      <rect x="22" y="2" width="6" height="30" rx="3"/><path d="M2 28 q13 12 26 0 l0 8 -26 0 Z"/></g>|||<g fill="{T}">
-      <rect x="8" y="34" width="8" height="60" rx="4"/>
-      <path d="M8 2 q14 8 14 26 l0 6 -14 0 Z"/></g>''')
+    # el táper cerrado con su goma: el de las cinco, el que no te ha dado tiempo a abrir
+    # el plato vacío visto desde arriba, a las cinco de la tarde. No hay nada que dibujar dentro: ese es el chiste
+    R[25] = ("lado-der", 84, 84, f'''<path fill="{T}" fill-rule="evenodd" d="M42 0 a42 42 0 1 1 -0.1 0 Z M42 9 a33 33 0 1 0 0.1 0 Z"/>
+    <path fill="{T}" fill-rule="evenodd" d="M42 16 a26 26 0 1 1 -0.1 0 Z M42 23 a19 19 0 1 0 0.1 0 Z"/>''')
     # 27 YO ESTOY BIEN — la taza humeante entre llamitas (todo bien)
-    R[27] = ("lado-der", 100, 86, f'''<g fill="{T}">
-      <path fill-rule="evenodd" d="M18 34 l54 0 -6 44 q-2 8 -10 8 l-22 0 q-8 0 -10 -8 Z"/>
-      <path fill-rule="evenodd" d="M72 40 q18 -2 18 14 q0 16 -20 14 l2 -9 q10 1 10 -6 q0 -7 -9 -5 Z"/>
-      <path d="M32 26 q-5 -8 1 -14 M46 26 q-5 -8 1 -14 M60 26 q-5 -8 1 -14" stroke="{T}" stroke-width="5" fill="none" stroke-linecap="round"/>
-      <path d="M2 72 q8 -14 3 -26 q12 8 10 26 q-2 12 -13 0 Z"/>
-      <path d="M92 74 q7 -12 3 -22 q10 7 9 22 q-2 11 -12 0 Z"/></g>''')
+    # las gafas de sol con el incendio ardiendo dentro: tres llamas gordas por cristal, no un cepillo de dientes
+    R[27] = ("lado-der", 104, 74, f'''<path fill="{T}" d="M2 8 q0 -6 7 -6 l86 0 q7 0 7 6 l0 5 -100 0 Z"/>
+    <path fill="{T}" fill-rule="evenodd"
+      d="M4 13 l44 0 -3 42 q-1 14 -15 14 l-10 0 q-14 0 -16 -14 Z
+         M13 22 q5 9 3 17 q6 -4 5 -13 q7 8 6 19 q6 -3 6 -12 q7 10 3 22 l-22 0 q-4 -18 -1 -33 Z"/>
+    <path fill="{T}" fill-rule="evenodd"
+      d="M56 13 l44 0 -4 42 q-2 14 -16 14 l-10 0 q-14 0 -15 -14 Z
+         M65 22 q5 9 3 17 q6 -4 5 -13 q7 8 6 19 q6 -3 6 -12 q7 10 3 22 l-22 0 q-4 -18 -1 -33 Z"/>''')
     # 28 POR 7 VOTOS — la papeleta entrando en la urna
     # la urna convertida en tragaperras: sale 777
     R[28] = ("lado-der", 100, 84, f'''<path fill="{T}" fill-rule="evenodd" d="M 10 16 H 68 C 70 16 70 18 70 20 V 30 H 8 V 20 C 8 18 8 16 10 16 Z M 12 30 H 66 C 73 30 76 34 76 40 V 66 C 76 72 73 76 66 76 H 12 C 5 76 2 72 2 66 V 40 C 2 34 5 30 12 30 Z M 9 76 H 27 V 82 H 9 Z M 51 76 H 69 V 82 H 51 Z M 24 21 H 60 A 3 3 0 0 1 60 27 H 24 A 3 3 0 0 1 24 21 Z M 15 35 H 63 C 66 35 68 37 68 41 V 58 C 68 62 66 64 63 64 H 15 C 12 64 10 62 10 58 V 41 C 10 37 12 35 15 35 Z M 14 40 H 28 V 46 L 21.7 58 H 15.1 L 24.4 47 H 14 Z M 32 40 H 46 V 46 L 39.7 58 H 33.1 L 42.4 47 H 32 Z M 50 40 H 64 V 46 L 57.7 58 H 51.1 L 60.4 47 H 50 Z"/><path fill="{T}" d="M 36 6 L 49 3 L 52 8 L 53 27 L 37 27 Z"/><path fill="none" stroke="{T}" stroke-width="6" stroke-linecap="round" d="M 76 46 C 87 46 91 40 92 31"/><circle cx="92" cy="22" r="8" fill="{T}"/>''')
     # 29 FISCAL SOPLÓN — el silbato colgando junto al sello
-    R[29] = ("lado-der", 78, 74, f'''
-      <path fill="{T}" fill-rule="evenodd" d="M8 28 q0 -12 12 -12 l34 0 0 16 12 0 q6 0 5 7 l-2 10 q-13 22 -34 13 q-27 -8 -27 -34 Z
-        M26 36 a9 9 0 1 0 0.1 0 Z"/>
-      <path d="M52 6 q14 -4 20 8" stroke="{T}" stroke-width="5" fill="none" stroke-linecap="round"/>''')
+    # el silbato de árbitro pitando de verdad: boquilla, cámara gorda, la bolita calada y tres rayas de canto
+    # el silbato de árbitro, grande y de perfil, con la bolita calada y tres rayas de pitido
+    R[29] = ("lado-der", 112, 76, f'''<g fill="{T}">
+      <path fill-rule="evenodd"
+        d="M2 26 q0 -10 11 -10 l36 0 0 14 17 0 q12 0 15 11 q7 20 -9 31 q-19 13 -39 3 q-31 -15 -31 -49 Z
+           M30 48 a10 10 0 1 0 0.1 0 Z"/>
+      <rect x="2" y="14" width="30" height="11" rx="5.5"/>
+    </g>
+    <g stroke="{T}" stroke-width="8" stroke-linecap="round" fill="none">
+      <path d="M86 16 l18 -10"/><path d="M93 38 l19 0"/><path d="M88 58 l18 10"/>
+    </g>''')
     # 30 Ecologetas — la hoja con enchufe
     # una huella de pie descalzo con un JET PRIVADO calado en la planta: el ecologeta predica descalzo y viaja en jet
     R[30] = ("lado-izq", 80, 100, f'''<path fill="{T}" d="M 12.8,1.2 C 18.9,1.4 22.9,5.2 22.8,9.7 C 22.7,14.4 18.1,17.7 12.1,17.6 C 6.2,17.5 2.4,13.9 2.5,9.3 C 2.6,4.6 6.9,1.0 12.8,1.2 Z"/><ellipse cx="33.6" cy="6.4" rx="7.0" ry="5.7" fill="{T}"/><ellipse cx="51.0" cy="7.6" rx="6.1" ry="5.2" fill="{T}"/><ellipse cx="66.4" cy="11.6" rx="5.6" ry="4.7" fill="{T}"/><ellipse cx="75.7" cy="21.2" rx="4.2" ry="3.8" fill="{T}"/><path fill="{T}" fill-rule="evenodd" d="M 4,46 C 3,33 13,22 30,21 C 44,20 62,23.5 71,30.5 C 77,35 79.5,42 78,48.5 C 76.5,57 69,62.5 58,65 C 43,68 24,67.5 14,61.5 C 7,57 3.5,53 4,46 Z M 66.0,42.5 L 64.0,40.3 L 57.0,39.3 L 49.0,39.0 L 34.0,29.2 L 28.4,32.9 L 37.5,39.4 L 28.0,40.1 L 17.5,35.0 L 17.5,42.5 L 17.5,50.0 L 28.0,44.9 L 37.5,45.6 L 28.4,52.1 L 34.0,55.8 L 49.0,46.0 L 57.0,45.7 L 64.0,44.7 Z"/><path fill="{T}" d="M 38,73 C 52,72.5 62.5,79 62.5,87 C 62.5,95 51.5,99.5 37,99.5 C 24,99.5 14,94 14.5,86 C 15,78.5 25,73.5 38,73 Z"/>''')
@@ -229,10 +248,18 @@ def _dibujos(T):
     # el sol y un horizonte que se va deshilachando en rayas y puntos
     R[46] = ("abajo", 120, 40, f'''<g fill="none" stroke="{T}" stroke-linecap="round" stroke-linejoin="round"><path stroke-width="5.4" d="M2.9,33.6 C22,32.2 40,34.4 62,32.9 C68,32.5 71,33.2 74,32.8"/><path stroke-width="5" d="M84,32.6 C87.5,32.2 90,32.9 93,32.5"/><path stroke-width="5" d="M102.5,32.2 L108,32.6"/><path stroke-width="5" d="M117,32.1 L117.3,32.1"/><path stroke-width="4.9" d="M23.8,33.4 C22.2,22.8 29.6,18 39.8,17.8 C50.6,17.6 58.2,23 57,33.2"/></g><path fill="{T}" stroke="{T}" stroke-width="1.6" stroke-linejoin="round" d="M27.04,23.62 L17,20.72 L15.77,23.24 L24.24,29.37 Z M31.49,19.57 L20.42,10.34 L18.38,12.25 L26.81,23.93 Z M37.67,17.28 L32.79,9.16 L30.16,10.12 L31.65,19.47 Z M43.96,17.52 L42.68,2.67 L39.88,2.57 L37.57,17.3 Z M50.18,20.44 L53.29,9.95 L50.78,8.72 L44.43,17.64 Z M54.38,25.14 L63.06,14.9 L61.19,12.82 L50.1,20.38 Z M56.16,29.37 L63.28,23.9 L62.06,21.38 L53.36,23.62 Z"/>''')
     # 47 COMPROMISO FIRME… — los dedos cruzados a la espalda
-    R[47] = ("lado-der", 70, 92, f'''<g fill="{T}" transform="rotate(14 35 46)">
-      <path fill-rule="evenodd" d="M14 22 q0 -18 21 -18 q21 0 21 18 q0 12 -10 14 l0 10 q14 2 14 12 l-50 0 q0 -10 14 -12 l0 -10 q-10 -2 -10 -14 Z
-        M22 16 q4 -6 12 -6 l0 6 q-6 0 -8 4 Z"/>
-      <path d="M32 58 l6 0 -2 26 q-1 6 -2 0 Z"/></g>''')
+    # un lápiz de una pieza firmando una rúbrica: firmado a lápiz, o sea, borrable
+    R[47] = ("lado-der", 70, 98, f'''<g fill="{T}">
+      <path fill-rule="evenodd"
+        d="M22 2 q13 0 13 10 l0 6 -26 0 0 -6 q0 -10 13 -10 Z"/>
+      <rect x="9" y="18" width="26" height="7"/>
+      <path fill-rule="evenodd" d="M9 25 l26 0 0 38 -26 0 Z M19 30 l6 0 0 28 -6 0 Z"/>
+      <path d="M9 63 l26 0 -13 19 Z"/>
+      <path d="M19 78 l6 0 -3 5 Z"/>
+      <path d="M2 92 q9 -9 16 -2 q6 6 13 -1 q6 -6 13 1 q5 5 11 0 l3 5 q-9 8 -17 1 q-6 -5 -11 1 q-7 7 -14 0 q-5 -5 -11 1 Z"/>
+    </g>''')
+    # 48 ESCUCHA ACTIVA… — la oreja
+    # el buzón de sugerencias con un candado: échalas ahí, que no se abre
     # 48 ESCUCHA ACTIVA… — la oreja
     R[48] = ("lado-izq", 64, 88, f'''<g fill="none" stroke="{T}" stroke-width="9" stroke-linecap="round">
       <path d="M14 30 q0 -22 20 -22 q22 0 22 24 q0 14 -12 24 q-10 8 -10 18 q0 10 -10 10 q-10 0 -12 -10"/>
@@ -264,6 +291,8 @@ def _dibujos(T):
     # 52 CAMBIO DE OPINIÓN… — la veleta
     # veleta de gallo sobre la flecha, con el € clavado en la peana
     R[52] = ("lado-izq", 90, 112, f'''<g transform="translate(6,0) scale(0.86)"><path fill="{T}" d="M88,18 C83,13 79,12 76,12 C76,8 74,5 71,6 C71,2 66,1.5 65,6 C64,2 59,2 58,7 C57,3 52,4.5 51,10 C48,14 46,18 43,23 C37,21 30,22 26,26 C24,17 18,8 8,2 C5,6 4,14 7,21 C12,29 19,34 27,37 C31,36.5 35,36 38,38 C29,41 17,39 8,33 C5,41 14,51 26,53 C29,55 36,57 44,56 C53,54 60,47 61,38 C62,31 61,26 59,22 C62,21 66,23 68,21 C71,20 74,19 76,18 Z"/></g><path fill="{T}" d="M37,43 L42.5,43 L42.5,56 L37,56 Z"/><path fill="{T}" d="M48,42 L53.5,42 L52.5,56 L47,56 Z"/><path fill="{T}" d="M2,45 L17,58 L2,71 L20,63 L60,63 L60,71 L88,58 L60,45 L60,53 L20,53 Z"/><path fill="{T}" d="M41,62 L49,62 L50,80 L40,80 Z"/><mask id="m52" maskUnits="userSpaceOnUse" x="0" y="0" width="90" height="112"><rect x="0" y="0" width="90" height="112" fill="#fff"/><path fill="none" stroke="#000" stroke-width="5" stroke-linecap="butt" d="M52.7,87.6 A10,10 0 1 0 52.7,100.4"/><rect x="28" y="86.9" width="24" height="4.6" fill="#000"/><rect x="28" y="96.5" width="24" height="4.6" fill="#000"/></mask><path fill="{T}" mask="url(#m52)" d="M13,76 L77,76 L77,107 C77,110 74.5,112 71,112 L19,112 C15.5,112 13,110 13,107 Z"/>''')
+    # 53 Vocación de servicio… — el sobre de la nómina, lacrado con euro
+    # la poltrona con el tornillo de estrella en el asiento: atornillado al sillón
     # 53 Vocación de servicio… — el sobre de la nómina, lacrado con euro
     R[53] = ("lado-izq", 94, 66, f'''
       <path fill="{T}" fill-rule="evenodd" d="M2 4 q0 -2 2 -2 l86 0 q2 0 2 2 l0 56 q0 4 -4 4 l-82 0 q-4 0 -4 -4 Z
