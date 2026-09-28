@@ -55,7 +55,7 @@ export const PROPORCION: Record<string, number> = {
   "t-alma-socialista-mente-de-tiburon": 1.9156,
   "t-cambio-de-opinion-no-de-sueldo": 1.1718,
   "t-compromiso-firme-hasta-nueva-orden": 2.4602,
-  "t-ecologetas": 2.9448,
+  "t-ecologetas": 4.5319,
   "t-el-pueblo-primero-despues-de-mi": 2.0647,
   "t-escucha-activa-decision-tomada": 3.7548,
   "t-espana-va-como-un-cohete": 4.0555,

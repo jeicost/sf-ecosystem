@@ -122,7 +122,7 @@ PIEZAS = [
     (27, "t-yo-estoy-bien",     ["YO ESTOY", "BIEN"],                     "desnuda", "cartel"),
     (28, "t-por-7-votos",       ["POR", "7", "VOTOS"],                    "cifra",   "cond"),
     (29, "t-fiscal-soplon",     ["FISCAL", "SOPLÓN"],                     "sello",   "cartel"),
-    (30, "t-ecologetas",        ["Ecologetas"],                           "desnuda", "redonda"),
+    (30, "t-ecologetas",        ["Ecologetas"],                           "sustituida","redonda"),
     (31, "t-soy-feminista-porque-soy-socialista",
          ["SOY FEMINISTA", "PORQUE SOY", "SOCIALISTA"],                   "desnuda", "cond"),
     (44, "t-alma-socialista-mente-de-tiburon",
@@ -281,6 +281,25 @@ def _dibujos(T):
     return R
 
 DIBUJOS_POR_PIEZA = _dibujos(TINTA)
+
+
+# ── Letras sustituidas por un dibujo ──────────────────────────────────────
+# El truco de la referencia que más ingenio tiene: el € que hace de E en
+# GARR€PA y la O de DROPO que es una espiral. No es un dibujo AL LADO de la
+# palabra, es un dibujo DENTRO — y por eso se lee de un golpe en vez de en
+# dos tiempos. {n: (índice de la letra, ancho relativo a la caja alta, svg)}
+def _sustituciones(T):
+    return {
+        # 30 · la «o» de Ecologetas es una hoja con su nervio
+        # 30 · la «o» de Ecologetas es una hoja con su nervio. Caja baja
+        # (0,56 del cuerpo) y algo más ancha que alta, como la o redonda.
+        30: (2, 0.62, 0.56, f'''<path fill="{T}" fill-rule="evenodd"
+              d="M50 3 Q95 30 91 60 Q87 97 50 97 Q13 97 9 60 Q5 30 50 3 Z
+                 M43 30 l14 0 0 50 -14 0 Z"/>'''),
+    }
+
+
+SUSTITUCIONES = _sustituciones(TINTA)
 
 # EL REPARTO DE VOCES es una decisión de composición, no de gusto: las
 # piezas ANCLA (una o dos líneas, las que se leen a un metro) van en la voz
@@ -446,6 +465,35 @@ def compon(lineas, trato, voz, medida=None, slug="x", n=None, avances=None) -> s
         medida_aro = {"x": cx - r, "y": cy - r, "w": 2 * r, "h": 2 * r}
         medida_texto, med2 = medida, medida_aro
         return con_dibujo_con(sello, med2)
+
+    if trato == "sustituida":
+        # Una letra de la palabra es un dibujo. Se compone letra a letra con
+        # los avances medidos, y en el hueco de la letra elegida entra el
+        # fragmento escalado a la altura de caja alta.
+        if not avances or n not in SUSTITUCIONES:
+            return con_dibujo(texto(lineas))
+        idx, rel_w, rel_h, frag = SUSTITUCIONES[n]
+        anchos = avances[0]
+        letras = lineas[0]
+        alta = t * rel_h
+        ancho_dib = t * rel_w
+        total = sum(a for i, a in enumerate(anchos) if i != idx) + ancho_dib
+        partes = []
+        x = cx - total / 2
+        for i, ch in enumerate(letras):
+            if i == idx:
+                partes.append(
+                    f'<g transform="translate({x:.1f} {cy - alta:.1f}) '
+                    f'scale({ancho_dib / 100.0:.4f} {alta / 100.0:.4f})">{frag}</g>'
+                )
+                x += ancho_dib
+            else:
+                partes.append(
+                    f'<text x="{x:.1f}" y="{cy:.1f}" fill="{TINTA}" {fam} '
+                    f'font-size="{t:.1f}">{ch}</text>'
+                )
+                x += anchos[i]
+        return "".join(partes)
 
     if trato == "arco":
         # La palabra montada en un ARCO, con cada letra girada a su tangente.
@@ -645,7 +693,7 @@ def main() -> int:
             # fuente cargada, pidiendo prefijos cada vez más largos (así el
             # kerning real entra en la cuenta).
             avances = None
-            if trato in ("arco", "revuelto"):
+            if trato in ("arco", "revuelto", "sustituida"):
                 anchos = []
                 previo = 0.0
                 for k in range(1, len(lineas[0]) + 1):
