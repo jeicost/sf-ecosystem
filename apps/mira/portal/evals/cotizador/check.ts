@@ -26,6 +26,13 @@ check('60x80x60', JSON.stringify(dimensionsFrom('60x80x60')) === '[60,80,60]')
 check('decimales con coma', JSON.stringify(dimensionsFrom('60,5 × 40 × 40')) === '[60.5,40,40]')
 check('dos medidas no valen', dimensionsFrom('60 x 40') === null)
 check('texto libre no vale', dimensionsFrom('varias medidas') === null)
+// La unidad se LEE y se convierte. Sin esto, un palet en metros salia como
+// 1,2 cm y uno en milimetros como seis metros de largo (28-sep-2026).
+check('metros → centímetros', JSON.stringify(dimensionsFrom('1,20 x 0,80 x 1,00 m')) === '[120,80,100]')
+check('milímetros → centímetros', JSON.stringify(dimensionsFrom('600 x 400 x 400 mm')) === '[60,40,40]')
+check('«1 palet de 120 x 100 x 160» NO se interpreta', dimensionsFrom('1 palet de 120 x 100 x 160') === null)
+check('unidades mezcladas NO se adivinan', dimensionsFrom('120 cm x 1 m x 60 cm') === null)
+check('unidad desconocida NO se interpreta', dimensionsFrom('60 x 40 x 40 pulgadas') === null)
 
 console.log('\nPrefill: el encargo real de 3 bultos NO se convierte en paquetes')
 const ticketReal = {

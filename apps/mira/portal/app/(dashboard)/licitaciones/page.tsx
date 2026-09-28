@@ -1,7 +1,7 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
-import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X, BookOpen } from 'lucide-react'
+import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X, BookOpen, Upload, Download, Pencil } from 'lucide-react'
 import { useActiveClient, type ActiveClient } from '@/lib/client-context'
 import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
 import { useClientTools } from '@/lib/hooks/useClientTools'
@@ -41,6 +41,12 @@ export default function LicitacionesPage() {
   const brand = activeClient?.primaryColor || '#6366F1'
 
   const [pliego, setPliego] = useState('')
+  // Subir el pliego en vez de pegarlo, editar la memoria dentro del módulo y
+  // sacarla en Word: los tres pasos que antes había que hacer fuera.
+  const [reading, setReading] = useState(false)
+  const [exporting, setExporting] = useState(false)
+  const [editing, setEditing] = useState(false)
+  const fileRef = useRef<HTMLInputElement>(null)
   const [criteria, setCriteria] = useState<Criteria | null>(null)
   const [memoria, setMemoria] = useState<Memoria | null>(null)
   const [oferta, setOferta] = useState<Oferta | null>(null)
@@ -133,6 +139,66 @@ export default function LicitacionesPage() {
       if (!res.ok) { setRadarError(data.error || 'Could not fetch tenders'); return }
       setRadarItems(data.results || []); setRadarMeta(data.meta || null)
     } catch { setRadarError('Network error') } finally { setRadarLoading(false) }
+  }
+
+  // Un pliego real son 40-80 páginas en PDF: pedir que se peguen a mano
+  // significaba, en la práctica, extraer criterios de un trozo.
+  const readPliegoFile = async (file: File) => {
+    if (!clientId) return
+    setReading(true); setError(null)
+    try {
+      const fd = new FormData()
+      fd.append('clientId', clientId)
+      fd.append('file', file)
+      const res = await fetch('/api/tender/pliego', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'No se ha podido leer el fichero'); return }
+      // Se AÑADE, no se pisa: un expediente lleva PCAP y PPT en ficheros
+      // distintos y los dos hacen falta para sacar los criterios.
+      setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${data.filename} ---\n${data.text}` : data.text))
+    } catch {
+      setError('No se ha podido leer el fichero')
+    } finally {
+      setReading(false)
+      if (fileRef.current) fileRef.current.value = ''
+    }
+  }
+
+  // Descargar la memoria como .docx. Se exporta lo GUARDADO, así que primero se
+  // guarda: si no, se bajaría la versión anterior sin que nadie lo note.
+  const exportMemoria = async () => {
+    if (!clientId || !memoria) return
+    setExporting(true); setError(null)
+    try {
+      await save()
+      const id = currentId
+      if (!id) { setError('Guarda el expediente antes de exportar'); return }
+      const res = await fetch('/api/tender/export', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, tenderId: id }),
+      })
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setError(data.error || 'No se ha podido exportar'); return
+      }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${(memoria.titulo || 'memoria').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim() || 'memoria'}.docx`
+      document.body.appendChild(a); a.click(); a.remove()
+      URL.revokeObjectURL(url)
+    } catch {
+      setError('No se ha podido exportar')
+    } finally {
+      setExporting(false)
+    }
+  }
+
+  /** Edición a mano de una sección. La memoria generada es un borrador, no un acta. */
+  const editSection = (i: number, patch: Partial<Section>) => {
+    if (!memoria?.secciones) return
+    setMemoria({ ...memoria, secciones: memoria.secciones.map((s, idx) => (idx === i ? { ...s, ...patch } : s)) })
   }
 
   const extract = async () => {
@@ -371,10 +437,22 @@ export default function LicitacionesPage() {
 
       {/* Paso 1: pliego */}
       <div className="rounded-2xl border border-line bg-surface p-5">
-        <label className="mb-2 flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><FileText size={13} /> 1 · Paste the tender documents (PCAP + PPT + criteria)</label>
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <label className="flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><FileText size={13} /> 1 · Tender documents (PCAP + PPT + criteria)</label>
+          <div className="flex items-center gap-2">
+            {pliego.trim() && <span className="text-[11px] text-ink-muted tabular-nums">{pliego.trim().length.toLocaleString('es-ES')} chars</span>}
+            <button onClick={() => fileRef.current?.click()} disabled={reading || !clientId}
+              className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
+              {reading ? <><Loader2 size={13} className="animate-spin" /> Reading…</> : <><Upload size={13} /> Upload PDF or Word</>}
+            </button>
+            <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,.md,application/pdf" className="hidden"
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) readPliegoFile(f) }} />
+          </div>
+        </div>
         <textarea ref={pliegoRef} value={pliego} onChange={e => setPliego(e.target.value)} rows={7}
-          placeholder="Paste the tender document text here…"
+          placeholder="Upload the tender PDF, or paste its text here…"
           className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
+        <p className="mt-1.5 text-[11px] text-ink-muted">Upload each document one by one (PCAP and PPT): they add up, they do not replace each other. Scanned PDFs have no text — those still need pasting.</p>
         <button onClick={extract} disabled={pliego.trim().length < 200 || step !== 'idle' || !clientId}
           className="mt-3 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
           {step === 'extracting' ? <><Loader2 size={16} className="animate-spin" /> Analysing…</> : <><ListChecks size={16} /> Extract criteria</>}
@@ -534,8 +612,17 @@ export default function LicitacionesPage() {
                 className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
                 {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save</>}
               </button>
+              <button onClick={() => setEditing((v) => !v)}
+                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs transition-colors hover:text-ink"
+                style={editing ? { color: brand } : undefined}>
+                <Pencil size={13} /> {editing ? 'Done editing' : 'Edit'}
+              </button>
               <button onClick={copyMemoria} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
                 {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy</>}
+              </button>
+              <button onClick={exportMemoria} disabled={exporting}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                {exporting ? <><Loader2 size={13} className="animate-spin" /> Preparing…</> : <><Download size={13} /> Word</>}
               </button>
             </div>
           </div>
@@ -556,10 +643,23 @@ export default function LicitacionesPage() {
             {memoria.secciones?.map((s, i) => (
               <div key={i} className="rounded-xl border border-line-subtle bg-page p-4">
                 <div className="mb-2 flex items-center justify-between gap-2">
-                  <h3 className="text-sm font-semibold text-ink">{s.titulo}</h3>
+                  {editing ? (
+                    <input value={s.titulo} onChange={(e) => editSection(i, { titulo: e.target.value })}
+                      className="w-full rounded-lg border border-line bg-surface px-2 py-1 text-sm font-semibold text-ink outline-none" />
+                  ) : (
+                    <h3 className="text-sm font-semibold text-ink">{s.titulo}</h3>
+                  )}
                   {s.puntos_objetivo != null && <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: `${brand}22`, color: brand }}>{s.puntos_objetivo} pts</span>}
                 </div>
-                <p className="whitespace-pre-line text-sm text-ink-secondary leading-relaxed">{s.contenido}</p>
+                {/* La memoria generada es un BORRADOR: quien firma es quien la
+                    presenta, y tiene que poder corregirla aquí en vez de
+                    llevársela a un Word y perder el hilo con los criterios. */}
+                {editing ? (
+                  <textarea value={s.contenido} onChange={(e) => editSection(i, { contenido: e.target.value })} rows={Math.min(24, Math.max(6, Math.ceil((s.contenido || '').length / 90)))}
+                    className="w-full resize-y rounded-lg border border-line bg-surface p-2.5 text-sm text-ink-secondary leading-relaxed outline-none focus:ring-1 focus:ring-ink-muted" />
+                ) : (
+                  <p className="whitespace-pre-line text-sm text-ink-secondary leading-relaxed">{s.contenido}</p>
+                )}
                 {s.datos_a_confirmar && s.datos_a_confirmar.length > 0 && (
                   <div className="mt-2 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 p-2">
                     <p className="text-[10px] uppercase tracking-wider text-amber-500/80 mb-1">To confirm before submitting</p>

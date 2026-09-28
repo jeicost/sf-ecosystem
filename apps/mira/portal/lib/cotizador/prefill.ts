@@ -48,22 +48,52 @@ export function postalCodeFrom(address: unknown): string | null {
   return matches[matches.length - 1]
 }
 
+/** La unidad del contrato es el centímetro. Lo demás se convierte, no se ignora. */
+const UNIT_TO_CM: Record<string, number> = {
+  mm: 0.1, cm: 1, cms: 1, dm: 10, m: 100, mt: 100, mts: 100, metro: 100, metros: 100,
+}
+
 /**
- * "60 x 40 x 40 cm" → [60, 40, 40]. Acepta x/×/*, decimales con coma y unidad
- * opcional. Devuelve null si no hay EXACTAMENTE tres números: "60x40" o
- * "varias medidas" no son medidas utilizables.
+ * "60 x 40 x 40 cm" → [60, 40, 40], en CENTÍMETROS siempre.
+ *
+ * La unidad se LEE y se convierte; no se descarta. La primera versión cogía el
+ * primer número de cada trozo y tiraba el resto, así que "1,20 x 0,80 x 1,00 m"
+ * salía como 1,2 × 0,8 × 1 cm —un palet convertido en una caja de cerillas— y
+ * "600 x 400 x 400 mm" como seis metros de largo. Con eso MIRA le pedía precio
+ * al motor sobre unas medidas que se había inventado ella al cambiar de unidad,
+ * y presentaba como bueno lo que contestara.
+ *
+ * Ahora cada trozo tiene que ser UN número con su unidad opcional y nada más:
+ * "1 palet de 120 x 100 x 160" ya no cuela (¿es 1 o 120 el largo?), y mezclar
+ * unidades tampoco se adivina. Todo lo que no se pueda leer con seguridad
+ * devuelve null y el encargo se queda PENDIENTE_DATOS, que es lo que manda el
+ * contrato: antes que un número inventado, ningún número.
  */
 export function dimensionsFrom(text: unknown): [number, number, number] | null {
   if (typeof text !== 'string') return null
-  const cleaned = text.replace(/,(\d)/g, '.$1')
-  const parts = cleaned.split(/\s*[x×*]\s*/i)
+  const parts = text.replace(/,(\d)/g, '.$1').trim().split(/\s*[x×*]\s*/i)
   if (parts.length !== 3) return null
-  const nums = parts.map((p) => {
-    const m = p.match(/\d+(?:\.\d+)?/)
-    return m ? Number(m[0]) : NaN
-  })
-  if (nums.some((n) => !Number.isFinite(n) || n <= 0)) return null
-  return [nums[0], nums[1], nums[2]]
+
+  const nums: number[] = []
+  const units = new Set<string>()
+  for (const part of parts) {
+    const m = part.trim().match(/^(\d+(?:\.\d+)?)\s*([a-zA-Z]+)?\.?$/)
+    if (!m) return null
+    const n = Number(m[1])
+    if (!Number.isFinite(n) || n <= 0) return null
+    if (m[2]) {
+      const u = m[2].toLowerCase()
+      if (!(u in UNIT_TO_CM)) return null
+      units.add(u)
+    }
+    nums.push(n)
+  }
+  // Unidades mezcladas ("120 cm x 1 m x 60 cm"): puede ser correcto, pero no
+  // es objetivo deducir a cuál se refiere cada número. No se interpreta.
+  if (units.size > 1) return null
+  const factor = units.size === 1 ? UNIT_TO_CM[[...units][0]] : 1
+  const cm = nums.map((n) => Math.round(n * factor * 10) / 10)
+  return [cm[0], cm[1], cm[2]]
 }
 
 export interface TicketFieldsLike {
