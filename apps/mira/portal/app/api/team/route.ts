@@ -148,7 +148,7 @@ export async function POST(req: NextRequest) {
       const { data: link } = await db.auth.admin.generateLink({
         type: invited ? 'invite' : 'magiclink',
         email,
-        options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://mira-portal-nu.vercel.app'}/login` },
+        options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL || 'https://mira.startupsfactory.es'}/login` },
       })
       actionLink = link?.properties?.action_link ?? null
     } catch {

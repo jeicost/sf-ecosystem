@@ -38,7 +38,7 @@ async function createAdmin() {
       const { data, error: recoveryError } = await supabase.auth.admin.generateLink({
         type: 'recovery',
         email: 'jacostech@gmail.com',
-        options: { redirectTo: 'https://mira-portal-nu.vercel.app/reset-password' }
+        options: { redirectTo: 'https://mira.startupsfactory.es/reset-password' }
       })
       if (recoveryError) throw recoveryError
       console.log('✅ Recovery link:')
@@ -52,7 +52,7 @@ async function createAdmin() {
     const { data, error: linkError } = await supabase.auth.admin.generateLink({
       type: 'recovery',
       email: 'jacostech@gmail.com',
-      options: { redirectTo: 'https://mira-portal-nu.vercel.app/reset-password' }
+      options: { redirectTo: 'https://mira.startupsfactory.es/reset-password' }
     })
     if (linkError) throw linkError
     console.log('\n✅ Recovery link:')

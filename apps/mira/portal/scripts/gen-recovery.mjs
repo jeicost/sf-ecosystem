@@ -16,7 +16,7 @@ async function generateLink(email) {
       type: 'recovery',
       email,
       options: {
-        redirectTo: 'https://mira-portal-nu.vercel.app/reset-password'
+        redirectTo: 'https://mira.startupsfactory.es/reset-password'
       }
     })
 

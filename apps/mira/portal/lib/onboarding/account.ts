@@ -18,7 +18,13 @@ import { canAddSeat } from '@/lib/seats'
 // marca y el proyecto, así que el operador veía "ha fallado" sobre un cliente
 // que SÍ existía en la base de datos.
 
-const RESET_PASSWORD_REDIRECT = 'https://mira-portal-nu.vercel.app/reset-password'
+// El dominio real, no el técnico del proyecto (28-sep-2026). Los enlaces de
+// alta llevaban al usuario a mira-portal-nu.vercel.app, que responde con un
+// 307 al dominio bueno: funcionaba de milagro, porque el token de recuperación
+// viaja en el fragmento de la URL y depende del navegador que lo conserve al
+// redirigir. Comprobado contra Supabase que este destino está en la lista
+// blanca de redirecciones antes de cambiarlo.
+const RESET_PASSWORD_REDIRECT = 'https://mira.startupsfactory.es/reset-password'
 
 export interface CreateLoginAccessResult {
   userId: string

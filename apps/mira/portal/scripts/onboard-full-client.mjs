@@ -27,7 +27,7 @@ if (!SERVICE_ROLE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
 
-const RESET_PASSWORD_REDIRECT = 'https://mira-portal-nu.vercel.app/reset-password'
+const RESET_PASSWORD_REDIRECT = 'https://mira.startupsfactory.es/reset-password'
 const VALID_ROLES = ['owner', 'admin', 'editor', 'viewer']
 
 // ── Argument parsing (supports both "--key value" and "--key=value", plus bare boolean flags) ──
