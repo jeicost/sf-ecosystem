@@ -165,3 +165,55 @@ Sus contraformas están al 5 % de la caja alta. A nuestra escala impresa eso se 
 10. ¿Se toca con la pieza vecina?
 
 **Recortes ampliados para consultar mientras se dibuja:** `/private/tmp/claude-501/-Users-carlosjacoste/59997309-af5b-44b2-afcf-e013ed8eaa8b/scratchpad/crops/` (A_filibuster_boat, C_capdefava_head, D_penjat_hanger, E_xulo_trophy, I_dropo, J_esquila_tijeras, K_pixapins, N_trompimetre, AB_pulgar_pilota, AD_gamarus_flechas, AH_pendo_xerra son los más instructivos).
+
+
+---
+
+# Apéndice · Lo aprendido dibujando (28-sep)
+
+Añadido después de dibujar y rechazar tres rondas de pictogramas. Todo esto
+salió de ver fallar el dibujo, no de mirar la referencia.
+
+## Los cinco modos de fallar, con nombre
+
+1. **Lee como una LETRA.** Un cordón de terciopelo —dos postes y un arco—
+   salía una «M» mayúscula a 22 px. Cuidado con las siluetas simétricas de
+   dos verticales unidas por una curva.
+2. **Lee como un ICONO DE LIBRERÍA.** Correcto, anodino, sin chiste. Es el
+   fallo más frecuente y el más difícil de ver: el dibujo «está bien».
+3. **Sale en PIEZAS SUELTAS.** Un lápiz en tres trozos que no se tocan no es
+   un lápiz. Todo objeto tiene que ser una silueta continua o un grupo con
+   contactos claros.
+4. **Lo que debía ser tinta se dibujó como AGUJERO.** Unas gafas con el
+   incendio calado: sobre vidrio oscuro la llama es del color del fondo y la
+   lente queda en un aro con un boquete. Ante cada forma: ¿tinta o agujero?
+5. **DOS MASAS BLANCAS QUE SE TOCAN SE FUNDEN.** En tinta única no hay
+   contorno que las separe. Una mano sobre una cara sale un bulto. O una de
+   las dos es calado, o se abre un hueco entre ellas.
+
+## La proporción manda sobre el detalle
+
+Una tirita costó tres pasadas. Cuadrada con seis puntos leía un DADO; con
+escotaduras en el talle, un papel rasgado; larga y estrecha con la gasa
+calada, una tirita a la primera. **Antes de añadir un detalle, comprueba la
+silueta**: si la proporción no dice el objeto, ningún detalle lo salvará.
+
+Corolario, ya visto también en la pieza-columna del lagrimómetro: el ancho de
+una pieza que cruza la botella es espacio que le quitas a todo lo demás, así
+que su proporción es una decisión de composición, no de dibujo.
+
+## Símbolos que significan otra cosa sin permiso
+
+- **Cruz dentro de un círculo** = cruz de farmacia o ambulancia. Un tornillo
+  de estrella en un sillón convirtió la poltrona en una furgoneta médica.
+- **Anillo grueso con barra diagonal** = el ⊘ universal de prohibido.
+- **Rectángulo redondeado con dos o tres rayas horizontales** = el menú
+  hamburguesa.
+- Un tornillo se dibuja con **ranura horizontal**, nunca en aspa.
+
+## La pregunta que caza casi todo
+
+Renderiza a 22 px y pregúntate: **«si no supiera lo que esto pretende ser,
+¿qué diría que es?»**. Dicho en voz alta y respondido con honestidad, ese
+control habría descartado él solo el cordón-M, el pollito de librería y el
+peón de ajedrez que quería ser lápiz.
