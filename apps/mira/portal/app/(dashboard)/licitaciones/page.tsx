@@ -44,6 +44,7 @@ export default function LicitacionesPage() {
   // Subir el pliego en vez de pegarlo, editar la memoria dentro del módulo y
   // sacarla en Word: los tres pasos que antes había que hacer fuera.
   const [reading, setReading] = useState(false)
+  const [corpus, setCorpus] = useState<{ documentos: number; memoriasPresentadas: number } | null>(null)
   const [exporting, setExporting] = useState(false)
   const [editing, setEditing] = useState(false)
   const fileRef = useRef<HTMLInputElement>(null)
@@ -200,6 +201,16 @@ export default function LicitacionesPage() {
     if (!memoria?.secciones) return
     setMemoria({ ...memoria, secciones: memoria.secciones.map((s, idx) => (idx === i ? { ...s, ...patch } : s)) })
   }
+
+  // Con qué material cuenta el generador. Se consulta al abrir, no al generar:
+  // enterarse de que no hay corpus DESPUÉS de esperar una memoria es tarde.
+  useEffect(() => {
+    if (!clientId) { setCorpus(null); return }
+    fetch(`/api/tender/corpus?clientId=${clientId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setCorpus(j ? { documentos: j.documentos, memoriasPresentadas: j.memoriasPresentadas } : null))
+      .catch(() => {})
+  }, [clientId])
 
   const extract = async () => {
     if (pliego.trim().length < 200 || !clientId) return
@@ -434,6 +445,24 @@ export default function LicitacionesPage() {
           </div>
         )}
       </div>
+
+      {/* Con qué escribe: el corpus de la empresa y las memorias ya presentadas.
+          Una memoria floja casi nunca es culpa del modelo — es falta de
+          material — y hasta ahora eso no se veía por ninguna parte. */}
+      {corpus && (
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line-subtle bg-surface px-4 py-3">
+          <p className="text-[11px] text-ink-tertiary">
+            <BookOpen size={12} className="mr-1.5 inline align-[-2px]" style={{ color: brand }} />
+            This proposal will be written from <strong className="text-ink-secondary">{corpus.documentos}</strong> company document{corpus.documentos === 1 ? '' : 's'}
+            {corpus.memoriasPresentadas > 0
+              ? <> and <strong className="text-ink-secondary">{corpus.memoriasPresentadas}</strong> previously submitted proposal{corpus.memoriasPresentadas === 1 ? '' : 's'}.</>
+              : <>. No previously submitted proposal is loaded yet: loading past ones is what makes the next one sound like yours.</>}
+          </p>
+          <a href="/brain" className="shrink-0 rounded-lg bg-page px-3 py-1.5 text-[11px] text-ink-secondary transition-colors hover:text-ink">
+            Add documents
+          </a>
+        </div>
+      )}
 
       {/* Paso 1: pliego */}
       <div className="rounded-2xl border border-line bg-surface p-5">
