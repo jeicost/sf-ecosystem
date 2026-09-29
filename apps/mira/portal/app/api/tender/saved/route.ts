@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { requireTool } from '@/lib/tools/access'
 import { adminClient } from '@/lib/supabase'
+import { writable } from '@/lib/db-json'
 
 // Expediente de licitación persistido: listar, guardar (crear o actualizar) y
 // borrar. Todo con service_role tras resolveRequestClient, que es quien acota el
@@ -28,10 +29,22 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(data)
     }
 
-    const { data, error } = await db.from('tenders').select(COLS)
-      .eq('client_id', access.clientId).order('updated_at', { ascending: false }).limit(50)
+    // La lista pesaba 0,93 MB: viajaban las memorias completas para pintar un
+    // título y dos marcas. Ahora viajan solo las columnas de la lista y dos
+    // booleanos; el expediente entero se pide al abrirlo (?id=).
+    const LIST_LIMIT = 300
+    const { data, error, count } = await db.from('tenders')
+      .select('id,title,expediente,organo,deadline,status,updated_at,memoria,oferta', { count: 'exact' })
+      .eq('client_id', access.clientId).order('updated_at', { ascending: false }).limit(LIST_LIMIT)
     if (error) throw error
-    return NextResponse.json({ tenders: data || [] })
+    const tenders = (data || []).map((t) => ({
+      id: t.id, title: t.title, expediente: t.expediente, organo: t.organo, deadline: t.deadline,
+      status: t.status, updated_at: t.updated_at,
+      has_memoria: !!t.memoria, has_oferta: !!t.oferta,
+    }))
+    // Si hay más de los que caben, se dice: una lista que corta sin avisar hace
+    // creer que un expediente no existe.
+    return NextResponse.json({ tenders, total: count ?? tenders.length, capped: (count ?? 0) > LIST_LIMIT })
   } catch (error) {
     console.error('tender/saved GET error:', error)
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Error' }, { status: 500 })
@@ -46,23 +59,28 @@ export async function POST(req: NextRequest) {
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const db = adminClient()
 
-    const fields = {
-      title: (body.title || 'Licitación sin título').slice(0, 300),
-      expediente: body.expediente || null,
-      organo: body.organo || null,
-      deadline: body.deadline || null,
-      source_url: body.source_url || null,
-      pliego_text: typeof body.pliego_text === 'string' ? body.pliego_text : null,
-      criteria: body.criteria ?? null,
-      memoria: body.memoria ?? null,
-      oferta: body.oferta ?? null,
-      ...(body.status ? { status: body.status } : {}),
-      updated_at: new Date().toISOString(),
+    const STATUSES = ['borrador', 'preparando', 'presentada', 'ganada', 'perdida']
+    if (body.status !== undefined && !STATUSES.includes(body.status)) {
+      return NextResponse.json({ error: 'Estado no válido' }, { status: 400 })
     }
 
     if (body.id) {
+      // ACTUALIZAR = escribir solo lo que viene. Antes cada guardado ponía a
+      // NULL todo lo que la pantalla no mandaba: el órgano y el enlace a la
+      // PLACSP desaparecían al primer clic en «Guardar», y un guardado solo de
+      // estado habría borrado la memoria. Un campo ausente no es un campo vacío.
+      const fields: Record<string, unknown> = { updated_at: new Date().toISOString() }
+      if (typeof body.title === 'string' && body.title.trim()) fields.title = body.title.slice(0, 300)
+      for (const k of ['expediente', 'organo', 'deadline', 'source_url'] as const) {
+        if (k in body) fields[k] = body[k] || null
+      }
+      if ('pliego_text' in body) fields.pliego_text = typeof body.pliego_text === 'string' ? body.pliego_text : null
+      for (const k of ['criteria', 'memoria', 'oferta'] as const) {
+        if (k in body) fields[k] = body[k] ?? null
+      }
+      if (body.status) fields.status = body.status
       // El filtro por client_id impide actualizar el expediente de otro cliente.
-      const { data, error } = await db.from('tenders').update(fields)
+      const { data, error } = await db.from('tenders').update(writable(fields))
         .eq('id', body.id).eq('client_id', access.clientId).select(COLS).maybeSingle()
       if (error) throw error
       if (!data) return NextResponse.json({ error: 'No encontrada' }, { status: 404 })
@@ -70,7 +88,20 @@ export async function POST(req: NextRequest) {
     }
 
     const { data, error } = await db.from('tenders')
-      .insert({ ...fields, client_id: access.clientId, created_by: access.userId })
+      .insert({
+        title: (body.title || 'Licitación sin título').slice(0, 300),
+        expediente: body.expediente || null,
+        organo: body.organo || null,
+        deadline: body.deadline || null,
+        source_url: body.source_url || null,
+        pliego_text: typeof body.pliego_text === 'string' ? body.pliego_text : null,
+        criteria: body.criteria ?? null,
+        memoria: body.memoria ?? null,
+        oferta: body.oferta ?? null,
+        ...(body.status ? { status: body.status } : {}),
+        client_id: access.clientId,
+        created_by: access.userId,
+      })
       .select(COLS).single()
     if (error) throw error
     return NextResponse.json(data)

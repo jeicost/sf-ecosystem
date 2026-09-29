@@ -9,7 +9,7 @@
 //   SUPABASE_ACCESS_TOKEN=<token> npx supabase gen types typescript \
 //     --project-id nnevhtfxuawexliwlbmh --schema public > types/database.generated.ts
 //
-// 94 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
+// 95 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
 export type Json =
   | string
   | number
@@ -3992,6 +3992,72 @@ export type Database = {
           tier?: string
         }
         Relationships: []
+      }
+      tender_documents: {
+        Row: {
+          client_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          instruction: string | null
+          kind: string
+          sections: Json
+          source_filename: string | null
+          source_text: string | null
+          status: string
+          tender_id: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          instruction?: string | null
+          kind: string
+          sections?: Json
+          source_filename?: string | null
+          source_text?: string | null
+          status?: string
+          tender_id?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          instruction?: string | null
+          kind?: string
+          sections?: Json
+          source_filename?: string | null
+          source_text?: string | null
+          status?: string
+          tender_id?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tender_documents_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tender_documents_tender_id_fkey"
+            columns: ["tender_id"]
+            isOneToOne: false
+            referencedRelation: "tenders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tender_settings: {
         Row: {

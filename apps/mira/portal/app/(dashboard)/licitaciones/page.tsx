@@ -6,6 +6,9 @@ import { useActiveClient, type ActiveClient } from '@/lib/client-context'
 import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
 import { useClientTools } from '@/lib/hooks/useClientTools'
 import BrandName from '@/components/ui/BrandName'
+import SectionRewriter from '@/components/tenders/SectionRewriter'
+import DocumentsPanel from '@/components/tenders/DocumentsPanel'
+import { uploadTenderFile } from '@/lib/tenders/upload-client'
 
 // Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
 // el Cerebro) + flujo de 3 pasos: pegar pliego → criterios → memoria guiada.
@@ -19,7 +22,7 @@ interface Oferta { lote: string | null; formula_precio: string | null; estrategi
 interface RadarScore { fit: number; verdict: 'go' | 'revisar' | 'no-go'; reason: string }
 interface RadarItem { id: string; expediente: string; title: string; org: string; cpv: string[]; amount: number | null; deadline: string | null; link: string; score: RadarScore | null }
 interface RadarMeta { total_found: number; scored: number; capped: boolean; pagesRead: number; stopReason: string }
-interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string; memoria: Memoria | null; oferta: Oferta | null }
+interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string; has_memoria: boolean; has_oferta: boolean }
 
 const STATUS_LABEL: Record<string, string> = { borrador: 'Draft', preparando: 'Preparing', presentada: 'Submitted', ganada: 'Won', perdida: 'Lost' }
 const STATUS_COLOR: Record<string, string> = { borrador: '#94A3B8', preparando: '#F59E0B', presentada: '#6366F1', ganada: '#10B981', perdida: '#EF4444' }
@@ -68,6 +71,10 @@ export default function LicitacionesPage() {
   const pliegoRef = useRef<HTMLTextAreaElement>(null)
   // Expediente persistido: sin esto, la memoria se perdía al recargar.
   const [saved, setSaved] = useState<SavedTender[]>([])
+  const [savedMeta, setSavedMeta] = useState<{ total: number; capped: boolean } | null>(null)
+  // Cambios que solo existen en pantalla. Mientras sea true, cambiar de
+  // expediente, empezar otro o cerrar la pestaña PREGUNTA antes de tirarlos.
+  const [dirty, setDirty] = useState(false)
   const [currentId, setCurrentId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [savedAt, setSavedAt] = useState<string | null>(null)
@@ -79,55 +86,98 @@ export default function LicitacionesPage() {
       if (!res.ok) return
       const data = await res.json()
       setSaved(data.tenders || [])
+      setSavedMeta({ total: data.total ?? (data.tenders || []).length, capped: !!data.capped })
     } catch { /* la lista es accesoria: si falla, la página sigue usable */ }
   }, [clientId])
 
   useEffect(() => { loadList() }, [loadList])
 
-  const save = async (patch?: { status?: string; criteria?: Criteria | null; memoria?: Memoria | null; oferta?: Oferta | null }) => {
-    // Los overrides permiten guardar inmediatamente después de generar, cuando el
-    // estado de React todavía no refleja el resultado recién recibido.
+  /**
+   * Guarda el expediente. Devuelve su id si ha guardado y null si no.
+   *
+   * Antes salía EN SILENCIO cuando no había criterios ni pliego, y eso es justo
+   * lo que tienen las 37 memorias presentadas que se cargaron como ejemplo:
+   * marcar una como «ganada», guardar una edición o exportar no hacían nada y
+   * nadie se enteraba. Un expediente que ya existe se puede guardar siempre; uno
+   * nuevo sin nada dentro lo dice en vez de callarse.
+   */
+  const save = async (patch?: { status?: string; criteria?: Criteria | null; memoria?: Memoria | null; oferta?: Oferta | null }): Promise<string | null> => {
     const crit = patch && 'criteria' in patch ? patch.criteria : criteria
     const mem = patch && 'memoria' in patch ? patch.memoria : memoria
     const ofe = patch && 'oferta' in patch ? patch.oferta : oferta
-    if (!clientId || (!crit && !pliego.trim())) return
+    if (!clientId) return null
+    if (!currentId && !crit && !mem && !pliego.trim()) {
+      setError('There is nothing to save yet: upload or paste the tender documents first.')
+      return null
+    }
     setSaving(true)
     try {
+      const title = mem?.titulo || crit?.object || (pliego.trim() ? pliego.trim().slice(0, 80) : undefined)
       const res = await fetch('/api/tender/saved', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: currentId, clientId,
-          title: mem?.titulo || crit?.object || pliego.slice(0, 80),
-          expediente: crit?.expediente || null,
-          deadline: crit?.deadline || null,
+          ...(title ? { title } : {}),
+          // Solo lo que la pantalla CONOCE: al actualizar, la ruta deja intacto
+          // lo que no viaja (órgano, enlace a la PLACSP…).
+          ...(crit ? { expediente: crit.expediente || null, deadline: crit.deadline || null } : {}),
           pliego_text: pliego, criteria: crit, memoria: mem, oferta: ofe,
           ...(patch?.status ? { status: patch.status } : {}),
         }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Could not save'); return }
+      if (!res.ok) { setError(data.error || 'Could not save'); return null }
       setCurrentId(data.id)
+      setDirty(false)
       setSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
       loadList()
-    } catch { setError('Network error while saving') } finally { setSaving(false) }
+      return data.id as string
+    } catch {
+      setError('Network error while saving: your changes are still on screen, try again.')
+      return null
+    } finally { setSaving(false) }
   }
+
+  /** Antes de tirar lo que hay en pantalla, se pregunta. */
+  const confirmDiscard = () =>
+    !dirty || window.confirm('You have unsaved changes in this tender. Discard them?')
+
+  // Cerrar o recargar la pestaña con cambios sin guardar también pregunta.
+  useEffect(() => {
+    if (!dirty) return
+    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
+    window.addEventListener('beforeunload', h)
+    return () => window.removeEventListener('beforeunload', h)
+  }, [dirty])
 
   const open = async (id: string) => {
     if (!clientId) return
+    if (id !== currentId && !confirmDiscard()) return
     setError(null)
     try {
       const res = await fetch(`/api/tender/saved?id=${id}&clientId=${clientId}`)
       if (!res.ok) { setError('Could not open'); return }
       const t = await res.json()
       setCurrentId(t.id); setPliego(t.pliego_text || '')
-      setCriteria(t.criteria || null); setMemoria(t.memoria || null); setOferta(t.oferta || null); setSavedAt(null)
+      setCriteria(t.criteria || null); setMemoria(t.memoria || null); setOferta(t.oferta || null); setSavedAt(null); setDirty(false)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch { setError('Network error') }
   }
 
   const startNew = () => {
-    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null)
+    if (!confirmDiscard()) return
+    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false)
   }
+
+  // Cambiar de marca vacía la pantalla: si no, se podía generar la oferta de un
+  // pliego de GTD con la doctrina de precios de GLS.
+  const lastClient = useRef<string | undefined>(clientId)
+  useEffect(() => {
+    if (lastClient.current && clientId && lastClient.current !== clientId) {
+      setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false)
+    }
+    lastClient.current = clientId
+  }, [clientId])
 
   const setStatus = async (status: string) => { await save({ status }) }
 
@@ -148,15 +198,20 @@ export default function LicitacionesPage() {
     if (!clientId) return
     setReading(true); setError(null)
     try {
-      const fd = new FormData()
-      fd.append('clientId', clientId)
-      fd.append('file', file)
-      const res = await fetch('/api/tender/pliego', { method: 'POST', body: fd })
+      // Subida directa al almacenamiento: Vercel corta en ~4,5 MB y la mitad
+      // de los pliegos reales pesan más.
+      const up = await uploadTenderFile(clientId, file)
+      if ('error' in up) { setError(up.error); return }
+      const res = await fetch('/api/tender/pliego', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, path: up.path, filename: file.name, mime: file.type }),
+      })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'No se ha podido leer el fichero'); return }
       // Se AÑADE, no se pisa: un expediente lleva PCAP y PPT en ficheros
       // distintos y los dos hacen falta para sacar los criterios.
       setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${data.filename} ---\n${data.text}` : data.text))
+      setDirty(true)
     } catch {
       setError('No se ha podido leer el fichero')
     } finally {
@@ -171,9 +226,10 @@ export default function LicitacionesPage() {
     if (!clientId || !memoria) return
     setExporting(true); setError(null)
     try {
-      await save()
-      const id = currentId
-      if (!id) { setError('Guarda el expediente antes de exportar'); return }
+      // Se exporta lo GUARDADO. Si el guardado falla, no se descarga nada: si
+      // no, saldría la versión anterior como si fuera la buena.
+      const id = await save()
+      if (!id) return
       const res = await fetch('/api/tender/export', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientId, tenderId: id }),
@@ -196,10 +252,45 @@ export default function LicitacionesPage() {
     }
   }
 
+  // Mejora asistida de una sección de la memoria. Devuelve la propuesta; no
+  // guarda nada hasta que una persona la acepta.
+  const pedirMejoraMemoria = (i: number) => async (instruccion: string) => {
+    if (!clientId || !currentId) return { error: 'Guarda el expediente antes de pedir mejoras' }
+    const res = await fetch('/api/tender/rewrite', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, target: 'memoria', tenderId: currentId, sectionIndex: i, instruction: instruccion }),
+    })
+    const data = await res.json()
+    if (!res.ok) return { error: data.error || 'Error' }
+    return { propuesta: data.propuesta as string, avisos: (data.avisos || []) as string[] }
+  }
+
+  // La oferta económica también se entrega: sale con su tabla de precios.
+  const exportOferta = async () => {
+    if (!clientId || !currentId) return
+    setExporting(true); setError(null)
+    try {
+      const id = await save()
+      if (!id) return
+      const res = await fetch('/api/tender/export', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, tenderId: id, kind: 'oferta' }),
+      })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error || 'No se ha podido exportar'); return }
+      const blob = await res.blob()
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url; a.download = 'oferta-economica.docx'
+      document.body.appendChild(a); a.click(); a.remove()
+      URL.revokeObjectURL(url)
+    } finally { setExporting(false) }
+  }
+
   /** Edición a mano de una sección. La memoria generada es un borrador, no un acta. */
   const editSection = (i: number, patch: Partial<Section>) => {
     if (!memoria?.secciones) return
     setMemoria({ ...memoria, secciones: memoria.secciones.map((s, idx) => (idx === i ? { ...s, ...patch } : s)) })
+    setDirty(true)
   }
 
   // Con qué material cuenta el generador. Se consulta al abrir, no al generar:
@@ -214,18 +305,35 @@ export default function LicitacionesPage() {
 
   const extract = async () => {
     if (pliego.trim().length < 200 || !clientId) return
-    setStep('extracting'); setError(null); setCriteria(null); setMemoria(null); setOferta(null)
+    // Re-extraer ya no borra la memoria ni la oferta: antes escribía memoria:
+    // null en la base de datos sin preguntar. Los criterios nuevos se usan la
+    // próxima vez que se genere; lo escrito se queda.
+    setStep('extracting'); setError(null)
     try {
       const res = await fetch('/api/tender/extract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId }) })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Could not extract criteria'); return }
       setCriteria(data)
-      save({ criteria: data, memoria: null })  // guarda el expediente en cuanto hay algo que perder
+      save({ criteria: data })  // guarda el expediente en cuanto hay algo que perder
     } catch { setError('Network error') } finally { setStep('idle') }
   }
 
   const generate = async () => {
     if (!criteria || !clientId) return
+    if (memoria?.secciones?.length) {
+      if (!window.confirm('Generating again replaces the current proposal. The current version will be kept in Documents so nothing is lost. Continue?')) return
+      // La versión anterior —con las ediciones a mano— se archiva ANTES de
+      // pedir la nueva: dos horas de ajuste fino no pueden depender de un clic.
+      const backup = await fetch('/api/tender/documents', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId, tenderId: currentId, kind: 'memoria',
+          title: `${memoria.titulo || 'Proposal'} — previous version (${new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })})`,
+          sections: memoria.secciones.map((sec) => ({ titulo: sec.titulo, contenido: sec.contenido, criterio: sec.criterio, puntos_objetivo: sec.puntos_objetivo })),
+        }),
+      })
+      if (!backup.ok) { setError('Could not keep a copy of the current proposal, so it has not been replaced.'); return }
+    }
     setStep('generating'); setError(null)
     try {
       const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId, tenderId: currentId }) })
@@ -311,7 +419,9 @@ export default function LicitacionesPage() {
       {saved.length > 0 && (
         <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FolderOpen size={15} style={{ color: brand }} /> Your tenders</h2>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FolderOpen size={15} style={{ color: brand }} /> Your tenders
+              {savedMeta && <span className="text-[11px] font-normal text-ink-muted">{savedMeta.capped ? `latest ${saved.length} of ${savedMeta.total}` : savedMeta.total}</span>}
+            </h2>
             {(currentId || pliego) && (
               <button onClick={startNew} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink">
                 <Plus size={13} /> New
@@ -332,8 +442,8 @@ export default function LicitacionesPage() {
                       {STATUS_LABEL[t.status] || t.status}
                       {t.expediente ? ` · Exp. ${t.expediente}` : ''}
                       {d != null ? ` · ${d > 0 ? `${d} days` : 'expired'}` : ''}
-                      {t.memoria ? ' · has proposal' : ''}
-                      {t.oferta ? ' · has offer' : ''}
+                      {t.has_memoria ? ' · has proposal' : ''}
+                      {t.has_oferta ? ' · has offer' : ''}
                     </span>
                   </span>
                 </button>
@@ -478,7 +588,7 @@ export default function LicitacionesPage() {
               onChange={(e) => { const f = e.target.files?.[0]; if (f) readPliegoFile(f) }} />
           </div>
         </div>
-        <textarea ref={pliegoRef} value={pliego} onChange={e => setPliego(e.target.value)} rows={7}
+        <textarea ref={pliegoRef} value={pliego} onChange={e => { setPliego(e.target.value); setDirty(true) }} rows={7}
           placeholder="Upload the tender PDF, or paste its text here…"
           className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
         <p className="mt-1.5 text-[11px] text-ink-muted">Upload each document one by one (PCAP and PPT): they add up, they do not replace each other. Scanned PDFs have no text — those still need pasting.</p>
@@ -495,18 +605,25 @@ export default function LicitacionesPage() {
           <div className="mb-3 flex items-center justify-between">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><ListChecks size={15} style={{ color: brand }} /> 2 · Scoring criteria {criteria.total_points ? `· ${criteria.total_points} pts` : ''}</h2>
             <div className="flex items-center gap-2">
-              {byGroup('juicio_valor').length > 0 && (
-                <button onClick={generate} disabled={step !== 'idle'}
-                  className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-                  {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> Generate proposal</>}
-                </button>
-              )}
+              {/* Antes el botón desaparecía si el pliego no tenía criterios de
+                  juicio de valor, sin explicar por qué. Pero una memoria técnica
+                  se pide igual como documentación del servicio: se deja
+                  generar y se avisa abajo de que no puntúa. */}
+              <button onClick={generate} disabled={step !== 'idle'}
+                className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> {memoria ? 'Generate again' : 'Generate proposal'}</>}
+              </button>
               <button onClick={generateOferta} disabled={step !== 'idle'}
                 className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
                 {step === 'generating-oferta' ? <><Loader2 size={14} className="animate-spin" /> Pricing…</> : <><Sparkles size={14} /> Generate economic offer</>}
               </button>
             </div>
           </div>
+          {byGroup('juicio_valor').length === 0 && (
+            <p className="mb-3 rounded-lg bg-surface px-3 py-2 text-[11px] text-ink-tertiary">
+              This tender only scores automatic criteria and price: the technical proposal will not earn points, but it is usually still required as service documentation.
+            </p>
+          )}
           {criteria.object && <p className="mb-3 text-xs text-ink-tertiary">{criteria.expediente ? `Exp. ${criteria.expediente} · ` : ''}{criteria.object}{criteria.deadline ? ` · due ${criteria.deadline}` : ''}</p>}
           <div className="grid gap-3 sm:grid-cols-3">
             {['juicio_valor', 'automatico_tecnico', 'precio'].map(g => byGroup(g).length > 0 && (
@@ -540,6 +657,12 @@ export default function LicitacionesPage() {
               </button>
               <button onClick={copyOferta} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
                 {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy table</>}
+              </button>
+              {/* La oferta también se entrega: sale en Word con su tabla de
+                  precios, no solo en la pantalla. */}
+              <button onClick={exportOferta} disabled={exporting}
+                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                {exporting ? <><Loader2 size={13} className="animate-spin" /> Preparing…</> : <><Download size={13} /> Word</>}
               </button>
             </div>
           </div>
@@ -678,7 +801,12 @@ export default function LicitacionesPage() {
                   ) : (
                     <h3 className="text-sm font-semibold text-ink">{s.titulo}</h3>
                   )}
-                  {s.puntos_objetivo != null && <span className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: `${brand}22`, color: brand }}>{s.puntos_objetivo} pts</span>}
+                  <div className="flex shrink-0 items-center gap-2">
+                    {s.puntos_objetivo != null && <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: `${brand}22`, color: brand }}>{s.puntos_objetivo} pts</span>}
+                    <SectionRewriter titulo={s.titulo} brand={brand}
+                      onRewrite={pedirMejoraMemoria(i)}
+                      onAccept={(contenido) => editSection(i, { contenido })} />
+                  </div>
                 </div>
                 {/* La memoria generada es un BORRADOR: quien firma es quien la
                     presenta, y tiene que poder corregirla aquí en vez de
@@ -716,6 +844,12 @@ export default function LicitacionesPage() {
           )}
         </div>
       )}
+
+      {/* Documentos de la licitación: los que Usoa sube para trabajarlos y los
+          anexos que acompañan a la oferta. Van al final porque se usan DESPUÉS
+          de tener criterios y memoria. */}
+      {clientId && <DocumentsPanel clientId={clientId} tenderId={currentId} brand={brand} />}
+
     </div>
   )
 }
@@ -737,21 +871,26 @@ function PlaybookPanel({ clientId, brand }: { clientId: string; brand: string })
   const [saving, setSaving] = useState(false)
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
+  // Si la carga falla, se para. Antes el efecto se relanzaba solo en bucle y
+  // dejaba el cuadro VACÍO con «Guardar» activo: un clic borraba la doctrina de
+  // precios de la marca. Ahora no se reintenta sin que nadie lo pida y no se
+  // puede guardar lo que no se ha llegado a cargar.
+  const [loadFailed, setLoadFailed] = useState(false)
 
   // Al cambiar de marca, el playbook de la anterior no vale: se descarta.
-  useEffect(() => { setLoaded(false); setText(''); setSavedAt(null); setErr(null) }, [clientId])
+  useEffect(() => { setLoaded(false); setText(''); setSavedAt(null); setErr(null); setLoadFailed(false) }, [clientId])
 
   useEffect(() => {
-    if (!open || loaded || loading) return
+    if (!open || loaded || loading || loadFailed) return
     setLoading(true)
     ;(async () => {
       try {
         const res = await fetch(`/api/tender/playbook?clientId=${clientId}`)
         const data = await res.json()
-        if (!res.ok) { setErr(data.error || 'Could not load'); return }
+        if (!res.ok) { setErr(data.error || 'Could not load'); setLoadFailed(true); return }
         setText(data.playbook || '')
         setLoaded(true)
-      } catch { setErr('Network error') } finally { setLoading(false) }
+      } catch { setErr('Network error'); setLoadFailed(true) } finally { setLoading(false) }
     })()
   }, [open, loaded, loading, clientId])
 
@@ -793,7 +932,7 @@ function PlaybookPanel({ clientId, brand }: { clientId: string; brand: string })
                 <p className="text-[11px] text-ink-muted">{text.length}/12000 characters · plain text, no format needed</p>
                 <div className="flex items-center gap-2">
                   {savedAt && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
-                  <button onClick={save} disabled={saving}
+                  <button onClick={save} disabled={saving || !loaded}
                     className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
                     {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save playbook</>}
                   </button>
@@ -801,7 +940,14 @@ function PlaybookPanel({ clientId, brand }: { clientId: string; brand: string })
               </div>
             </>
           )}
-          {err && <p className="mt-2 text-xs text-red-400">{err}</p>}
+          {err && (
+            <p className="mt-2 flex items-center gap-2 text-xs text-red-400">
+              {err}
+              {loadFailed && (
+                <button onClick={() => { setErr(null); setLoadFailed(false) }} className="rounded-lg bg-page px-2 py-0.5 text-[11px] text-ink-secondary hover:text-ink">Retry</button>
+              )}
+            </p>
+          )}
         </div>
       )}
     </div>

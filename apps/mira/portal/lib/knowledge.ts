@@ -16,7 +16,7 @@ export interface KnowledgeItem {
   id: string
   client_id: string
   project_id: string | null
-  source: 'drive' | 'upload_chat' | 'upload' | 'reference'
+  source: 'drive' | 'upload_chat' | 'upload' | 'reference' | 'brand_doc'
   agent_role: string | null
   title: string | null
   summary: string | null
@@ -235,11 +235,14 @@ function rankDocumentsByQuery(docs: KnowledgeItem[], query?: string | null): Kno
     .map((x) => x.item)
 }
 
-const SOURCE_LABEL: Record<KnowledgeItem['source'], string> = {
+const SOURCE_LABEL: Record<string, string> = {
   drive: 'Drive',
   upload_chat: 'Subido en chat',
   upload: 'Documentation',
   reference: 'Referencia',
+  // Faltaba: los documentos de Brand Brain (0065) llegaban al prompt
+  // etiquetados «[undefined]».
+  brand_doc: 'Documento de la empresa',
 }
 
 export function isKnowledgeUnified(): boolean {
@@ -314,7 +317,7 @@ export async function getKnowledgeContext(
         const perItem = Math.min(PER_ITEM[kind], budget - used)
         if (perItem < 120) break
         const tag = item.project_id && item.project_id === projectId ? ' · from THIS project' : ''
-        const head = `- [${SOURCE_LABEL[item.source]}${tag}] ${item.title || 'Untitled'}: `
+        const head = `- [${SOURCE_LABEL[item.source] || 'Documento'}${tag}] ${item.title || 'Untitled'}: `
         const line = head + excerpt(item, perItem - head.length, kind)
         lines.push(line)
         used += line.length
