@@ -120,7 +120,7 @@ PIEZAS = [
     # FACHA pasa de caja a TAMPÓN de contorno, como su banderín TABALOT.
     (26, "t-facha",             ["FACHA"],                                "tampon",  "cartel"),
     (27, "t-yo-estoy-bien",     ["YO ESTOY", "BIEN"],                     "desnuda", "cartel"),
-    (28, "t-por-7-votos",       ["POR", "7", "VOTOS"],                    "cifra",   "cond"),
+    (28, "t-por-7-votos",       ["POR", "7", "VOTOS"],                    "cifra-fila","cartel"),
     (29, "t-fiscal-soplon",     ["FISCAL", "SOPLÓN"],                     "sello",   "cartel"),
     (30, "t-ecologetas",        ["Ecologetas"],                           "sustituida","redonda"),
     (31, "t-soy-feminista-porque-soy-socialista",
@@ -219,7 +219,7 @@ def _dibujos(T):
          M65 22 q5 9 3 17 q6 -4 5 -13 q7 8 6 19 q6 -3 6 -12 q7 10 3 22 l-22 0 q-4 -18 -1 -33 Z"/>''')
     # 28 POR 7 VOTOS — la papeleta entrando en la urna
     # la urna convertida en tragaperras: sale 777
-    R[28] = ("lado-der", 100, 84, f'''<path fill="{T}" fill-rule="evenodd" d="M 10 16 H 68 C 70 16 70 18 70 20 V 30 H 8 V 20 C 8 18 8 16 10 16 Z M 12 30 H 66 C 73 30 76 34 76 40 V 66 C 76 72 73 76 66 76 H 12 C 5 76 2 72 2 66 V 40 C 2 34 5 30 12 30 Z M 9 76 H 27 V 82 H 9 Z M 51 76 H 69 V 82 H 51 Z M 24 21 H 60 A 3 3 0 0 1 60 27 H 24 A 3 3 0 0 1 24 21 Z M 15 35 H 63 C 66 35 68 37 68 41 V 58 C 68 62 66 64 63 64 H 15 C 12 64 10 62 10 58 V 41 C 10 37 12 35 15 35 Z M 14 40 H 28 V 46 L 21.7 58 H 15.1 L 24.4 47 H 14 Z M 32 40 H 46 V 46 L 39.7 58 H 33.1 L 42.4 47 H 32 Z M 50 40 H 64 V 46 L 57.7 58 H 51.1 L 60.4 47 H 50 Z"/><path fill="{T}" d="M 36 6 L 49 3 L 52 8 L 53 27 L 37 27 Z"/><path fill="none" stroke="{T}" stroke-width="6" stroke-linecap="round" d="M 76 46 C 87 46 91 40 92 31"/><circle cx="92" cy="22" r="8" fill="{T}"/>''')
+    R[28] = ("lado-der", 100, 84, f'''<path fill="{T}" fill-rule="evenodd" d="M 10 16 H 68 C 70 16 70 18 70 20 V 30 H 8 V 20 C 8 18 8 16 10 16 Z M 12 30 H 66 C 73 30 76 34 76 40 V 66 C 76 72 73 76 66 76 H 12 C 5 76 2 72 2 66 V 40 C 2 34 5 30 12 30 Z M 9 76 H 27 V 82 H 9 Z M 51 76 H 69 V 82 H 51 Z M 24 21 H 60 A 3 3 0 0 1 60 27 H 24 A 3 3 0 0 1 24 21 Z M 15 35 H 63 C 66 35 68 37 68 41 V 58 C 68 62 66 64 63 64 H 15 C 12 64 10 62 10 58 V 41 C 10 37 12 35 15 35 Z M 13 39 H 29 V 47 L 22.5 59 H 14 L 24 48 H 13 Z M 31 39 H 47 V 47 L 40.5 59 H 32 L 42 48 H 31 Z M 49 39 H 65 V 47 L 58.5 59 H 50 L 60 48 H 49 Z"/><path fill="{T}" d="M 36 6 L 49 3 L 52 8 L 53 27 L 37 27 Z"/><path fill="none" stroke="{T}" stroke-width="6" stroke-linecap="round" d="M 76 46 C 87 46 91 40 92 31"/><circle cx="92" cy="22" r="8" fill="{T}"/>''')
     # 29 FISCAL SOPLÓN — el silbato colgando junto al sello
     # el silbato de árbitro pitando de verdad: boquilla, cámara gorda, la bolita calada y tres rayas de canto
     # el silbato de árbitro, grande y de perfil, con la bolita calada y tres rayas de pitido
@@ -640,6 +640,51 @@ def compon(lineas, trato, voz, medida=None, slug="x", n=None, avances=None, caja
             cuerpo
             + f'<rect x="{cx - w/2:.1f}" y="{y1:.0f}" width="{w:.1f}" height="3" fill="{TINTA}"/>'
             + f'<rect x="{cx - w/2:.1f}" y="{y2:.0f}" width="{w:.1f}" height="3" fill="{TINTA}"/>'
+        )
+
+    if trato == "cifra-fila":
+        # La cifra grande EN EL MEDIO y las palabras a sus lados, en una sola
+        # fila. Apiladas (tratamiento «cifra») el bitmap se come la altura y
+        # las palabras caen a 2 mm impresos: medido, perdían el 62 % de su
+        # tinta. En fila, la pieza es ancha y baja, y las tres partes comparten
+        # altura.
+        cifra = next((l for l in lineas if l.isdigit()), None)
+        palabras = [l for l in lineas if not l.isdigit()]
+        if cifra is None:
+            return texto(lineas)
+        u = t * 1.45 / 7
+        svg_c, ancho_c = pixeles(cifra, 0, 0, u)
+        alto_c = 7 * u
+        chico = t * 0.86
+        # El ancho de cada palabra se estima con el avance medio de la
+        # condensada (0,42 em): no hace falta más precisión porque las tres
+        # partes se centran entre sí, no se justifican.
+        anchos_p = [len(w) * chico * 0.42 for w in palabras]
+        hueco = t * 0.34
+        total = ancho_c + sum(anchos_p) + hueco * (len(palabras))
+        x = cx - total / 2
+        partes = []
+        for i, w in enumerate(palabras):
+            if i == 1:
+                partes.append(
+                    f'<g transform="translate({x:.1f} {cy - alto_c / 2:.1f})" fill="{TINTA}">{svg_c}</g>'
+                )
+                x += ancho_c + hueco
+            partes.append(
+                f'<text x="{x:.1f}" y="{cy + chico * 0.36:.1f}" fill="{TINTA}" '
+                f'{fam} font-size="{chico:.1f}">{w}</text>'
+            )
+            x += anchos_p[i] + hueco
+        if len(palabras) < 2:
+            partes.append(
+                f'<g transform="translate({x:.1f} {cy - alto_c / 2:.1f})" fill="{TINTA}">{svg_c}</g>'
+            )
+        # La caja de ESTA composición, no la del apilado que se midió en la
+        # primera pasada: con la del apilado el pictograma aterrizaba encima
+        # de la última palabra.
+        return con_dibujo_con(
+            "".join(partes),
+            {"x": cx - total / 2, "y": cy - alto_c / 2, "w": total, "h": alto_c},
         )
 
     if trato in ("cifra", "contador"):
