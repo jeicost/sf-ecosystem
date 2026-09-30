@@ -16,10 +16,19 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const pliego = typeof body.pliego === 'string' ? body.pliego.trim() : ''
     const criteria = body.criteria as TenderCriteria | undefined
-    if (!pliego || !criteria?.criteria?.length) return NextResponse.json({ error: 'Faltan el pliego o los criterios' }, { status: 400 })
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     done = trackRoute('tender/generate', access)
+    // Usoa subió su propio borrador de memoria como pliego: el extractor no
+    // encontró criterios (no los hay) y esto devolvía «Faltan el pliego o los
+    // criterios», que no dice qué hacer. Ahora se explica y queda registrado.
+    if (!pliego) { done.error(400, 'sin pliego'); return NextResponse.json({ error: 'No hay texto del pliego: sube el PCAP y el PPT en el paso 1.' }, { status: 400 }) }
+    if (!criteria?.criteria?.length) {
+      done.error(400, 'sin criterios')
+      return NextResponse.json({
+        error: 'El texto subido no contiene criterios de adjudicación, así que no hay contra qué escribir la memoria. Si es una memoria o un borrador propio, súbelo en Documentos para mejorarlo; si es una licitación, añade el PCAP, que es donde están los criterios.',
+      }, { status: 400 })
+    }
     const memoria = await generateTenderMemoria({ clientId: access.clientId, pliegoText: pliego, criteria, tenderId: typeof body.tenderId === 'string' ? body.tenderId : null })
     done({ secciones: Array.isArray((memoria as { secciones?: unknown[] }).secciones) ? (memoria as { secciones?: unknown[] }).secciones!.length : 0, pliegoChars: pliego.length }); return NextResponse.json(memoria)
   } catch (error) {

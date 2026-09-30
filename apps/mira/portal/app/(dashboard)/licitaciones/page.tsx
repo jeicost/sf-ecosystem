@@ -657,7 +657,8 @@ export default function LicitacionesPage() {
                   juicio de valor, sin explicar por qué. Pero una memoria técnica
                   se pide igual como documentación del servicio: se deja
                   generar y se avisa abajo de que no puntúa. */}
-              <button onClick={generate} disabled={step !== 'idle'}
+              <button onClick={generate} disabled={step !== 'idle' || criteria.criteria.length === 0}
+                title={criteria.criteria.length === 0 ? 'No award criteria were found in the uploaded text' : undefined}
                 className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
                 {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> {memoria ? 'Generate again' : 'Generate proposal'}</>}
               </button>
@@ -667,7 +668,16 @@ export default function LicitacionesPage() {
               </button>
             </div>
           </div>
-          {byGroup('juicio_valor').length === 0 && (
+          {criteria.criteria.length === 0 && (
+            <div className="mb-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
+              <p className="text-xs font-medium text-amber-400">No award criteria were found in the uploaded text, so there is nothing to write the proposal against.</p>
+              {criteria.data_gaps?.[0] && <p className="mt-1 text-[11px] text-amber-300/90">{criteria.data_gaps[0]}</p>}
+              <p className="mt-1.5 text-[11px] text-amber-300/90">
+                If this is your own proposal or a draft, <a href="#documentos" className="underline underline-offset-2">upload it in Documents</a> to improve it. If it is a tender, upload the PCAP: that is where the award criteria are.
+              </p>
+            </div>
+          )}
+          {criteria.criteria.length > 0 && byGroup('juicio_valor').length === 0 && (
             <p className="mb-3 rounded-lg bg-surface px-3 py-2 text-[11px] text-ink-tertiary">
               This tender only scores automatic criteria and price: the technical proposal will not earn points, but it is usually still required as service documentation.
             </p>
