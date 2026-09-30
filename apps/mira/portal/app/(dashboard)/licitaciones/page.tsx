@@ -613,9 +613,11 @@ export default function LicitacionesPage() {
           y muere con él cualquier carga en vuelo de la marca anterior. Sin
           esto, la respuesta de A llegaba con B ya activa y «Save» escribía la
           guía o la plantilla (razón social, NIF) de A en B. */}
-      {clientId && <PlaybookPanel key={clientId} clientId={clientId} brand={brand} />}
-      {clientId && <TeachPanel key={clientId} clientId={clientId} brand={brand} tenderId={currentId} />}
-      {clientId && <TemplateSettings key={clientId} clientId={clientId} brand={brand} />}
+      {/* key por marca para remontar al cambiar de marca — y DISTINTA en cada hermano: tres hermanos con la
+          misma key dejaban nodos zombis (dos «Teach MIRA» en pantalla, el 1-oct en prod). */}
+      {clientId && <PlaybookPanel key={`playbook-${clientId}`} clientId={clientId} brand={brand} />}
+      {clientId && <TeachPanel key={`teach-${clientId}`} clientId={clientId} brand={brand} tenderId={currentId} />}
+      {clientId && <TemplateSettings key={`template-${clientId}`} clientId={clientId} brand={brand} />}
 
       {/* Tender radar (PLACSP, gratis) */}
       <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
