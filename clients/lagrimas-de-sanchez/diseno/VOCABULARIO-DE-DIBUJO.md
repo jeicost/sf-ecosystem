@@ -217,3 +217,25 @@ Renderiza a 22 px y pregúntate: **«si no supiera lo que esto pretende ser,
 ¿qué diría que es?»**. Dicho en voz alta y respondido con honestidad, ese
 control habría descartado él solo el cordón-M, el pollito de librería y el
 peón de ajedrez que quería ser lápiz.
+
+## «No imprime» no quiere decir «sóbrale»
+
+Escribí una herramienta que localizaba los paths cuya tinta desaparece
+entera a malla fina y los quitaba, con el razonamiento de que el arte no
+debe contener lo que no va a existir sobre el vidrio. La medición mejoró en
+once piezas. Al mirarlas, se había comido los NOMBRES: «PILI JUERGA»
+desapareció, «EL PORTERO» quedó en «E P RTER» y «SINCRONIZADA» en
+«N R N A A».
+
+El razonamiento estaba bien y la premisa mal. Un elemento que no imprime
+tiene dos arreglos posibles y son opuestos:
+
+- **Si es decoración** (las puntadas de un delantal, el plumeado de una
+  cazadora, el rayado de un tampón): sobra, y quitarlo es lo correcto.
+- **Si es contenido** (el nombre de la pieza, un dato, el chiste): no sobra
+  — es que está pequeño. Se AGRANDA, que es lo que hace
+  `agrandar-rotulos.py`.
+
+Distinguir las dos cosas no lo puede hacer una métrica de grosor, porque las
+dos dan el mismo número. Requiere saber qué es cada elemento. Por eso no hay
+herramienta automática para esto y se quitó la que había.
