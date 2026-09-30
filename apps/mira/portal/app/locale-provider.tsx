@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useState, ReactNode } from 'react'
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 
 type Locale = 'es' | 'en'
 
@@ -19,8 +19,18 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
   // suyo, porque el valor de localStorage manda.
   const [locale, setLocale] = useState<Locale>(() => {
     if (typeof window === 'undefined') return 'en'
-    return (localStorage.getItem('locale') as Locale) || 'en'
+    const stored = localStorage.getItem('locale') as Locale | null
+    if (stored === 'es' || stored === 'en') return stored
+    // Sin elección previa, el idioma del navegador. Una persona con Edge en
+    // español que veía el portal en inglés dejaba que el navegador lo
+    // tradujera, y eso rompía React. Con el español propio no hay nada que
+    // traducir. Quien elija idioma, manda (localStorage).
+    return (navigator.language || '').toLowerCase().startsWith('es') ? 'es' : 'en'
   })
+
+  // El atributo lang de <html> tiene que decir la verdad: si declara inglés y
+  // el contenido está en español, el navegador ofrece traducirlo.
+  useEffect(() => { document.documentElement.lang = locale }, [locale])
 
   const handleSetLocale = (newLocale: Locale) => {
     setLocale(newLocale)
