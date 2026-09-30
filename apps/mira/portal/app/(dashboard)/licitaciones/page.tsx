@@ -857,8 +857,17 @@ export default function LicitacionesPage() {
         <div className="mt-4 rounded-xl border border-line-subtle bg-page/60 p-3">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <label className="flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><MessageSquare size={13} style={{ color: brand }} /> Your instructions for this proposal</label>
-            {/* Contador: las instrucciones se guardan hasta 20.000 caracteres; que se vea cuánto lleva. */}
-            {instructions.trim() && <span className="text-[11px] text-ink-muted tabular-nums">{instructions.length.toLocaleString('es-ES')} / 20.000 chars</span>}
+            <div className="flex items-center gap-2">
+              {/* Contador: las instrucciones se guardan hasta 20.000 caracteres; que se vea cuánto lleva. */}
+              {instructions.trim() && <span className="text-[11px] text-ink-muted tabular-nums">{instructions.length.toLocaleString('es-ES')} / 20.000 chars</span>}
+              {savedAt && !dirty && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
+              {/* Sin memoria aún no había ningún botón de guardar: las instrucciones escritas antes
+                  de generar se perdían al salir. */}
+              <button onClick={() => save()} disabled={saving || !dirty || !clientId}
+                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
+                {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save instructions</>}
+              </button>
+            </div>
           </div>
           <p className="mb-2 mt-0.5 text-[11px] text-ink-tertiary">Tell MIRA everything before it writes: what this client cares about, what to emphasise, what to avoid, tone, structure. It reads this first and tells you which instructions it applied. It never invents company data to satisfy an instruction.</p>
           <textarea value={instructions} onChange={(e) => { setInstructions(e.target.value); setDirty(true) }} rows={4}
