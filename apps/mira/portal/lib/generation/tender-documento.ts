@@ -108,8 +108,11 @@ export async function reescribirSeccion(opts: {
   tituloDocumento?: string
   otrasSecciones?: { titulo: string }[]
   criterioTexto?: string | null
+  /** Bloque de enseñanza ya construido (teachingBlock): instrucciones del expediente + guía + lecciones. */
+  teaching?: string | null
 }): Promise<{ contenido: string; avisos: string[] }> {
   const { clientId, seccion, instruccion, tituloDocumento, otrasSecciones, criterioTexto } = opts
+  const teaching = (opts.teaching || '').trim()
 
   const knowledge = await getKnowledgeContext(clientId, {
     // La búsqueda combina el tema de la sección, lo que se pide y el criterio:
@@ -131,7 +134,8 @@ ${criterioTexto ? `CRITERIO DEL PLIEGO AL QUE RESPONDE ESTA SECCIÓN:\n${criteri
 SECCIÓN ACTUAL — "${seccion.titulo}":
 ${seccion.contenido}
 
-INSTRUCCIÓN DEL RESPONSABLE:
+${teaching ? `LO QUE LA RESPONSABLE HA ENSEÑADO PARA ESTA MARCA Y ESTE EXPEDIENTE (se aplica siempre; la instrucción puntual de abajo manda sobre todo esto):\n${teaching}\n` : ''}
+INSTRUCCIÓN PUNTUAL DEL RESPONSABLE (manda sobre todo lo anterior):
 ${instruccion}
 
 REGLAS INNEGOCIABLES

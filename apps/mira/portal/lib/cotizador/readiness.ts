@@ -14,12 +14,17 @@ export type MissingReason =
   | 'palletized'
   | 'packages_empty'
   | 'package_quantity' | 'package_dimensions' | 'package_weight' | 'package_id_duplicated'
+  // El motor ha respondido MISSING_REQUIRED_DATA y nombra el campo. MIRA no
+  // sabe comprobarlo por sí misma (p. ej. ratingArea): lo guarda y lo enseña.
+  | 'engine_required'
 
 export interface MissingItem {
   reason: MissingReason
   /** Índice del bulto cuando el problema es de un bulto concreto. */
   packageIndex?: number
   packageId?: string
+  /** Nombre del campo tal y como lo nombra el motor (solo 'engine_required'). */
+  field?: string
 }
 
 export interface ShipmentDraft {
@@ -87,6 +92,40 @@ export function missingForQuote(s: ShipmentDraft): MissingItem[] {
 
 export function isQuotable(s: ShipmentDraft): boolean {
   return missingForQuote(s).length === 0
+}
+
+/**
+ * Nombre de campo del motor → carencia local equivalente, para no enseñar dos
+ * veces lo mismo ("packages" del motor y "packages_empty" de MIRA). Lo que no
+ * tiene equivalente (ratingArea, extras…) se conserva con el nombre del motor.
+ */
+const ENGINE_FIELD_TO_REASON: Record<string, MissingReason> = {
+  'origin.country': 'origin_country',
+  'origin.postalCode': 'origin_postal_code',
+  'destination.country': 'destination_country',
+  'destination.postalCode': 'destination_postal_code',
+  palletized: 'palletized',
+  packages: 'packages_empty',
+}
+
+/**
+ * Fusiona lo que falta según MIRA con lo que falta según el motor. La lista
+ * local manda: un campo del motor solo se añade si MIRA no lo tenía ya bajo
+ * su propio nombre, y nunca dos veces el mismo campo.
+ */
+export function mergeEngineMissing(local: MissingItem[], engineFields: string[]): MissingItem[] {
+  const out = [...local]
+  const localReasons = new Set(local.map((m) => m.reason))
+  const seen = new Set<string>()
+  for (const raw of engineFields) {
+    const field = raw.trim()
+    if (!field || seen.has(field)) continue
+    seen.add(field)
+    const equivalent = ENGINE_FIELD_TO_REASON[field]
+    if (equivalent && localReasons.has(equivalent)) continue
+    out.push({ reason: 'engine_required', field })
+  }
+  return out
 }
 
 /** Estado que corresponde a un envío según lo que le falte. */

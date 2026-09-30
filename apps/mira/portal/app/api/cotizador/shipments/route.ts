@@ -20,7 +20,9 @@ export async function GET(req: NextRequest) {
     if (id) {
       const shipment = await getShipment(db, access.clientId, id)
       if (!shipment) return NextResponse.json({ error: 'not_found' }, { status: 404 })
-      const quotes = await latestQuotes(db, access.clientId, id)
+      // Cada cotización trae `stale` calculado contra el envío de AHORA: si se
+      // editó después de cotizar, el precio guardado ya no es de estos datos.
+      const quotes = await latestQuotes(db, access.clientId, shipment)
       // `configured` viaja aquí porque el token vive solo en el servidor:
       // la pantalla no puede deducirlo y no debe fingir que sí.
       return NextResponse.json({ shipment, quotes, configured: isCotizadorConfigured() })

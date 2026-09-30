@@ -1,14 +1,16 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { clsx } from 'clsx'
-import { Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X, BookOpen, Upload, Download, Pencil } from 'lucide-react'
+import { MessageSquare, Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X, BookOpen, Upload, Download, Pencil } from 'lucide-react'
 import { useActiveClient, type ActiveClient } from '@/lib/client-context'
 import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
 import { useClientTools } from '@/lib/hooks/useClientTools'
 import BrandName from '@/components/ui/BrandName'
 import SectionRewriter from '@/components/tenders/SectionRewriter'
 import DocumentsPanel from '@/components/tenders/DocumentsPanel'
-import { uploadTenderFile } from '@/lib/tenders/upload-client'
+import TemplateSettings from '@/components/tenders/TemplateSettings'
+import TeachPanel from '@/components/tenders/TeachPanel'
+import { uploadTenderFile, removeTenderFile } from '@/lib/tenders/upload-client'
 import { trackPage, trackAction } from '@/lib/activity-client'
 
 // Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
@@ -16,7 +18,7 @@ import { trackPage, trackAction } from '@/lib/activity-client'
 interface Criterion { group: string; name: string; points: number | null; sub?: { name: string; points: number | null }[]; requires?: string }
 interface Criteria { object?: string; expediente?: string; deadline?: string; total_points: number | null; criteria: Criterion[]; data_gaps?: string[] }
 interface Section { criterio: string; puntos_objetivo: number | null; titulo: string; contenido: string; datos_a_confirmar?: string[] }
-interface Memoria { titulo?: string; resumen_ejecutivo?: string; secciones?: Section[]; checklist_qa?: string[]; data_gaps?: string[] }
+interface Memoria { titulo?: string; resumen_ejecutivo?: string; secciones?: Section[]; checklist_qa?: string[]; data_gaps?: string[]; instrucciones_aplicadas?: string[]; instrucciones_no_aplicadas?: { instruccion: string; motivo: string }[] }
 interface OfertaLinea { seccion: string; servicio: string; tramo: string | null; max_sin_iva: number | null; factor: number | null; precio_ofertado: number | null; baja_pct: number | null; motivo: string; a_confirmar: boolean }
 interface OfertaCriterioAuto { nombre: string; opciones: string | null; respuesta: string; puntos: number | null; motivo: string }
 interface Oferta { lote: string | null; formula_precio: string | null; estrategia: string; lineas: OfertaLinea[]; criterios_automaticos: OfertaCriterioAuto[]; a_confirmar_global: string[]; avisos: string[]; suma_ponderada: number | null }
@@ -38,6 +40,18 @@ const daysLeft = (iso: string | null) => (iso ? Math.ceil((new Date(iso).getTime
 
 const GROUP_LABEL: Record<string, string> = { juicio_valor: 'Qualitative', automatico_tecnico: 'Automatic (technical)', precio: 'Price' }
 
+// Qué documento pide el apartado libre. Espejo de KindLibre en
+// lib/generation/tender-libre.ts ('carta' se guarda como 'anexo' en la BD).
+type BriefKind = 'memoria' | 'oferta' | 'anexo' | 'carta'
+const BRIEF_KIND_LABEL: Record<BriefKind, string> = {
+  memoria: 'Technical proposal',
+  oferta: 'Commercial proposal / offer without prices',
+  anexo: 'Annex',
+  carta: 'Letter or short reply',
+}
+const BRIEF_MIN = 80
+const BRIEF_ACCEPT = '.pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain'
+
 export default function LicitacionesPage() {
   const { activeClient, setActiveClient } = useActiveClient()
   const { tools, isLoading: toolsLoading } = useClientTools(activeClient?.id)
@@ -57,6 +71,13 @@ export default function LicitacionesPage() {
   const [brief, setBrief] = useState('')
   const [briefBusy, setBriefBusy] = useState(false)
   const [briefAvisos, setBriefAvisos] = useState<string[]>([])
+  // 01-oct: Usoa quería SUBIR su documento, no pegarlo («con ChatGPT lo puedo
+  // hacer así»). Un solo fichero (la petición del cliente o su borrador) y el
+  // tipo de documento que espera de vuelta. El fichero se sube al GENERAR, no al
+  // elegirlo: así un «Remove» no deja huérfanos en el almacenamiento.
+  const [briefFile, setBriefFile] = useState<File | null>(null)
+  const [briefKind, setBriefKind] = useState<BriefKind>('memoria')
+  const briefFileRef = useRef<HTMLInputElement>(null)
   const [docsRefresh, setDocsRefresh] = useState(0)
   const [docOpenId, setDocOpenId] = useState<string | null>(null)
   const [rowStatusBusy, setRowStatusBusy] = useState<string | null>(null)
@@ -91,6 +112,11 @@ export default function LicitacionesPage() {
   // expediente, empezar otro o cerrar la pestaña PREGUNTA antes de tirarlos.
   const [dirty, setDirty] = useState(false)
   const [currentId, setCurrentId] = useState<string | null>(null)
+  // Lo que la persona le dice a MIRA ANTES de generar (Usoa, 30-sep: «tengo que
+  // tener la libertad de explicar a MIRA todo lo que me pasa por la cabeza»), y
+  // de qué memoria pasada partir. Viajan con el expediente (0084).
+  const [instructions, setInstructions] = useState('')
+  const [baseTenderId, setBaseTenderId] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [savedAt, setSavedAt] = useState<string | null>(null)
 
@@ -124,13 +150,13 @@ export default function LicitacionesPage() {
     const mem = patch && 'memoria' in patch ? patch.memoria : memoria
     const ofe = patch && 'oferta' in patch ? patch.oferta : oferta
     if (!clientId) return null
-    if (!currentId && !crit && !mem && !pliego.trim()) {
+    if (!currentId && !crit && !mem && !pliego.trim() && !instructions.trim()) {
       setError('There is nothing to save yet: upload or paste the tender documents first.')
       return null
     }
     setSaving(true)
     try {
-      const title = mem?.titulo || crit?.object || (pliego.trim() ? pliego.trim().slice(0, 80) : undefined)
+      const title = mem?.titulo || crit?.object || (pliego.trim() ? pliego.trim().slice(0, 80) : (instructions.trim() ? instructions.trim().slice(0, 80) : undefined))
       const res = await fetch('/api/tender/saved', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -140,6 +166,7 @@ export default function LicitacionesPage() {
           // lo que no viaja (órgano, enlace a la PLACSP…).
           ...(crit ? { expediente: crit.expediente || null, deadline: crit.deadline || null } : {}),
           pliego_text: pliego, criteria: crit, memoria: mem, oferta: ofe,
+          instructions: instructions.trim() || null, base_tender_id: baseTenderId,
           ...(patch?.status ? { status: patch.status } : {}),
         }),
       })
@@ -179,6 +206,7 @@ export default function LicitacionesPage() {
       const t = await res.json()
       setCurrentId(t.id); setPliego(t.pliego_text || '')
       setCriteria(t.criteria || null); setMemoria(t.memoria || null); setOferta(t.oferta || null); setSavedAt(null); setDirty(false)
+      setInstructions(t.instructions || ''); setBaseTenderId(t.base_tender_id || null)
       // Antes saltaba ARRIBA y la memoria quedaba abajo, fuera de la vista:
       // Usoa pulsó la misma fila siete veces creyendo que no abría. Ahora se
       // baja hasta el contenido del expediente.
@@ -188,7 +216,7 @@ export default function LicitacionesPage() {
 
   const startNew = () => {
     if (!confirmDiscard()) return
-    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false)
+    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false); setInstructions(''); setBaseTenderId(null)
   }
 
   // Cambiar de marca vacía la pantalla: si no, se podía generar la oferta de un
@@ -196,7 +224,7 @@ export default function LicitacionesPage() {
   const lastClient = useRef<string | undefined>(clientId)
   useEffect(() => {
     if (lastClient.current && clientId && lastClient.current !== clientId) {
-      setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false)
+      setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false); setInstructions(''); setBaseTenderId(null)
     }
     lastClient.current = clientId
   }, [clientId])
@@ -219,18 +247,25 @@ export default function LicitacionesPage() {
   const readPliegoFile = async (file: File) => {
     if (!clientId) return
     setReading(true); setError(null)
+    // Fuera del try: si /pliego no llega (red) o cae con 5xx, el fichero ya
+    // subido se borra del bucket; si no, se quedaría huérfano.
+    let subidoPath: string | null = null
     try {
       // Subida directa al almacenamiento: Vercel corta en ~4,5 MB y la mitad
       // de los pliegos reales pesan más.
       trackAction('/licitaciones', 'subir-pliego', clientId, { bytes: file.size, tipo: file.type })
       const up = await uploadTenderFile(clientId, file)
       if ('error' in up) { trackAction('/licitaciones', 'subir-pliego-error', clientId, { error: up.error }); setError(up.error); return }
+      subidoPath = up.path
       const res = await fetch('/api/tender/pliego', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientId, path: up.path, filename: file.name, mime: file.type }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'No se ha podido leer el fichero'); return }
+      if (!res.ok) {
+        if (res.status >= 500) void removeTenderFile(clientId, subidoPath)
+        setError(data.error || 'No se ha podido leer el fichero'); return
+      }
       if (data.looksLikeProposal) {
         trackAction('/licitaciones', 'pliego-parece-memoria', clientId, { filename: data.filename })
         setPendingProposal({ file, text: data.text, filename: data.filename })
@@ -241,6 +276,7 @@ export default function LicitacionesPage() {
       setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${data.filename} ---\n${data.text}` : data.text))
       setDirty(true)
     } catch {
+      if (subidoPath) void removeTenderFile(clientId, subidoPath)
       setError('No se ha podido leer el fichero')
     } finally {
       setReading(false)
@@ -283,16 +319,17 @@ export default function LicitacionesPage() {
 
   // Mejora asistida de una sección de la memoria. Devuelve la propuesta; no
   // guarda nada hasta que una persona la acepta.
-  const pedirMejoraMemoria = (i: number) => async (instruccion: string) => {
-    if (!clientId || !currentId) return { error: 'Guarda el expediente antes de pedir mejoras' }
-    trackAction('/licitaciones', 'mejorar-seccion', clientId, { seccion: i })
+  const pedirMejoraMemoria = (i: number) => async (instruccion: string, opts?: { remember?: boolean }) => {
+    if (!clientId || !currentId) return { error: 'Save the tender before asking for improvements' }
+    trackAction('/licitaciones', 'mejorar-seccion', clientId, { seccion: i, recordar: !!opts?.remember })
     const res = await fetch('/api/tender/rewrite', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientId, target: 'memoria', tenderId: currentId, sectionIndex: i, instruction: instruccion }),
+      // remember: la instrucción pasa a ser una lección de la marca (tender_lessons).
+      body: JSON.stringify({ clientId, target: 'memoria', tenderId: currentId, sectionIndex: i, instruction: instruccion, remember: !!opts?.remember }),
     })
     const data = await res.json()
     if (!res.ok) return { error: data.error || 'Error' }
-    return { propuesta: data.propuesta as string, avisos: (data.avisos || []) as string[] }
+    return { propuesta: data.propuesta as string, avisos: (data.avisos || []) as string[], lessonId: (data.lessonId ?? null) as string | null }
   }
 
   // La oferta económica también se entrega: sale con su tabla de precios.
@@ -317,23 +354,60 @@ export default function LicitacionesPage() {
     } finally { setExporting(false) }
   }
 
-  /** Encargo libre → documento en Documentos. Tarda uno o dos minutos. */
-  const generarDesdeEncargo = async (texto: string, filename?: string) => {
-    if (!clientId || texto.trim().length < 80) return
+  /**
+   * Encargo libre → documento en Documentos. Tarda uno o dos minutos.
+   * Con fichero, el brief es opcional; sin fichero hacen falta ≥ 80 caracteres.
+   * El fichero sube directo al almacenamiento (Vercel corta cuerpos > 4,5 MB) y
+   * a la API solo viaja su ruta; el servidor lo lee y lo borra.
+   */
+  const generarDesdeEncargo = async (args: { texto: string; file?: File | null; kind?: BriefKind }) => {
+    if (!clientId) return
+    const texto = args.texto.trim()
+    const file = args.file ?? null
+    const kind = args.kind ?? briefKind
+    if (!file && texto.length < BRIEF_MIN) {
+      setError(`Write at least two or three sentences (${BRIEF_MIN} characters) about what you need, or attach the request or your draft.`)
+      return
+    }
     setBriefBusy(true); setError(null); setBriefAvisos([])
-    trackAction('/licitaciones', 'generar-desde-encargo', clientId, { chars: texto.length })
+    trackAction('/licitaciones', 'generar-desde-encargo', clientId, { chars: texto.length, kind, conFichero: !!file })
+    // Fuera del try: si la llamada a /libre no llega (red) o cae con 5xx, el
+    // fichero ya subido se borra del bucket; si no, se quedaría huérfano.
+    let subido: { path: string; filename: string; mime: string } | null = null
     try {
+      if (file) {
+        const up = await uploadTenderFile(clientId, file)
+        if ('error' in up) {
+          trackAction('/licitaciones', 'generar-desde-encargo-error', clientId, { paso: 'subida', error: up.error })
+          setError(`${up.error} Try again, or paste the text of the document in the box instead.`)
+          return
+        }
+        subido = { path: up.path, filename: file.name, mime: file.type }
+      }
       const res = await fetch('/api/tender/libre', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, brief: texto, filename, tenderId: currentId }),
+        body: JSON.stringify({ clientId, brief: texto, kind, path: subido?.path, filename: subido?.filename, mime: subido?.mime, tenderId: currentId }),
       })
-      const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Could not generate the document'); return }
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) {
+        trackAction('/licitaciones', 'generar-desde-encargo-error', clientId, { paso: 'generar', status: res.status })
+        // Un 4xx ya consumió el fichero (la ruta lo lee lo primero); un 5xx
+        // puede haber caído antes de leerlo.
+        if (res.status >= 500 && subido) void removeTenderFile(clientId, subido.path)
+        setError(data.error || 'Could not generate the document. Try again in a minute; if it keeps failing, paste the text instead of attaching the file.')
+        return
+      }
       setBriefAvisos(data.avisos || [])
-      setBrief('')
+      setBrief(''); setBriefFile(null)
       setDocsRefresh((n) => n + 1)
       setDocOpenId(data.document.id)
-    } catch { setError('Network error') } finally { setBriefBusy(false) }
+    } catch {
+      if (subido) void removeTenderFile(clientId, subido.path)
+      setError('Network error while generating: check your connection and try again. No document was created.')
+    } finally {
+      setBriefBusy(false)
+      if (briefFileRef.current) briefFileRef.current.value = ''
+    }
   }
 
   // Marcar el estado desde la LISTA, sin abrir el expediente. Usoa tuvo que
@@ -405,7 +479,7 @@ export default function LicitacionesPage() {
     setStep('generating'); setError(null)
     trackAction('/licitaciones', 'generar-memoria', clientId, { criterios: criteria.criteria.length, regenerar: !!memoria })
     try {
-      const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId, tenderId: currentId }) })
+      const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId, tenderId: currentId, instructions, baseTenderId }) })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Could not generate the proposal'); return }
       setMemoria(data)
@@ -417,7 +491,7 @@ export default function LicitacionesPage() {
     if (!clientId || pliego.trim().length < 200) return
     setStep('generating-oferta'); setError(null)
     try {
-      const res = await fetch('/api/tender/oferta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId, tenderId: currentId }) })
+      const res = await fetch('/api/tender/oferta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId, tenderId: currentId, instructions }) })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'Could not generate the economic offer'); return }
       setOferta(data)
@@ -535,7 +609,13 @@ export default function LicitacionesPage() {
         </div>
       )}
 
-      {clientId && <PlaybookPanel clientId={clientId} brand={brand} />}
+      {/* key={clientId}: al cambiar de marca sin recargar, el panel se REMONTA
+          y muere con él cualquier carga en vuelo de la marca anterior. Sin
+          esto, la respuesta de A llegaba con B ya activa y «Save» escribía la
+          guía o la plantilla (razón social, NIF) de A en B. */}
+      {clientId && <PlaybookPanel key={clientId} clientId={clientId} brand={brand} />}
+      {clientId && <TeachPanel key={clientId} clientId={clientId} brand={brand} tenderId={currentId} />}
+      {clientId && <TemplateSettings key={clientId} clientId={clientId} brand={brand} />}
 
       {/* Tender radar (PLACSP, gratis) */}
       <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
@@ -661,7 +741,7 @@ export default function LicitacionesPage() {
           <p className="text-xs font-medium text-amber-400">“{pendingProposal.filename}” looks like a proposal, not a tender document.</p>
           <p className="mt-1 text-[11px] text-amber-300/90">A tender (pliego) is what the public body publishes. If this is your own proposal or a draft you want to improve, it belongs in Documents.</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            <button onClick={() => { const t = pendingProposal.text; const f = pendingProposal.filename; setPendingProposal(null); void generarDesdeEncargo(t, f) }}
+            <button onClick={() => { const f = pendingProposal.file; setPendingProposal(null); setBriefFile(f); void generarDesdeEncargo({ texto: brief, file: f, kind: 'memoria' }) }}
               disabled={briefBusy}
               className="rounded-lg px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50" style={{ background: brand }}>
               {briefBusy ? 'Generating…' : 'It is a request: generate the document it asks for'}
@@ -679,24 +759,65 @@ export default function LicitacionesPage() {
       )}
 
       {/* Apartado libre: sin pliego. Un cliente pide «tarifas y una memoria de
-          vuestra empresa» y no hay pliego que subir porque no existe. */}
+          vuestra empresa» y no hay pliego que subir porque no existe.
+          01-oct: admite ADJUNTAR la petición o el propio borrador (PDF/Word) y
+          elegir qué documento se quiere de vuelta; con fichero el texto es opcional. */}
       <div className="mb-4 rounded-2xl border border-line bg-surface p-5">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><Sparkles size={15} style={{ color: brand }} /> No tender? Describe what you need</h2>
           <span className="text-[11px] text-ink-muted">{brief.trim().length > 0 ? `${brief.trim().length} chars` : ''}</span>
         </div>
-        <p className="mb-2 text-[11px] text-ink-tertiary">
-          Paste the request as it reached you: who is asking, what service, what document they expect. MIRA reads everything the company has — documents, past proposals — and writes it. If they ask for prices, it leaves the price fields for the commercial team: it never invents a rate.
+        <p className="mb-3 text-[11px] text-ink-tertiary">
+          Paste or attach the request as it reached you, or your own draft to be rewritten, and MIRA reads all the company&apos;s material — documents, past proposals, the Brain — to write the document you choose. It never invents a price: rate fields are left for the commercial team.
         </p>
+
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          <input ref={briefFileRef} type="file" accept={BRIEF_ACCEPT} className="hidden"
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) { setBriefFile(f); setError(null); trackAction('/licitaciones', 'adjuntar-encargo', clientId, { bytes: f.size, tipo: f.type }) } }} />
+          {briefFile ? (
+            <span className="flex items-center gap-2 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary">
+              <FileText size={13} className="shrink-0" />
+              <span className="max-w-[260px] truncate" title={briefFile.name}>{briefFile.name}</span>
+              <span className="text-ink-muted">{(briefFile.size / 1024 / 1024).toFixed(1)} MB</span>
+              <button onClick={() => { setBriefFile(null); if (briefFileRef.current) briefFileRef.current.value = '' }} disabled={briefBusy}
+                className="ml-1 flex items-center gap-1 text-ink-muted transition-colors hover:text-ink disabled:opacity-50" title="Remove the file">
+                <X size={12} /> Remove
+              </button>
+            </span>
+          ) : (
+            <button onClick={() => briefFileRef.current?.click()} disabled={briefBusy || !clientId}
+              className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
+              <Upload size={13} /> Attach the request or your draft (PDF or Word)
+            </button>
+          )}
+          <label className="flex items-center gap-2 text-xs text-ink-secondary">
+            What should MIRA write?
+            <select value={briefKind} onChange={(e) => setBriefKind(e.target.value as BriefKind)} disabled={briefBusy}
+              className="rounded-lg border border-line bg-page px-2 py-1.5 text-xs text-ink outline-none focus:ring-1 focus:ring-ink-muted">
+              {(Object.keys(BRIEF_KIND_LABEL) as BriefKind[]).map((k) => <option key={k} value={k}>{BRIEF_KIND_LABEL[k]}</option>)}
+            </select>
+          </label>
+        </div>
+
+        <label className="mb-1 block text-xs text-ink-secondary">
+          What do you need? (who asks, what service, what they expect)
+          {briefFile && <span className="text-ink-muted"> — optional with a file attached</span>}
+        </label>
         <textarea value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
-          placeholder="e.g. A Facility Services company is bidding for a large client and will subcontract transport and distribution to us. They ask for our rates and a technical proposal of our company covering local, national and international services…"
+          placeholder={briefFile
+            ? 'Optional: anything the file does not say — who is asking, deadline, what to emphasise…'
+            : 'e.g. A Facility Services company is bidding for a large client and will subcontract transport and distribution to us. They ask for our rates and a technical proposal of our company covering local, national and international services…'}
           className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button onClick={() => generarDesdeEncargo(brief)} disabled={briefBusy || brief.trim().length < 80 || !clientId}
+          <button onClick={() => generarDesdeEncargo({ texto: brief, file: briefFile })} disabled={briefBusy || !clientId || (!briefFile && brief.trim().length < BRIEF_MIN)}
             className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-            {briefBusy ? <><Loader2 size={16} className="animate-spin" /> Writing (1–2 min)…</> : <><Sparkles size={16} /> Generate the document</>}
+            {briefBusy ? <><Loader2 size={16} className="animate-spin" /> {briefFile ? 'Reading the file and writing (1–3 min)…' : 'Writing (1–2 min)…'}</> : <><Sparkles size={16} /> Generate the document</>}
           </button>
-          <span className="text-[11px] text-ink-muted">It appears in Documents below, editable and downloadable as Word.</span>
+          <span className="text-[11px] text-ink-muted">
+            {!briefFile && brief.trim().length > 0 && brief.trim().length < BRIEF_MIN
+              ? `${BRIEF_MIN - brief.trim().length} more characters, or attach a file.`
+              : `The ${BRIEF_KIND_LABEL[briefKind].toLowerCase()} appears in Documents below, editable and downloadable as Word.`}
+          </span>
         </div>
         {briefAvisos.length > 0 && (
           <ul className="mt-3 space-y-1">
@@ -727,6 +848,32 @@ export default function LicitacionesPage() {
           className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
         <p className="mt-1.5 text-[11px] text-ink-muted">Upload each document one by one (PCAP and PPT): they add up, they do not replace each other. Scanned PDFs have no text — those still need pasting.</p>
         <p className="mt-1 text-[11px] text-ink-muted">Want to improve a proposal you already have instead? <a href="#documentos" className="text-ink-secondary underline underline-offset-2 hover:text-ink">Upload it in Documents ↓</a></p>
+        {/* Instrucciones de la persona (Usoa, 30-sep): «tengo que tener la libertad
+            de explicar a MIRA todo lo que me pasa por la cabeza antes de liarse a
+            hacer una memoria». Entran en la memoria, la oferta y las mejoras con
+            máxima prioridad y se guardan con el expediente. */}
+        <div className="mt-4 rounded-xl border border-line-subtle bg-page/60 p-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <label className="flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><MessageSquare size={13} style={{ color: brand }} /> Your instructions for this proposal</label>
+            {/* Contador: las instrucciones se guardan hasta 20.000 caracteres; que se vea cuánto lleva. */}
+            {instructions.trim() && <span className="text-[11px] text-ink-muted tabular-nums">{instructions.length.toLocaleString('es-ES')} / 20.000 chars</span>}
+          </div>
+          <p className="mb-2 mt-0.5 text-[11px] text-ink-tertiary">Tell MIRA everything before it writes: what this client cares about, what to emphasise, what to avoid, tone, structure. It reads this first and tells you which instructions it applied. It never invents company data to satisfy an instruction.</p>
+          <textarea value={instructions} onChange={(e) => { setInstructions(e.target.value); setDirty(true) }} rows={4}
+            placeholder="e.g. This body values real-time tracking above all: give it its own section. Do not mention international services. Lean on our university experience. Short sentences, institutional tone…"
+            className="w-full resize-y rounded-xl border border-line bg-surface p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
+          <div className="mt-2 flex flex-wrap items-center gap-2">
+            <label className="text-[11px] text-ink-tertiary">Start from a past proposal (optional)</label>
+            <select value={baseTenderId || ''} onChange={(e) => { setBaseTenderId(e.target.value || null); setDirty(true) }}
+              className="max-w-full rounded-lg border border-line-subtle bg-surface px-2 py-1 text-[11px] text-ink-secondary outline-none">
+              <option value="">Let MIRA pick the closest ones</option>
+              {saved.filter((t) => t.has_memoria && t.id !== currentId).map((t) => (
+                <option key={t.id} value={t.id}>{STATUS_LABEL[t.status] || t.status} · {t.title.slice(0, 70)}</option>
+              ))}
+            </select>
+            <span className="text-[11px] text-ink-muted">Its structure and tone become the starting point; the content is rewritten for this tender.</span>
+          </div>
+        </div>
         <button onClick={extract} disabled={pliego.trim().length < 200 || step !== 'idle' || !clientId}
           className="mt-3 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
           {step === 'extracting' ? <><Loader2 size={16} className="animate-spin" /> Analysing…</> : <><ListChecks size={16} /> Extract criteria</>}
@@ -971,8 +1118,15 @@ export default function LicitacionesPage() {
               </div>
             ))}
           </div>
-          {(memoria.checklist_qa?.length || memoria.data_gaps?.length) && (
+          {(memoria.checklist_qa?.length || memoria.data_gaps?.length || memoria.instrucciones_aplicadas?.length) && (
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              {/* Que la persona VEA que la han escuchado: lo que no se aplicó va en data_gaps con su motivo. */}
+              {memoria.instrucciones_aplicadas && memoria.instrucciones_aplicadas.length > 0 && (
+                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 sm:col-span-2">
+                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-emerald-500/90">Your instructions, applied</p>
+                  <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{memoria.instrucciones_aplicadas.map((c, i) => <li key={i}>{c}</li>)}</ul>
+                </div>
+              )}
               {memoria.checklist_qa && memoria.checklist_qa.length > 0 && (
                 <div className="rounded-xl border border-line-subtle p-3">
                   <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">QA checklist</p>
@@ -981,7 +1135,7 @@ export default function LicitacionesPage() {
               )}
               {memoria.data_gaps && memoria.data_gaps.length > 0 && (
                 <div className="rounded-xl border border-line-subtle p-3">
-                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">Corpus gaps</p>
+                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">Gaps and notes</p>
                   <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{memoria.data_gaps.map((c, i) => <li key={i}>{c}</li>)}</ul>
                 </div>
               )}

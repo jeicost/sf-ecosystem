@@ -24,3 +24,20 @@ export async function uploadTenderFile(clientId: string, file: File): Promise<{ 
   if (error) return { error: `No se ha podido subir “${file.name}”: ${error.message}` }
   return { path: data.path as string }
 }
+
+/**
+ * Deshacer una subida cuya llamada siguiente no llegó a consumir el fichero
+ * (la red falló o el servidor cayó con 5xx). Si la ruta ya lo leyó y lo borró,
+ * borrar de nuevo no hace daño. Mejor esfuerzo: nunca lanza, para no tapar
+ * el error real que se le va a enseñar a la persona.
+ */
+export async function removeTenderFile(clientId: string, path: string): Promise<void> {
+  try {
+    await fetch('/api/tender/upload-url', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, path }),
+    })
+  } catch {
+    // Sin red no hay forma de limpiar; el error que importa ya está en pantalla.
+  }
+}

@@ -15,9 +15,12 @@
 import { createServer } from 'http'
 import type { AddressInfo } from 'net'
 
+// Request de control CONGELADO (§6.2 de la guía): las DOS áreas de
+// tarificación van tal cual las nombra el motor. Es el mismo literal que en
+// smoke.ts; si el contrato cambia, se cambia en los dos con su versión.
 const CONTROL = {
   origin: { country: 'ES', postalCode: '04810', ratingArea: 'Almería' },
-  destination: { country: 'ES', postalCode: '29001' },
+  destination: { country: 'ES', postalCode: '29001', ratingArea: 'Málaga' },
   palletized: true,
   service: 'AUTO' as const,
   packages: [{ id: 'P1', quantity: 1, lengthCm: 60, widthCm: 80, heightCm: 60, weightKg: 280 }],
@@ -86,7 +89,7 @@ function fakeServer() {
         return send(200, {
           provider: 'Palletways', traceId: 'tr-areas',
           origin: { status: 'AVAILABLE', options: ['Almería', 'Almería Norte'] },
-          destination: { status: 'NOT_REQUIRED', options: [] },
+          destination: { status: 'AVAILABLE', options: ['Málaga'] },
         })
       }
       if (!Array.isArray(p.packages) || p.packages.length === 0) {
@@ -108,6 +111,8 @@ function fakeServer() {
         recommended: { provider: 'Palletways', service: 'ECONOMY', total: 134.93, currency: 'EUR' },
         alternatives: [{ provider: 'Palletways', service: 'PREMIUM', total: 142.61, currency: 'EUR' }],
         warnings: [], errors: [],
+        // El mock hace ECO: en --fake lo que se comprueba es lo que MIRA envía.
+        echo: p,
       })
     })
   })
@@ -160,17 +165,41 @@ async function main() {
   if (areas) {
     check('el origen pide área y ofrece opciones exactas',
       areas.origin.status === 'AVAILABLE' && areas.origin.options.length > 0, areas.origin)
-    check('las opciones NO se deducen de la ciudad (vienen del motor)',
-      areas.origin.options.every((o) => typeof o === 'string' && o.length > 0), areas.origin.options)
+    check('el destino también (el control lleva Málaga)',
+      areas.destination.status === 'AVAILABLE' && areas.destination.options.length > 0, areas.destination)
+    if (fake) {
+      // Contra el mock se puede afirmar de verdad: las opciones son EXACTAMENTE
+      // las que devolvió el servidor de mentira, sin alias ni transformación.
+      // Antes esta prueba pasaba con cualquier lista de cadenas no vacías.
+      check('las opciones son EXACTAMENTE las del motor (sin alias ni transformar)',
+        JSON.stringify(areas.origin.options) === JSON.stringify(['Almería', 'Almería Norte'])
+        && JSON.stringify(areas.destination.options) === JSON.stringify(['Málaga']),
+        [areas.origin.options, areas.destination.options])
+    } else {
+      // Contra el host real no se sabe qué opciones tocan: solo se comprueba
+      // que llegan como texto no vacío. Que no se deducen de la ciudad lo
+      // garantiza el código (MIRA no tiene tabla de áreas), no esta prueba.
+      check('las opciones llegan como cadenas no vacías',
+        areas.origin.options.every((o) => typeof o === 'string' && o.length > 0), areas.origin.options)
+    }
   }
 
   console.log('\nCaso de aceptación común · 04810 → 29001 · 60×80×60 · 280 kg paletizado')
-  const { response: ok } = await requestQuote({ shipmentRef: 'MIRA-ACEPTACION-001', ...CONTROL })
+  const controlRequest = { shipmentRef: 'MIRA-ACEPTACION-001', ...CONTROL }
+  const { response: ok } = await requestQuote(controlRequest)
   check('status OK', ok.status === 'OK', ok.status)
-  check('hay precio utilizable', hasUsablePrice(ok))
-  check('ECONOMY = 134,93', ok.recommended?.total === 134.93, ok.recommended?.total)
-  const premium = (ok.alternatives || []).find((a) => String(a.service).toUpperCase() === 'PREMIUM')
-  check('PREMIUM = 142,61', premium?.total === 142.61, ok.alternatives)
+  check('hay precio utilizable (total finito y con moneda del motor)', hasUsablePrice(ok))
+  if (fake) {
+    // Un mock que devuelve 134,93 solo demuestra que el mock devuelve 134,93:
+    // aquí se comprueba que el cliente ENVÍA el caso de control tal cual.
+    check('el cliente envía el caso de control TAL CUAL (eco profundo)',
+      JSON.stringify((ok as { echo?: unknown }).echo) === JSON.stringify(controlRequest), (ok as { echo?: unknown }).echo)
+    note('ECONOMY = 134,93 y PREMIUM = 142,61 quedan SIN VERIFICAR: solo contra el host real')
+  } else {
+    check('ECONOMY = 134,93', ok.recommended?.total === 134.93, ok.recommended?.total)
+    const premium = (ok.alternatives || []).find((a) => String(a.service).toUpperCase() === 'PREMIUM')
+    check('PREMIUM = 142,61', premium?.total === 142.61, ok.alternatives)
+  }
   check('traceId presente (y MIRA lo persiste)', !!ok.traceId, ok.traceId)
   check('dataVersion presente (y MIRA lo persiste)', !!ok.dataVersion, ok.dataVersion)
   if (String(ok.recommended?.provider || '').toUpperCase().includes('PALLETWAYS')) {

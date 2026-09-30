@@ -16,10 +16,17 @@ const SUGERENCIAS = [
   'Añade los medios y KPIs reales de la empresa',
 ]
 
+/**
+ * Lo que devuelve la reescritura. `lessonId` viene cuando se pidió recordar la
+ * instrucción y la ruta la guardó como lección (source 'improve').
+ */
+export type RewriteResult = { propuesta: string; avisos: string[]; lessonId?: string | null } | { error: string }
+
 export default function SectionRewriter({ titulo, brand, onRewrite, onAccept }: {
   titulo: string
   brand: string
-  onRewrite: (instruccion: string) => Promise<{ propuesta: string; avisos: string[] } | { error: string }>
+  /** opts.remember: la persona quiere que esta instrucción sea una lección de la marca. Quien llama la reenvía al body. */
+  onRewrite: (instruccion: string, opts: { remember: boolean }) => Promise<RewriteResult>
   onAccept: (contenido: string) => void
 }) {
   const [abierto, setAbierto] = useState(false)
@@ -28,17 +35,23 @@ export default function SectionRewriter({ titulo, brand, onRewrite, onAccept }: 
   const [propuesta, setPropuesta] = useState<string | null>(null)
   const [avisos, setAvisos] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
+  // «Recuérdalo»: la instrucción pasa a ser una lección que MIRA aplica en todas
+  // las memorias de la marca (Usoa quería que sus correcciones enseñen). Por
+  // defecto desmarcado: una corrección puntual de este párrafo no es una regla.
+  const [remember, setRemember] = useState(false)
+  const [lessonSaved, setLessonSaved] = useState(false)
 
   const pedir = async () => {
     if (!instruccion.trim()) return
-    setBusy(true); setError(null); setPropuesta(null); setAvisos([])
-    const res = await onRewrite(instruccion.trim())
+    setBusy(true); setError(null); setPropuesta(null); setAvisos([]); setLessonSaved(false)
+    const res = await onRewrite(instruccion.trim(), { remember })
     setBusy(false)
     if ('error' in res) { setError(res.error); return }
     setPropuesta(res.propuesta); setAvisos(res.avisos || [])
+    if (remember && res.lessonId) { setLessonSaved(true); setRemember(false) }
   }
 
-  const cerrar = () => { setAbierto(false); setPropuesta(null); setAvisos([]); setError(null); setInstruccion('') }
+  const cerrar = () => { setAbierto(false); setPropuesta(null); setAvisos([]); setError(null); setInstruccion(''); setRemember(false); setLessonSaved(false) }
 
   if (!abierto) {
     return (
@@ -69,12 +82,18 @@ export default function SectionRewriter({ titulo, brand, onRewrite, onAccept }: 
         </div>
       )}
 
+      <label className="mt-2 flex cursor-pointer items-center gap-2 text-[11px] text-ink-tertiary">
+        <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} disabled={busy || lessonSaved} className="h-3 w-3 accent-current" />
+        Remember this instruction for future proposals
+      </label>
+
       <div className="mt-2 flex flex-wrap items-center gap-2">
         <button onClick={pedir} disabled={busy || !instruccion.trim()}
           className="inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium text-white disabled:opacity-50" style={{ background: brand }}>
           {busy ? <><Loader2 size={11} className="animate-spin" /> Rewriting…</> : <><Sparkles size={11} /> {propuesta ? 'Try again' : 'Rewrite'}</>}
         </button>
         {error && <span className="text-[11px] text-red-400">{error}</span>}
+        {lessonSaved && <span className="inline-flex items-center gap-1 text-[11px] text-ink-muted"><Check size={11} /> Saved as a lesson</span>}
       </div>
 
       {propuesta && (

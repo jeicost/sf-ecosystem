@@ -15,8 +15,12 @@ export default function MissingList({ missing, locale }: { missing: MissingItem[
       </p>
       <ul className="space-y-0.5 text-[11px] text-amber-300/90">
         {missing.map((m, i) => (
-          <li key={`${m.reason}-${m.packageIndex ?? 'x'}-${i}`}>
-            · {t(`quotes.missing.${m.reason}`, locale).replace('{n}', String((m.packageIndex ?? 0) + 1))}
+          <li key={`${m.reason}-${m.packageIndex ?? 'x'}-${m.field ?? ''}-${i}`}>
+            {/* 'engine_required' trae el nombre del campo tal cual lo dice el
+                motor (p. ej. origin.ratingArea): se enseña sin traducir. */}
+            · {t(`quotes.missing.${m.reason}`, locale)
+              .replace('{n}', String((m.packageIndex ?? 0) + 1))
+              .replace('{field}', m.field ?? '')}
           </li>
         ))}
       </ul>

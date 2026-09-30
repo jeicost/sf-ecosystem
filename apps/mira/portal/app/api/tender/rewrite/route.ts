@@ -5,6 +5,7 @@ import { requireTool } from '@/lib/tools/access'
 import { errorMessage } from '@/lib/email-ops/auth'
 import { toJson, writable } from '@/lib/db-json'
 import { reescribirSeccion, type DocSection } from '@/lib/generation/tender-documento'
+import { addLesson, avisoLeccionLarga, loadTeaching, teachingBlockDetallado } from '@/lib/tenders/teaching'
 
 // "Mejora esta sección": el operador marca una y dice qué quiere.
 //
@@ -24,6 +25,8 @@ interface Body {
   documentId?: string
   sectionIndex?: number
   instruction?: string
+  /** true → la instrucción se guarda además como LECCIÓN de la marca (source 'improve'). */
+  remember?: boolean
 }
 
 export async function POST(req: NextRequest) {
@@ -43,6 +46,9 @@ export async function POST(req: NextRequest) {
     let secciones: DocSection[] = []
     let tituloDoc = ''
     let criterioTexto: string | null = null
+    // Instrucciones del expediente: solo cuando la sección vive en la memoria.
+    let instruccionesExpediente: string | null = null
+    let tenderIdParaLeccion: string | null = null
 
     if (body.target === 'documento') {
       if (typeof body.documentId !== 'string') return NextResponse.json({ error: 'documentId required' }, { status: 400 })
@@ -54,10 +60,12 @@ export async function POST(req: NextRequest) {
       tituloDoc = data.title as string
     } else {
       if (typeof body.tenderId !== 'string') return NextResponse.json({ error: 'tenderId required' }, { status: 400 })
-      const { data, error } = await db.from('tenders').select('id,title,memoria,criteria')
+      const { data, error } = await db.from('tenders').select('id,title,memoria,criteria,instructions')
         .eq('id', body.tenderId).eq('client_id', access.clientId).maybeSingle()
       if (error) throw error
       if (!data) return NextResponse.json({ error: 'not_found' }, { status: 404 })
+      instruccionesExpediente = data.instructions || null
+      tenderIdParaLeccion = data.id
       const memoria = (data.memoria || {}) as { titulo?: string; secciones?: DocSection[] }
       secciones = memoria.secciones || []
       tituloDoc = memoria.titulo || (data.title as string) || ''
@@ -72,14 +80,45 @@ export async function POST(req: NextRequest) {
     const seccion = secciones[i]
     if (!seccion) return NextResponse.json({ error: 'Esa sección ya no existe.' }, { status: 400 })
 
-    const { contenido, avisos } = await reescribirSeccion({
+    // Lo que la persona ha enseñado (guía + lecciones de la marca, instrucciones
+    // del expediente) entra también en la mejora: la instrucción puntual manda
+    // sobre todo ello, pero una mejora no puede ignorar las reglas de la casa.
+    const teaching = await loadTeaching(access.clientId)
+    const { text: bloque, recortes: recortesEnsenanza } = teachingBlockDetallado({ instructions: instruccionesExpediente, guide: teaching.guide, lessons: teaching.lessons })
+
+    const { contenido, avisos: avisosModelo } = await reescribirSeccion({
       clientId: access.clientId,
       seccion,
       instruccion,
       tituloDocumento: tituloDoc,
       otrasSecciones: secciones.filter((_, idx) => idx !== i).map((s) => ({ titulo: s.titulo })),
       criterioTexto,
+      teaching: bloque,
     })
+    // Lo que el modelo no vio de la enseñanza también se avisa aquí.
+    const avisos: string[] = [...avisosModelo, ...recortesEnsenanza]
+
+    // «Recuérdalo»: la instrucción pasa a ser una lección que MIRA aplica
+    // siempre (Usoa quería que sus propias correcciones enseñen). Solo tras una
+    // reescritura con éxito: una instrucción que falló no se aprende. Y una
+    // instrucción que no cabe en una lección (LESSON_MAX) NO se guarda a
+    // medias: antes se guardaban los primeros 1.000 caracteres de hasta 2.000
+    // y se confirmaba «Saved as a lesson».
+    let lessonId: string | null = null
+    if (body.remember === true) {
+      const demasiadoLarga = avisoLeccionLarga(instruccion)
+      if (demasiadoLarga) {
+        avisos.push(demasiadoLarga)
+      } else {
+        try {
+          const lesson = await addLesson({ clientId: access.clientId, text: instruccion, source: 'improve', tenderId: tenderIdParaLeccion, createdBy: access.userId })
+          lessonId = lesson?.id || null
+        } catch (err) {
+          // La mejora ya está hecha: un fallo al guardar la lección no la tira.
+          console.error('tender/rewrite: no se pudo guardar la lección', err)
+        }
+      }
+    }
 
     // La instrucción se guarda para saber qué se pidió la última vez; el texto
     // NO: lo acepta una persona. Una reescritura que se guarda sola es una
@@ -89,7 +128,8 @@ export async function POST(req: NextRequest) {
         .eq('id', body.documentId).eq('client_id', access.clientId)
     }
 
-    done({ target: body.target, seccion: i, instruccionChars: instruccion.length, avisos: avisos.length }); return NextResponse.json({ propuesta: contenido, avisos, anterior: seccion.contenido })
+    done({ target: body.target, seccion: i, instruccionChars: instruccion.length, avisos: avisos.length, lecciones: teaching.lessons.length, remember: body.remember === true, lessonSaved: !!lessonId })
+    return NextResponse.json({ propuesta: contenido, avisos, anterior: seccion.contenido, lessonId })
   } catch (error) {
     done?.error(500, errorMessage(error))
     console.error('tender/rewrite error:', error)

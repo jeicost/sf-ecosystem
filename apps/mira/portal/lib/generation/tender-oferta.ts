@@ -2,6 +2,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { extractJson } from '@/lib/generation/extract-json'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { teachingBlockDetallado, type Lesson } from '@/lib/tenders/teaching'
 
 // Oferta económica de licitaciones (D4 Entrega). El agente APRENDE de las
 // ofertas que el cliente ya presentó (tenders con `oferta` y status
@@ -96,9 +97,17 @@ export async function generateTenderOferta(opts: {
   clientId: string
   pliegoText: string
   tenderId?: string | null
+  /** Orientación libre de la persona para ESTE expediente (p. ej. «este lote no lo peleamos», «aquí el coste manda»). */
+  instructions?: string | null
+  /** Lecciones que MIRA aplica siempre. La guía de REDACCIÓN no entra aquí: no aplica a precios. */
+  lessons?: Lesson[] | null
 }): Promise<TenderOferta> {
   const { clientId, pliegoText, tenderId } = opts
   const [playbook, examples] = await Promise.all([getPlaybook(clientId), loadExamples(clientId, tenderId)])
+  // Las instrucciones de la persona MANDAN sobre el enfoque, pero no autorizan
+  // a inventar una base de precio: la doctrina de precios (playbook) sigue igual
+  // y toda línea sin base sigue saliendo a_confirmar.
+  const { text: teaching, recortes: recortesEnsenanza } = teachingBlockDetallado({ instructions: opts.instructions, lessons: opts.lessons })
 
   const prompt = `You are the pricing strategist preparing the ECONOMIC OFFER (Anexo de oferta económica) for a Spanish public tender. Work in Spanish.
 
@@ -129,6 +138,7 @@ Return ONLY a JSON object:
   "a_confirmar_global": ["decisiones que el equipo debe validar antes de presentar"]
 }
 
+${teaching ? `${teaching}\nThese instructions rule over the pricing approach (which lots or lines to fight, where cost must set the floor). They never justify a price without basis: such lines stay a_confirmar=true.\n` : ''}
 ${playbook ? `CLIENT PRICING PLAYBOOK (doctrina destilada de sus ofertas — prevalece sobre heurísticas genéricas):\n${playbook.slice(0, 6000)}\n` : ''}
 ${examples ? `PAST SUBMITTED OFFERS (imita sus % de baja por familia de servicio):\n${examples}\n` : ''}
 TENDER DOCUMENTS:
@@ -145,7 +155,11 @@ ${GROUNDING_CONTRACT}`
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
   const parsed = extractJson(text) as Partial<TenderOferta> | null
   if (!parsed || !Array.isArray(parsed.lineas)) throw new Error('No se pudo generar la oferta económica')
-  return validateOferta(parsed)
+  const oferta = validateOferta(parsed)
+  // Instrucciones o lecciones que no cabían en el prompt: el modelo vio la marca
+  // de recorte, la persona lo ve aquí.
+  oferta.avisos.push(...recortesEnsenanza)
+  return oferta
 }
 
 /** Entrada laxa: lo que venga del modelo o de una semilla; baja_pct y suma los pone TS. */

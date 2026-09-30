@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Loader2, Upload, Download, FileText, Trash2, ChevronDown, ChevronRight, Save, AlertTriangle } from 'lucide-react'
 import SectionRewriter from './SectionRewriter'
-import { uploadTenderFile } from '@/lib/tenders/upload-client'
+import { uploadTenderFile, removeTenderFile } from '@/lib/tenders/upload-client'
 import { trackAction } from '@/lib/activity-client'
 
 // Los documentos de la licitación que NO son la memoria del expediente.
@@ -69,17 +69,29 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
   const subir = async (file: File) => {
     setBusy('upload'); setError(null)
     trackAction('/licitaciones', 'subir-documento', clientId, { bytes: file.size, tipo: file.type })
+    // Fuera del try: si /documents/upload no llega (red) o cae con 5xx, el
+    // fichero ya subido se borra del bucket; si no, se quedaría huérfano.
+    let subidoPath: string | null = null
     try {
       const up = await uploadTenderFile(clientId, file)
       if ('error' in up) { setError(up.error); return }
+      subidoPath = up.path
       const res = await fetch('/api/tender/documents/upload', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientId, tenderId, path: up.path, filename: file.name, mime: file.type }),
       })
       const data = await res.json()
-      if (!res.ok) { setError(data.error || 'No se ha podido leer el documento'); return }
+      if (!res.ok) {
+        if (res.status >= 500) void removeTenderFile(clientId, subidoPath)
+        setError(data.error || 'No se ha podido leer el documento'); return
+      }
       await load()
       setAbierto(data.document.id)
+    } catch {
+      // Antes no había catch: un fallo de red se perdía como rechazo sin
+      // capturar y la persona no veía nada.
+      if (subidoPath) void removeTenderFile(clientId, subidoPath)
+      setError('Network error while uploading: check your connection and try again.')
     } finally {
       setBusy(null)
       if (fileRef.current) fileRef.current.value = ''
@@ -134,15 +146,16 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
     setSucio((s) => ({ ...s, [docId]: true }))
   }
 
-  const pedirMejora = (docId: string, i: number) => async (instruccion: string) => {
-    trackAction('/licitaciones', 'mejorar-seccion-documento', clientId, { seccion: i })
+  // opts.remember viaja al body: la ruta guarda la instrucción como lección de la marca.
+  const pedirMejora = (docId: string, i: number) => async (instruccion: string, opts?: { remember: boolean }) => {
+    trackAction('/licitaciones', 'mejorar-seccion-documento', clientId, { seccion: i, remember: !!opts?.remember })
     const res = await fetch('/api/tender/rewrite', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientId, target: 'documento', documentId: docId, sectionIndex: i, instruction: instruccion }),
+      body: JSON.stringify({ clientId, target: 'documento', documentId: docId, sectionIndex: i, instruction: instruccion, remember: !!opts?.remember }),
     })
     const data = await res.json()
     if (!res.ok) return { error: data.error || 'Error' }
-    return { propuesta: data.propuesta as string, avisos: (data.avisos || []) as string[] }
+    return { propuesta: data.propuesta as string, avisos: (data.avisos || []) as string[], lessonId: (data.lessonId ?? null) as string | null }
   }
 
   return (

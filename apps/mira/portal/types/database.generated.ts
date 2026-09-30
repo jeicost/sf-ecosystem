@@ -1,15 +1,3 @@
-// TIPOS GENERADOS DE LA BASE DE DATOS — no editar a mano.
-//
-// Hasta hoy (20-sep-2026) las consultas a Supabase viajaban como `any`: un
-// nombre de columna mal escrito o un campo que ya no existe no lo veía el
-// compilador, solo producción. Los dos informes de auditoría (el mío del
-// 16-sep y el AS-IS de Alessandro) lo marcaban como P0.
-//
-// Regenerar cuando cambie el esquema (solo lectura, no toca la BD):
-//   SUPABASE_ACCESS_TOKEN=<token> npx supabase gen types typescript \
-//     --project-id nnevhtfxuawexliwlbmh --schema public > types/database.generated.ts
-//
-// 96 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
 export type Json =
   | string
   | number
@@ -4097,20 +4085,74 @@ export type Database = {
           },
         ]
       }
+      tender_lessons: {
+        Row: {
+          active: boolean
+          client_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          source: string
+          tender_id: string | null
+          text: string
+        }
+        Insert: {
+          active?: boolean
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          source?: string
+          tender_id?: string | null
+          text: string
+        }
+        Update: {
+          active?: boolean
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          source?: string
+          tender_id?: string | null
+          text?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tender_lessons_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tender_lessons_tender_id_fkey"
+            columns: ["tender_id"]
+            isOneToOne: false
+            referencedRelation: "tenders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tender_settings: {
         Row: {
           client_id: string
+          guide: string | null
           playbook: string | null
+          template: Json
           updated_at: string
         }
         Insert: {
           client_id: string
+          guide?: string | null
           playbook?: string | null
+          template?: Json
           updated_at?: string
         }
         Update: {
           client_id?: string
+          guide?: string | null
           playbook?: string | null
+          template?: Json
           updated_at?: string
         }
         Relationships: [
@@ -4125,6 +4167,7 @@ export type Database = {
       }
       tenders: {
         Row: {
+          base_tender_id: string | null
           client_id: string
           created_at: string
           created_by: string | null
@@ -4132,6 +4175,7 @@ export type Database = {
           deadline: string | null
           expediente: string | null
           id: string
+          instructions: string | null
           memoria: Json | null
           oferta: Json | null
           organo: string | null
@@ -4142,6 +4186,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          base_tender_id?: string | null
           client_id: string
           created_at?: string
           created_by?: string | null
@@ -4149,6 +4194,7 @@ export type Database = {
           deadline?: string | null
           expediente?: string | null
           id?: string
+          instructions?: string | null
           memoria?: Json | null
           oferta?: Json | null
           organo?: string | null
@@ -4159,6 +4205,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          base_tender_id?: string | null
           client_id?: string
           created_at?: string
           created_by?: string | null
@@ -4166,6 +4213,7 @@ export type Database = {
           deadline?: string | null
           expediente?: string | null
           id?: string
+          instructions?: string | null
           memoria?: Json | null
           oferta?: Json | null
           organo?: string | null
@@ -4176,6 +4224,13 @@ export type Database = {
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "tenders_base_tender_id_fkey"
+            columns: ["base_tender_id"]
+            isOneToOne: false
+            referencedRelation: "tenders"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "tenders_client_id_fkey"
             columns: ["client_id"]

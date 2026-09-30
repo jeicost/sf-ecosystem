@@ -1,11 +1,11 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
-import { Loader2, Save, Calculator, MapPin, AlertTriangle, CheckCircle2, Copy } from 'lucide-react'
+import { Loader2, Save, Calculator, MapPin, AlertTriangle, CheckCircle2, Copy, RefreshCw } from 'lucide-react'
 import { clsx } from 'clsx'
 import { t, type Locale } from '@/lib/i18n'
-import type { QuotePackage, RatingAreasResult } from '@/lib/cotizador/contract'
+import { usableOption, unusableReason, type QuoteOption, type QuotePackage, type RatingAreasResult } from '@/lib/cotizador/contract'
 import type { QuoteShipment, StoredQuote } from '@/lib/cotizador/store'
-import { missingForQuote } from '@/lib/cotizador/readiness'
+import { missingForQuote, type MissingItem } from '@/lib/cotizador/readiness'
 import MissingList from './MissingList'
 import PackagesEditor from './PackagesEditor'
 
@@ -13,14 +13,22 @@ import PackagesEditor from './PackagesEditor'
 //
 // El orden de la pantalla es el orden del contrato, y el botón de pedir precio
 // no se enciende hasta que no falta nada. Un precio solo aparece cuando el
-// motor devuelve OK: si no, sale el código de error tal cual, sin adornar.
+// motor devuelve OK con total y MONEDA: si no, sale el código de error tal
+// cual, sin adornar. Y si el envío cambió después de cotizar (`stale`), el
+// precio viejo pierde el verde y se pide otro.
 
 const F = 'w-full rounded-lg border border-line bg-page px-2.5 py-1.5 text-sm text-ink outline-none'
 const LBL = 'flex flex-col gap-1 text-[11px] text-ink-tertiary'
 
-function money(v: unknown, currency?: string | null): string | null {
-  if (typeof v !== 'number' || !Number.isFinite(v)) return null
-  return `${v.toFixed(2).replace('.', ',')} ${currency || 'EUR'}`
+/**
+ * Importe enseñable de una opción, o null. La moneda sale de la opción y, si
+ * no, de la raíz de la respuesta; sin ninguna de las dos NO hay importe. Aquí
+ * había un `currency || 'EUR'` que convertía cualquier divisa en euros.
+ */
+function money(option: unknown, root: { currency?: string | null }): string | null {
+  const price = usableOption(option as QuoteOption | null, root)
+  if (!price) return null
+  return `${price.total.toFixed(2).replace('.', ',')} ${price.currency}`
 }
 
 export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: {
@@ -53,8 +61,19 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
   // Se recalcula en vivo con lo que hay en pantalla: el operador ve desaparecer
   // cada carencia según la rellena, sin tener que guardar para enterarse.
   const missing = missingForQuote(shipment)
+  // Lo que el motor nombró en su último MISSING_REQUIRED_DATA (p. ej. el área
+  // de tarificación, que MIRA no sabe comprobar). Se enseña junto a lo local
+  // pero no bloquea el botón: solo el motor puede confirmar que ya está.
+  const engineMissing = (Array.isArray(shipment.missing) ? shipment.missing : [])
+    .filter((m): m is MissingItem => !!m && m.reason === 'engine_required')
 
-  const save = async () => {
+  /**
+   * Persiste lo que hay en pantalla. Devuelve true si el servidor lo guardó:
+   * «Pedir precio» y «Consultar áreas» lo llaman ANTES de preguntar al motor,
+   * porque el servidor cotiza el envío GUARDADO; si el operador había editado
+   * sin guardar, el precio no era de lo que estaba viendo.
+   */
+  const save = async (): Promise<boolean> => {
     setBusy('save'); setMsg(null)
     const res = await fetch('/api/cotizador/shipments', {
       method: 'PATCH', headers: { 'Content-Type': 'application/json' },
@@ -71,9 +90,19 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
     if (res.ok) { setShipment(data.shipment); setMsg({ kind: 'ok', text: t('quotes.saved', locale) }) }
     else setMsg({ kind: 'error', text: data.error || 'Error' })
     setBusy(null)
+    return res.ok
+  }
+
+  /** Guarda y, si no se pudo, lo dice y NO se llama al motor (fail-closed). */
+  const saveBeforeAsking = async (): Promise<boolean> => {
+    if (await save()) return true
+    setMsg((m) => ({ kind: 'error', text: `${t('quotes.save.failed', locale)} ${m?.text ?? ''}`.trim() }))
+    return false
   }
 
   const askAreas = async () => {
+    // Primero se guarda: sin esto el motor resolvía áreas de los datos viejos.
+    if (!(await saveBeforeAsking())) return
     setBusy('areas'); setMsg(null); setAreas(null)
     const res = await fetch('/api/cotizador/rating-areas', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -86,13 +115,21 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
   }
 
   const ask = async () => {
+    // Primero se guarda: el precio tiene que ser de lo que el operador ve.
+    if (!(await saveBeforeAsking())) return
     setBusy('quote'); setMsg(null)
     const res = await fetch('/api/cotizador/quote', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clientId, shipmentId: shipment.id }),
     })
     const data = await res.json()
-    if (!res.ok) setMsg({ kind: 'error', text: data.message || data.error || 'Error' })
+    if (!res.ok) {
+      // 502 = sin veredicto: el envío no ha cambiado de estado y la tarjeta
+      // de resultado ofrece reintentar. OK_WITHOUT_PRICE es el motor
+      // contestando OK sin precio, no un motor caído: se dice tal cual.
+      setMsg({ kind: 'error', text: data.error !== 'engine_unavailable' ? (data.message || data.error || 'Error')
+        : data.code === 'OK_WITHOUT_PRICE' ? t('quotes.engine.ok-without-price', locale) : t('quotes.engine.unavailable', locale) })
+    }
     await load()
     setBusy(null)
   }
@@ -132,6 +169,10 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
   const last = quotes[0]
   const recommended = (last?.recommended ?? null) as Record<string, unknown> | null
   const alternatives = Array.isArray(last?.alternatives) ? (last!.alternatives as Record<string, unknown>[]) : []
+  // El precio solo se enseña en verde si es de ESTOS datos: OK, utilizable y
+  // no caducado. `stale` lo calcula el servidor comparando peticiones.
+  const lastPrice = last && last.status === 'OK' ? money(recommended, last) : null
+  const lastFresh = !!lastPrice && !last?.stale
 
   return (
     <div className="space-y-5">
@@ -191,7 +232,7 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
         </div>
 
         <div className="mt-4 space-y-3">
-          <MissingList missing={missing} locale={locale} />
+          <MissingList missing={[...missing, ...engineMissing]} locale={locale} />
           <div className="flex flex-wrap items-center gap-2">
             <button onClick={save} disabled={busy !== null}
               className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
@@ -219,33 +260,76 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
 
       {last && (
         <div className="rounded-2xl border border-line bg-card p-5">
-          {last.status === 'OK' && recommended ? (
-            <>
-              <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
-                <CheckCircle2 size={13} /> {t('quotes.result.recommended', locale)}
+          {last.status === 'error' ? (
+            // Sin veredicto: el motor no contestó (red, timeout, 5xx, no-JSON)
+            // o contestó OK sin precio utilizable (OK_WITHOUT_PRICE). No es un
+            // "no": el envío sigue como estaba y se puede volver a preguntar.
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="flex items-start gap-1.5 text-xs text-amber-400">
+                <AlertTriangle size={13} className="mt-0.5 shrink-0" />
+                <span>
+                  {last.error_code === 'OK_WITHOUT_PRICE' ? t('quotes.engine.ok-without-price', locale) : t('quotes.engine.unavailable', locale)}
+                  {' '}<code className="text-ink-muted">{last.error_code || ''}</code>
+                </span>
               </p>
+              <button onClick={ask} disabled={busy !== null || missing.length > 0 || !configured}
+                className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
+                {busy === 'quote' ? <Loader2 size={12} className="animate-spin" /> : <RefreshCw size={12} />} {t('quotes.engine.retry', locale)}
+              </button>
+            </div>
+          ) : lastPrice ? (
+            <>
+              {lastFresh ? (
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-emerald-400">
+                  <CheckCircle2 size={13} /> {t('quotes.result.recommended', locale)}
+                </p>
+              ) : (
+                <p className="mb-2 flex items-center gap-1.5 text-xs font-semibold text-amber-400">
+                  <AlertTriangle size={13} /> {t('quotes.result.stale', locale)}
+                </p>
+              )}
               <div className="flex flex-wrap items-baseline gap-3">
-                <span className="text-2xl font-semibold tabular-nums text-ink">
-                  {money(recommended.total, last.currency) ?? t('quotes.result.none', locale)}
+                <span className={clsx('text-2xl font-semibold tabular-nums', lastFresh ? 'text-ink' : 'text-ink-muted line-through')}>
+                  {lastPrice}
                 </span>
                 <span className="text-xs text-ink-secondary">
-                  {String(recommended.provider ?? '')} {String(recommended.service ?? '')}
+                  {String(recommended?.provider ?? '')} {String(recommended?.service ?? '')}
                 </span>
               </div>
               {alternatives.length > 0 && (
                 <div className="mt-4">
                   <p className="mb-1.5 text-[11px] uppercase tracking-wide text-ink-muted">{t('quotes.result.alternatives', locale)}</p>
                   <ul className="space-y-1">
-                    {alternatives.map((a, i) => (
-                      <li key={i} className="flex items-baseline justify-between gap-3 rounded-lg bg-surface px-2.5 py-1.5 text-xs">
-                        <span className="text-ink-secondary">{String(a.provider ?? '')} {String(a.service ?? '')}</span>
-                        <span className="tabular-nums text-ink">{money(a.total, last.currency) ?? '—'}</span>
-                      </li>
-                    ))}
+                    {alternatives.map((a, i) => {
+                      const amount = money(a, last)
+                      return (
+                        <li key={i} className="flex items-baseline justify-between gap-3 rounded-lg bg-surface px-2.5 py-1.5 text-xs">
+                          <span className="text-ink-secondary">{String(a.provider ?? '')} {String(a.service ?? '')}</span>
+                          {amount ? (
+                            <span className={clsx('tabular-nums', lastFresh ? 'text-ink' : 'text-ink-muted line-through')}>{amount}</span>
+                          ) : (
+                            // Sin moneda (ni en la opción ni en la raíz) no hay importe que
+                            // enseñar; con moneda pero sin total utilizable (null, texto,
+                            // cero) tampoco, y antes se culpaba a la moneda igualmente.
+                            <span className="text-[11px] text-amber-400">
+                              {unusableReason(a as QuoteOption, last) === 'no_currency'
+                                ? t('quotes.result.no-currency', locale) : t('quotes.result.none', locale)}
+                            </span>
+                          )}
+                        </li>
+                      )
+                    })}
                   </ul>
                 </div>
               )}
             </>
+          ) : last.status === 'OK' ? (
+            // OK sin precio utilizable (total nulo, no numérico o sin moneda):
+            // el contrato no se ha cumplido y MIRA no rellena el hueco.
+            <p className="flex items-start gap-1.5 text-xs text-amber-400">
+              <AlertTriangle size={13} className="mt-0.5 shrink-0" />
+              <span>{t('quotes.result.not-usable-ok', locale)} {recommended && usableOption(recommended as QuoteOption, last) === null && typeof recommended.total === 'number' ? t('quotes.result.no-currency', locale) : ''}</span>
+            </p>
           ) : (
             // Sin OK no hay precio: se enseña el código del motor tal cual.
             <p className="flex items-start gap-1.5 text-xs text-amber-400">
@@ -282,14 +366,16 @@ export default function ShipmentEditor({ clientId, shipmentId, locale, brand }: 
           <p className="mb-2 text-[11px] uppercase tracking-wide text-ink-muted">{t('quotes.history.title', locale)}</p>
           <ul className="space-y-1">
             {quotes.slice(1).map((q) => {
-              const rec = (q.recommended ?? null) as Record<string, unknown> | null
-              const total = q.status === 'OK' ? money(rec?.total, q.currency) : null
+              const total = q.status === 'OK' ? money(q.recommended, q) : null
+              const label = q.status === 'error'
+                ? `${t('quotes.history.error', locale)} · ${q.error_code || ''}`
+                : total
+                  ? (q.stale ? `${total} · ${t('quotes.history.stale', locale)}` : total)
+                  : `${t('quotes.history.not-usable', locale)} · ${q.error_code || q.status}`
               return (
                 <li key={q.id} className="flex flex-wrap items-baseline justify-between gap-2 rounded-lg bg-surface px-2.5 py-1.5 text-[11px]">
                   <span className="text-ink-tertiary">{new Date(q.created_at).toLocaleString(locale === 'es' ? 'es-ES' : 'en-GB')}</span>
-                  <span className={total ? 'tabular-nums text-ink' : 'text-ink-muted'}>
-                    {total ?? `${t('quotes.history.not-usable', locale)} · ${q.error_code || q.status}`}
-                  </span>
+                  <span className={total && !q.stale ? 'tabular-nums text-ink' : 'text-ink-muted'}>{label}</span>
                 </li>
               )
             })}

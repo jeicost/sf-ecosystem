@@ -3,12 +3,34 @@ import { trackRoute } from '@/lib/activity'
 import { requireTool } from '@/lib/tools/access'
 import { adminClient } from '@/lib/supabase'
 import { writable } from '@/lib/db-json'
+import { INSTRUCTIONS_STORE_CAP, isUuid } from '@/lib/tenders/teaching'
 
 // Expediente de licitación persistido: listar, guardar (crear o actualizar) y
 // borrar. Todo con service_role tras resolveRequestClient, que es quien acota el
 // cliente — nunca se confía en el client_id que venga del navegador para leer.
 
-const COLS = 'id,client_id,title,expediente,organo,deadline,source_url,criteria,memoria,oferta,status,created_at,updated_at'
+// instructions y base_tender_id (0084) viajan con el expediente completo, no con la lista.
+const COLS = 'id,client_id,title,expediente,organo,deadline,source_url,criteria,memoria,oferta,status,instructions,base_tender_id,created_at,updated_at'
+
+/**
+ * La memoria de partida tiene que existir, tener memoria y ser del MISMO
+ * cliente; si no, 400 con un motivo claro. Devuelve el valor a guardar
+ * (uuid o null) o un error. `null` y '' limpian la elección.
+ */
+async function resolveBaseTenderId(db: ReturnType<typeof adminClient>, clientId: string, raw: unknown, selfId: string | null): Promise<{ value: string | null } | { error: string }> {
+  if (raw === null || raw === undefined || raw === '') return { value: null }
+  if (!isUuid(raw)) return { error: 'base_tender_id no es un identificador válido' }
+  if (selfId && raw === selfId) return { error: 'Un expediente no puede partir de sí mismo' }
+  const { data, error } = await db.from('tenders').select('id,memoria').eq('id', raw).eq('client_id', clientId).maybeSingle()
+  if (error) throw error
+  if (!data) return { error: 'La memoria de partida no existe o no es de esta marca' }
+  if (!data.memoria) return { error: 'El expediente elegido como partida no tiene memoria' }
+  return { value: data.id }
+}
+
+/** Instrucciones del expediente: texto recortado, o null si viene vacío. */
+const cleanInstructions = (raw: unknown): string | null =>
+  typeof raw === 'string' && raw.trim() ? raw.trim().slice(0, INSTRUCTIONS_STORE_CAP) : null
 
 /** Listado del cliente activo. Con ?id= devuelve uno solo, con su pliego. */
 // Guarda de entitlement: hasta ahora estas rutas solo comprobaban que la persona
@@ -82,14 +104,27 @@ export async function POST(req: NextRequest) {
         if (k in body) fields[k] = body[k] ?? null
       }
       if (body.status) fields.status = body.status
+      // Lo que la persona enseña a MIRA sobre ESTE expediente (0084).
+      if ('instructions' in body) fields.instructions = cleanInstructions(body.instructions)
+      if ('base_tender_id' in body) {
+        const base = await resolveBaseTenderId(db, access.clientId, body.base_tender_id, String(body.id))
+        if ('error' in base) { done.error(400, base.error); return NextResponse.json({ error: base.error }, { status: 400 }) }
+        fields.base_tender_id = base.value
+      }
       // El filtro por client_id impide actualizar el expediente de otro cliente.
       const { data, error } = await db.from('tenders').update(writable(fields))
         .eq('id', body.id).eq('client_id', access.clientId).select(COLS).maybeSingle()
       if (error) throw error
       if (!data) return NextResponse.json({ error: 'No encontrada' }, { status: 404 })
-      done({ modo: 'update', status: body.status || null, memoria: 'memoria' in body, oferta: 'oferta' in body }); return NextResponse.json(data)
+      done({ modo: 'update', status: body.status || null, memoria: 'memoria' in body, oferta: 'oferta' in body, instructions: 'instructions' in body, base: 'base_tender_id' in body }); return NextResponse.json(data)
     }
 
+    let baseTenderId: string | null = null
+    if ('base_tender_id' in body) {
+      const base = await resolveBaseTenderId(db, access.clientId, body.base_tender_id, null)
+      if ('error' in base) { done.error(400, base.error); return NextResponse.json({ error: base.error }, { status: 400 }) }
+      baseTenderId = base.value
+    }
     const { data, error } = await db.from('tenders')
       .insert({
         title: (body.title || 'Licitación sin título').slice(0, 300),
@@ -102,6 +137,8 @@ export async function POST(req: NextRequest) {
         memoria: body.memoria ?? null,
         oferta: body.oferta ?? null,
         ...(body.status ? { status: body.status } : {}),
+        instructions: cleanInstructions(body.instructions),
+        base_tender_id: baseTenderId,
         client_id: access.clientId,
         created_by: access.userId,
       })
