@@ -25,11 +25,15 @@ const KIND_LABEL: Record<string, string> = {
   subido: 'Uploaded', anexo: 'Annex', memoria: 'Proposal', oferta: 'Bid',
 }
 
-export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload, onFileConsumed }: {
+export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload, onFileConsumed, refreshKey, openId }: {
   clientId: string; tenderId: string | null; brand: string
   /** Un fichero que llega de fuera (p. ej. una memoria subida por error como pliego). */
   fileToUpload?: File | null
   onFileConsumed?: () => void
+  /** Cambia cuando otro panel crea un documento: se recarga la lista. */
+  refreshKey?: number
+  /** Documento que debe quedar abierto tras recargar. */
+  openId?: string | null
 }) {
   const [docs, setDocs] = useState<TenderDoc[]>([])
   const [loading, setLoading] = useState(true)
@@ -49,7 +53,8 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
     if (res.ok) setDocs(data.documents || [])
     setLoading(false)
   }, [clientId, tenderId])
-  useEffect(() => { load() }, [load])
+  useEffect(() => { load() }, [load, refreshKey])
+  useEffect(() => { if (openId) { setAbierto(openId); document.getElementById('documentos')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) } }, [openId])
 
   // Fichero que llega desde el paso del pliego: se sube aquí y se baja hasta
   // el panel para que se vea dónde ha ido.

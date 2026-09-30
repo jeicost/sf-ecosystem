@@ -52,6 +52,14 @@ export default function LicitacionesPage() {
   // pregunta, en vez de extraer criterios de la propia propuesta (Usoa, 30-sep).
   const [pendingProposal, setPendingProposal] = useState<{ file: File; text: string; filename: string } | null>(null)
   const [docFile, setDocFile] = useState<File | null>(null)
+  // Apartado libre (Usoa, 30-sep): un encargo en texto, sin pliego, y MIRA
+  // produce el documento pedido leyendo todo el corpus. Va a Documentos.
+  const [brief, setBrief] = useState('')
+  const [briefBusy, setBriefBusy] = useState(false)
+  const [briefAvisos, setBriefAvisos] = useState<string[]>([])
+  const [docsRefresh, setDocsRefresh] = useState(0)
+  const [docOpenId, setDocOpenId] = useState<string | null>(null)
+  const [rowStatusBusy, setRowStatusBusy] = useState<string | null>(null)
   const [opening, setOpening] = useState<string | null>(null)
   const contenidoRef = useRef<HTMLDivElement>(null)
   const [corpus, setCorpus] = useState<{ documentos: number; memoriasPresentadas: number } | null>(null)
@@ -309,6 +317,42 @@ export default function LicitacionesPage() {
     } finally { setExporting(false) }
   }
 
+  /** Encargo libre → documento en Documentos. Tarda uno o dos minutos. */
+  const generarDesdeEncargo = async (texto: string, filename?: string) => {
+    if (!clientId || texto.trim().length < 80) return
+    setBriefBusy(true); setError(null); setBriefAvisos([])
+    trackAction('/licitaciones', 'generar-desde-encargo', clientId, { chars: texto.length })
+    try {
+      const res = await fetch('/api/tender/libre', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, brief: texto, filename, tenderId: currentId }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'Could not generate the document'); return }
+      setBriefAvisos(data.avisos || [])
+      setBrief('')
+      setDocsRefresh((n) => n + 1)
+      setDocOpenId(data.document.id)
+    } catch { setError('Network error') } finally { setBriefBusy(false) }
+  }
+
+  // Marcar el estado desde la LISTA, sin abrir el expediente. Usoa tuvo que
+  // abrir nueve memorias una a una, con la página subiendo y bajando cada vez,
+  // para marcarlas como ganadas.
+  const setRowStatus = async (id: string, status: string) => {
+    if (!clientId) return
+    setRowStatusBusy(id)
+    trackAction('/licitaciones', 'marcar-estado-lista', clientId, { status })
+    try {
+      const res = await fetch('/api/tender/saved', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id, clientId, status }),
+      })
+      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error || 'Could not save the status'); return }
+      await loadList()
+    } finally { setRowStatusBusy(null) }
+  }
+
   /** Edición a mano de una sección. La memoria generada es un borrador, no un acta. */
   const editSection = (i: number, patch: Partial<Section>) => {
     if (!memoria?.secciones) return
@@ -457,9 +501,9 @@ export default function LicitacionesPage() {
             {saved.map((t) => {
               const d = daysLeft(t.deadline)
               return (
-                <button key={t.id} onClick={() => open(t.id)}
-                  className={clsx('flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors',
+                <div key={t.id} className={clsx('flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors',
                     t.id === currentId ? 'border-line bg-page' : 'border-line-subtle hover:bg-page')}>
+                <button onClick={() => open(t.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
                   {opening === t.id
                     ? <Loader2 size={12} className="shrink-0 animate-spin text-ink-muted" />
                     : <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: STATUS_COLOR[t.status] || '#94A3B8' }} />}
@@ -474,6 +518,17 @@ export default function LicitacionesPage() {
                     </span>
                   </span>
                 </button>
+                {/* Estado desde la lista: Won/Lost sin abrir la memoria. */}
+                {rowStatusBusy === t.id
+                  ? <Loader2 size={12} className="shrink-0 animate-spin text-ink-muted" />
+                  : (
+                    <select value={t.status} onChange={(e) => setRowStatus(t.id, e.target.value)} aria-label="Status"
+                      className="shrink-0 rounded-lg border border-line-subtle bg-surface px-1.5 py-1 text-[11px] text-ink-secondary outline-none"
+                      style={{ color: STATUS_COLOR[t.status] || undefined }}>
+                      {Object.keys(STATUS_LABEL).map((st) => <option key={st} value={st}>{STATUS_LABEL[st]}</option>)}
+                    </select>
+                  )}
+                </div>
               )
             })}
           </div>
@@ -606,9 +661,14 @@ export default function LicitacionesPage() {
           <p className="text-xs font-medium text-amber-400">“{pendingProposal.filename}” looks like a proposal, not a tender document.</p>
           <p className="mt-1 text-[11px] text-amber-300/90">A tender (pliego) is what the public body publishes. If this is your own proposal or a draft you want to improve, it belongs in Documents.</p>
           <div className="mt-3 flex flex-wrap gap-2">
+            <button onClick={() => { const t = pendingProposal.text; const f = pendingProposal.filename; setPendingProposal(null); void generarDesdeEncargo(t, f) }}
+              disabled={briefBusy}
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50" style={{ background: brand }}>
+              {briefBusy ? 'Generating…' : 'It is a request: generate the document it asks for'}
+            </button>
             <button onClick={() => { setDocFile(pendingProposal.file); setPendingProposal(null); trackAction('/licitaciones', 'memoria-a-documentos', clientId) }}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium text-white" style={{ background: brand }}>
-              Send it to Documents to improve it
+              className="rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink">
+              It is my own draft: send it to Documents to improve it
             </button>
             <button onClick={() => { setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${pendingProposal.filename} ---\n${pendingProposal.text}` : pendingProposal.text)); setDirty(true); setPendingProposal(null) }}
               className="rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink">
@@ -617,6 +677,33 @@ export default function LicitacionesPage() {
           </div>
         </div>
       )}
+
+      {/* Apartado libre: sin pliego. Un cliente pide «tarifas y una memoria de
+          vuestra empresa» y no hay pliego que subir porque no existe. */}
+      <div className="mb-4 rounded-2xl border border-line bg-surface p-5">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><Sparkles size={15} style={{ color: brand }} /> No tender? Describe what you need</h2>
+          <span className="text-[11px] text-ink-muted">{brief.trim().length > 0 ? `${brief.trim().length} chars` : ''}</span>
+        </div>
+        <p className="mb-2 text-[11px] text-ink-tertiary">
+          Paste the request as it reached you: who is asking, what service, what document they expect. MIRA reads everything the company has — documents, past proposals — and writes it. If they ask for prices, it leaves the price fields for the commercial team: it never invents a rate.
+        </p>
+        <textarea value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
+          placeholder="e.g. A Facility Services company is bidding for a large client and will subcontract transport and distribution to us. They ask for our rates and a technical proposal of our company covering local, national and international services…"
+          className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
+        <div className="mt-3 flex flex-wrap items-center gap-2">
+          <button onClick={() => generarDesdeEncargo(brief)} disabled={briefBusy || brief.trim().length < 80 || !clientId}
+            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+            {briefBusy ? <><Loader2 size={16} className="animate-spin" /> Writing (1–2 min)…</> : <><Sparkles size={16} /> Generate the document</>}
+          </button>
+          <span className="text-[11px] text-ink-muted">It appears in Documents below, editable and downloadable as Word.</span>
+        </div>
+        {briefAvisos.length > 0 && (
+          <ul className="mt-3 space-y-1">
+            {briefAvisos.map((a, i) => <li key={i} className="rounded-lg bg-amber-500/10 px-2.5 py-1.5 text-[11px] text-amber-400">{a}</li>)}
+          </ul>
+        )}
+      </div>
 
       {/* Aquí empieza el contenido del expediente: es adonde se baja al abrir uno. */}
       <div ref={contenidoRef} />
@@ -906,7 +993,7 @@ export default function LicitacionesPage() {
       {/* Documentos de la licitación: los que Usoa sube para trabajarlos y los
           anexos que acompañan a la oferta. Van al final porque se usan DESPUÉS
           de tener criterios y memoria. */}
-      {clientId && <DocumentsPanel clientId={clientId} tenderId={currentId} brand={brand} fileToUpload={docFile} onFileConsumed={() => setDocFile(null)} />}
+      {clientId && <DocumentsPanel clientId={clientId} tenderId={currentId} brand={brand} fileToUpload={docFile} onFileConsumed={() => setDocFile(null)} refreshKey={docsRefresh} openId={docOpenId} />}
 
     </div>
   )

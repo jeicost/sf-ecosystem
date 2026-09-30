@@ -99,7 +99,7 @@ ${GROUNDING_CONTRACT}`
  * sección. Es el "aprender de las que hemos hecho": la siguiente memoria
  * hereda el esqueleto y el criterio de las anteriores, no solo el corpus.
  */
-async function loadMemoriaExamples(clientId: string, excludeTenderId?: string | null): Promise<{ text: string; organos: string[] }> {
+export async function loadMemoriaExamples(clientId: string, excludeTenderId?: string | null): Promise<{ text: string; organos: string[] }> {
   const db = adminClient()
   const { data } = await db
     .from('tenders')
@@ -138,7 +138,7 @@ async function loadMemoriaExamples(clientId: string, excludeTenderId?: string | 
  * Nombres de órganos de los ejemplos que se han colado en la memoria nueva. El
  * modelo recibe la orden de no usarlos; TypeScript COMPRUEBA que la cumplió.
  */
-function organosColados(memoria: unknown, organos: string[], pliegoText: string): string[] {
+export function organosColados(memoria: unknown, organos: string[], pliegoText: string): string[] {
   const texto = JSON.stringify(memoria || '').toLowerCase()
   const pliego = pliegoText.toLowerCase()
   return organos.filter((o) => {
