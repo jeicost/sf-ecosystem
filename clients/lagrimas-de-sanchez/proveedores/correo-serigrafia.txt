@@ -46,10 +46,10 @@ preferimos hacerla la primera:
   ¿Cuál es el trazo mínimo que garantizan con su malla sobre vidrio?
 
 Lo preguntamos porque nuestro diseño está medido. Hemos simulado pieza a
-pieza qué sobrevive a la impresión en dos escenarios: con 0,35 mm el arte
-entra tal cual, y con 0,8 mm tenemos veintiséis piezas que redibujar
-antes del fotolito. Preferimos rehacerlas ahora que descubrirlo con las
-pantallas hechas.
+pieza qué sobrevive a la impresión, en dos escenarios: con un mínimo de
+0,35 mm nos entran 61 de las 67 piezas; con 0,8 mm hay veintiséis más
+que tendríamos que redibujar antes del fotolito. Preferimos rehacerlas
+ahora que descubrirlo con las pantallas hechas.
 
 Va adjunta la especificación técnica completa: el envase con sus medidas
 (Estal SM BG MG Essentia, magnum, antico), la decoración, el desarrollo
