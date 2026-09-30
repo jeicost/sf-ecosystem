@@ -48,6 +48,12 @@ export default function LicitacionesPage() {
   // Subir el pliego en vez de pegarlo, editar la memoria dentro del módulo y
   // sacarla en Word: los tres pasos que antes había que hacer fuera.
   const [reading, setReading] = useState(false)
+  // Un fichero subido como pliego que parece una MEMORIA: se retiene y se
+  // pregunta, en vez de extraer criterios de la propia propuesta (Usoa, 30-sep).
+  const [pendingProposal, setPendingProposal] = useState<{ file: File; text: string; filename: string } | null>(null)
+  const [docFile, setDocFile] = useState<File | null>(null)
+  const [opening, setOpening] = useState<string | null>(null)
+  const contenidoRef = useRef<HTMLDivElement>(null)
   const [corpus, setCorpus] = useState<{ documentos: number; memoriasPresentadas: number } | null>(null)
   const [exporting, setExporting] = useState(false)
   const [editing, setEditing] = useState(false)
@@ -158,15 +164,18 @@ export default function LicitacionesPage() {
     if (!clientId) return
     if (id !== currentId && !confirmDiscard()) return
     trackAction('/licitaciones', 'abrir-expediente', clientId, { id })
-    setError(null)
+    setError(null); setOpening(id)
     try {
       const res = await fetch(`/api/tender/saved?id=${id}&clientId=${clientId}`)
       if (!res.ok) { setError('Could not open'); return }
       const t = await res.json()
       setCurrentId(t.id); setPliego(t.pliego_text || '')
       setCriteria(t.criteria || null); setMemoria(t.memoria || null); setOferta(t.oferta || null); setSavedAt(null); setDirty(false)
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    } catch { setError('Network error') }
+      // Antes saltaba ARRIBA y la memoria quedaba abajo, fuera de la vista:
+      // Usoa pulsó la misma fila siete veces creyendo que no abría. Ahora se
+      // baja hasta el contenido del expediente.
+      setTimeout(() => contenidoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80)
+    } catch { setError('Network error') } finally { setOpening(null) }
   }
 
   const startNew = () => {
@@ -214,6 +223,11 @@ export default function LicitacionesPage() {
       })
       const data = await res.json()
       if (!res.ok) { setError(data.error || 'No se ha podido leer el fichero'); return }
+      if (data.looksLikeProposal) {
+        trackAction('/licitaciones', 'pliego-parece-memoria', clientId, { filename: data.filename })
+        setPendingProposal({ file, text: data.text, filename: data.filename })
+        return
+      }
       // Se AÑADE, no se pisa: un expediente lleva PCAP y PPT en ficheros
       // distintos y los dos hacen falta para sacar los criterios.
       setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${data.filename} ---\n${data.text}` : data.text))
@@ -446,7 +460,9 @@ export default function LicitacionesPage() {
                 <button key={t.id} onClick={() => open(t.id)}
                   className={clsx('flex w-full items-center gap-3 rounded-xl border px-3 py-2.5 text-left transition-colors',
                     t.id === currentId ? 'border-line bg-page' : 'border-line-subtle hover:bg-page')}>
-                  <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: STATUS_COLOR[t.status] || '#94A3B8' }} />
+                  {opening === t.id
+                    ? <Loader2 size={12} className="shrink-0 animate-spin text-ink-muted" />
+                    : <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: STATUS_COLOR[t.status] || '#94A3B8' }} />}
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm text-ink">{t.title}</span>
                     <span className="block text-[11px] text-ink-muted">
@@ -585,6 +601,26 @@ export default function LicitacionesPage() {
         </div>
       )}
 
+      {pendingProposal && (
+        <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
+          <p className="text-xs font-medium text-amber-400">“{pendingProposal.filename}” looks like a proposal, not a tender document.</p>
+          <p className="mt-1 text-[11px] text-amber-300/90">A tender (pliego) is what the public body publishes. If this is your own proposal or a draft you want to improve, it belongs in Documents.</p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <button onClick={() => { setDocFile(pendingProposal.file); setPendingProposal(null); trackAction('/licitaciones', 'memoria-a-documentos', clientId) }}
+              className="rounded-lg px-3 py-1.5 text-xs font-medium text-white" style={{ background: brand }}>
+              Send it to Documents to improve it
+            </button>
+            <button onClick={() => { setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${pendingProposal.filename} ---\n${pendingProposal.text}` : pendingProposal.text)); setDirty(true); setPendingProposal(null) }}
+              className="rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink">
+              No, it is the tender: use it
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Aquí empieza el contenido del expediente: es adonde se baja al abrir uno. */}
+      <div ref={contenidoRef} />
+
       {/* Paso 1: pliego */}
       <div className="rounded-2xl border border-line bg-surface p-5">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
@@ -603,6 +639,7 @@ export default function LicitacionesPage() {
           placeholder="Upload the tender PDF, or paste its text here…"
           className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
         <p className="mt-1.5 text-[11px] text-ink-muted">Upload each document one by one (PCAP and PPT): they add up, they do not replace each other. Scanned PDFs have no text — those still need pasting.</p>
+        <p className="mt-1 text-[11px] text-ink-muted">Want to improve a proposal you already have instead? <a href="#documentos" className="text-ink-secondary underline underline-offset-2 hover:text-ink">Upload it in Documents ↓</a></p>
         <button onClick={extract} disabled={pliego.trim().length < 200 || step !== 'idle' || !clientId}
           className="mt-3 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
           {step === 'extracting' ? <><Loader2 size={16} className="animate-spin" /> Analysing…</> : <><ListChecks size={16} /> Extract criteria</>}
@@ -859,7 +896,7 @@ export default function LicitacionesPage() {
       {/* Documentos de la licitación: los que Usoa sube para trabajarlos y los
           anexos que acompañan a la oferta. Van al final porque se usan DESPUÉS
           de tener criterios y memoria. */}
-      {clientId && <DocumentsPanel clientId={clientId} tenderId={currentId} brand={brand} />}
+      {clientId && <DocumentsPanel clientId={clientId} tenderId={currentId} brand={brand} fileToUpload={docFile} onFileConsumed={() => setDocFile(null)} />}
 
     </div>
   )

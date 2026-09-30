@@ -37,7 +37,13 @@ export async function POST(req: NextRequest) {
         chars: clean.length,
       }, { status: 422 })
     }
-    done({ chars: clean.length, filename: name }); return NextResponse.json({ text: clean, chars: clean.length, filename: name })
+    // Usoa subió «BORRADOR MEMORIA TECNICA.pdf» aquí y extrajo criterios de su
+    // propia memoria. Un fichero que se presenta como memoria y no tiene traza
+    // de pliego se marca para que la pantalla pregunte antes de seguir.
+    const cabecera = clean.slice(0, 3000).toUpperCase()
+    const looksLikeProposal = /MEMORIA\s*T[ÉE]CNICA|PROPUESTA\s*T[ÉE]CNICA|OFERTA\s*T[ÉE]CNICA/.test(cabecera)
+      && !/PLIEGO|CL[ÁA]USULA|CRITERIOS DE ADJUDICACI[ÓO]N|PRESCRIPCIONES/.test(cabecera)
+    done({ chars: clean.length, filename: name, looksLikeProposal }); return NextResponse.json({ text: clean, chars: clean.length, filename: name, looksLikeProposal })
   } catch (error) {
     done?.error(500, errorMessage(error))
     if (error instanceof UnsupportedFileError) return NextResponse.json({ error: error.message }, { status: 415 })

@@ -25,8 +25,11 @@ const KIND_LABEL: Record<string, string> = {
   subido: 'Uploaded', anexo: 'Annex', memoria: 'Proposal', oferta: 'Bid',
 }
 
-export default function DocumentsPanel({ clientId, tenderId, brand }: {
+export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload, onFileConsumed }: {
   clientId: string; tenderId: string | null; brand: string
+  /** Un fichero que llega de fuera (p. ej. una memoria subida por error como pliego). */
+  fileToUpload?: File | null
+  onFileConsumed?: () => void
 }) {
   const [docs, setDocs] = useState<TenderDoc[]>([])
   const [loading, setLoading] = useState(true)
@@ -47,6 +50,16 @@ export default function DocumentsPanel({ clientId, tenderId, brand }: {
     setLoading(false)
   }, [clientId, tenderId])
   useEffect(() => { load() }, [load])
+
+  // Fichero que llega desde el paso del pliego: se sube aquí y se baja hasta
+  // el panel para que se vea dónde ha ido.
+  useEffect(() => {
+    if (!fileToUpload) return
+    onFileConsumed?.()
+    void subir(fileToUpload)
+    document.getElementById('documentos')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fileToUpload])
 
   const subir = async (file: File) => {
     setBusy('upload'); setError(null)
@@ -128,7 +141,7 @@ export default function DocumentsPanel({ clientId, tenderId, brand }: {
   }
 
   return (
-    <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
+    <div id="documentos" className="mt-6 scroll-mt-6 rounded-2xl border border-line bg-surface p-5">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
           <FileText size={15} style={{ color: brand }} /> Documents
