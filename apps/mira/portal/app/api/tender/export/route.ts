@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { trackRoute } from '@/lib/activity'
 import { adminClient } from '@/lib/supabase'
 import { requireTool } from '@/lib/tools/access'
 import { errorMessage } from '@/lib/email-ops/auth'
@@ -49,10 +50,12 @@ const eur = (n: number | null | undefined) =>
   typeof n === 'number' && Number.isFinite(n) ? `${n.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} €` : '—'
 
 export async function POST(req: NextRequest) {
+  let done: ReturnType<typeof trackRoute> | null = null
   try {
     const body = (await req.json().catch(() => ({}))) as { clientId?: string; tenderId?: string; documentId?: string; kind?: 'memoria' | 'oferta' }
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    done = trackRoute('tender/export', access)
 
     const db = adminClient()
     const {
@@ -192,7 +195,7 @@ export async function POST(req: NextRequest) {
     })
 
     const buffer = await Packer.toBuffer(doc)
-    return new NextResponse(new Uint8Array(buffer), {
+    done({ kind: body.documentId ? 'documento' : (body.kind || 'memoria'), bytes: buffer.length }); return new NextResponse(new Uint8Array(buffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
         'Content-Disposition': disposition(sanear(nombre)),
@@ -200,6 +203,7 @@ export async function POST(req: NextRequest) {
       },
     })
   } catch (error) {
+    done?.error(500, errorMessage(error))
     console.error('tender/export error:', error)
     return NextResponse.json({ error: errorMessage(error) }, { status: 500 })
   }

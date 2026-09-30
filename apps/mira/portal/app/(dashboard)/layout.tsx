@@ -18,6 +18,7 @@ import { createClient } from '@/lib/supabase'
 import { getTheme, setTheme, initTheme, type Theme } from '@/lib/theme'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
+import { trackPage } from '@/lib/activity-client'
 // Removed import of hardcoded CLIENT_ID - now using dynamic activeClient
 // import { CLIENT_ID } from '@/lib/constants'
 import { Home, BookOpen, Brain, Zap, Layers, Menu, X, Archive, ClipboardList, CreditCard, Wrench } from 'lucide-react'
@@ -26,6 +27,10 @@ import { ErrorBoundary } from '@/components/error-boundary'
 
 function SidebarContent() {
   const path = usePathname()
+  // Seguimiento: una línea por página abierta, con la marca activa. Es lo que
+  // faltaba el 30-sep para saber por dónde anduvo Usoa en su primera sesión.
+  const { activeClient: clientForTracking } = useActiveClient()
+  useEffect(() => { if (path) trackPage(path, clientForTracking?.id) }, [path, clientForTracking?.id])
   const router = useRouter()
   const { activeClient } = useActiveClient()
   const { locale } = useLocaleContext()

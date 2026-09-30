@@ -1,7 +1,7 @@
 # Especificación técnica de serigrafía
 ## Lágrimas de Sánchez · magnum 150 cl · 1 tinta blanca sobre vidrio antico
 
-Documento para el taller. Rev. 1 · 29 de septiembre de 2026.
+Documento para el taller. Rev. 2 · 30 de septiembre de 2026.
 Contacto: Carlos Jacoste · Aranjuez, Madrid · lagrimasdesanchez.com
 
 ---
@@ -99,9 +99,9 @@ Y lo hacemos en **dos escenarios**, porque el suelo lo ponen ustedes:
 
 | Escenario | Trazo mínimo | Resultado |
 |---|---|---|
-| **Estricto** | 0,80 mm | 22 piezas limpias · 15 con riesgo |
-| **Malla fina** | 0,35 mm | 26 piezas más entran sin problema |
-| **Rotas en ambos** | — | **5 piezas**, y las estamos rehaciendo |
+| **Estricto** | 0,80 mm | 21 piezas limpias · 14 con riesgo asumible |
+| **Malla fina** | 0,35 mm | 26 piezas más entran sin problema — 61 de 67 en total |
+| **Rotas en ambos** | — | **6 piezas**, y las estamos rehaciendo |
 
 **Lo que esto significa para el presupuesto y para el arte:** si su malla
 garantiza ≤0,5 mm, el arte entra tal cual. Si su suelo real es 0,8 mm,

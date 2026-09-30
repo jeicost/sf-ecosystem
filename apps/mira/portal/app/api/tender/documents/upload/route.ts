@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { trackRoute } from '@/lib/activity'
 import { adminClient } from '@/lib/supabase'
 import { requireTool } from '@/lib/tools/access'
 import { errorMessage } from '@/lib/email-ops/auth'
@@ -20,12 +21,14 @@ import { COLS } from '../route'
 export const maxDuration = 300
 
 export async function POST(req: NextRequest) {
+  let done: ReturnType<typeof trackRoute> | null = null
   try {
     // El fichero ya está en el almacenamiento (subida directa desde el
     // navegador: Vercel corta en ~4,5 MB). Aquí solo llega su ruta.
     const body = (await req.json().catch(() => ({}))) as { clientId?: string; path?: string; filename?: string; mime?: string; tenderId?: string | null }
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    done = trackRoute('tender/documents/upload', access)
     if (typeof body.path !== 'string') return NextResponse.json({ error: 'path required' }, { status: 400 })
 
     const name = String(body.filename || 'documento')
@@ -51,8 +54,9 @@ export async function POST(req: NextRequest) {
       updated_by: access.userId,
     })).select(COLS).single()
     if (error) throw error
-    return NextResponse.json({ document: data, secciones: secciones.length })
+    done({ secciones: secciones.length, chars: limpio.length, filename: name }); return NextResponse.json({ document: data, secciones: secciones.length })
   } catch (error) {
+    done?.error(500, errorMessage(error))
     if (error instanceof UnsupportedFileError) return NextResponse.json({ error: error.message }, { status: 415 })
     const status = (error as { status?: number }).status
     if (status === 403 || status === 404) return NextResponse.json({ error: (error as Error).message }, { status })

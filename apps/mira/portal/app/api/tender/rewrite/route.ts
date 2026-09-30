@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { trackRoute } from '@/lib/activity'
 import { adminClient } from '@/lib/supabase'
 import { requireTool } from '@/lib/tools/access'
 import { errorMessage } from '@/lib/email-ops/auth'
@@ -26,10 +27,12 @@ interface Body {
 }
 
 export async function POST(req: NextRequest) {
+  let done: ReturnType<typeof trackRoute> | null = null
   try {
     const body = (await req.json().catch(() => ({}))) as Body
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    done = trackRoute('tender/rewrite', access)
 
     const instruccion = String(body.instruction || '').trim().slice(0, 2000)
     if (!instruccion) return NextResponse.json({ error: 'Dime qué quieres cambiar en esa sección.' }, { status: 400 })
@@ -86,8 +89,9 @@ export async function POST(req: NextRequest) {
         .eq('id', body.documentId).eq('client_id', access.clientId)
     }
 
-    return NextResponse.json({ propuesta: contenido, avisos, anterior: seccion.contenido })
+    done({ target: body.target, seccion: i, instruccionChars: instruccion.length, avisos: avisos.length }); return NextResponse.json({ propuesta: contenido, avisos, anterior: seccion.contenido })
   } catch (error) {
+    done?.error(500, errorMessage(error))
     console.error('tender/rewrite error:', error)
     return NextResponse.json({ error: errorMessage(error) }, { status: 500 })
   }

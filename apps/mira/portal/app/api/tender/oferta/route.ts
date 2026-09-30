@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { trackRoute } from '@/lib/activity'
 import { requireTool } from '@/lib/tools/access'
 import { adminClient } from '@/lib/supabase'
 import { generateTenderOferta } from '@/lib/generation/tender-oferta'
@@ -10,12 +11,14 @@ import { toJson } from '@/lib/db-json'
 export const maxDuration = 300
 
 export async function POST(req: NextRequest) {
+  let done: ReturnType<typeof trackRoute> | null = null
   try {
     const body = await req.json()
     const pliego = typeof body.pliego === 'string' ? body.pliego.trim() : ''
     if (pliego.length < 200) return NextResponse.json({ error: 'Falta el pliego (pega PCAP + PPT con las tablas de precios)' }, { status: 400 })
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    done = trackRoute('tender/oferta', access)
 
     const tenderId = typeof body.tenderId === 'string' ? body.tenderId : null
     const oferta = await generateTenderOferta({ clientId: access.clientId, pliegoText: pliego, tenderId })
@@ -26,8 +29,9 @@ export async function POST(req: NextRequest) {
         .update({ oferta: toJson(oferta), updated_at: new Date().toISOString() })
         .eq('id', tenderId).eq('client_id', access.clientId)
     }
-    return NextResponse.json(oferta)
+    done({ pliegoChars: pliego.length }); return NextResponse.json(oferta)
   } catch (error) {
+    done?.error(500, error instanceof Error ? error.message : 'Generation failed')
     console.error('tender/oferta error:', error)
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Generation failed' }, { status: 500 })
   }

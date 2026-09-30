@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { trackRoute } from '@/lib/activity'
 import { requireTool } from '@/lib/tools/access'
 import { errorMessage } from '@/lib/email-ops/auth'
 import { takeTenderUpload, extractTextFromFile, UnsupportedFileError } from '@/lib/tenders/upload'
@@ -16,10 +17,12 @@ import { takeTenderUpload, extractTextFromFile, UnsupportedFileError } from '@/l
 export const maxDuration = 120
 
 export async function POST(req: NextRequest) {
+  let done: ReturnType<typeof trackRoute> | null = null
   try {
     const body = (await req.json().catch(() => ({}))) as { clientId?: string; path?: string; filename?: string; mime?: string }
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    done = trackRoute('tender/pliego', access)
     if (typeof body.path !== 'string') return NextResponse.json({ error: 'path required' }, { status: 400 })
 
     const name = String(body.filename || 'pliego')
@@ -34,8 +37,9 @@ export async function POST(req: NextRequest) {
         chars: clean.length,
       }, { status: 422 })
     }
-    return NextResponse.json({ text: clean, chars: clean.length, filename: name })
+    done({ chars: clean.length, filename: name }); return NextResponse.json({ text: clean, chars: clean.length, filename: name })
   } catch (error) {
+    done?.error(500, errorMessage(error))
     if (error instanceof UnsupportedFileError) return NextResponse.json({ error: error.message }, { status: 415 })
     const status = (error as { status?: number }).status
     if (status === 403 || status === 404) return NextResponse.json({ error: (error as Error).message }, { status })

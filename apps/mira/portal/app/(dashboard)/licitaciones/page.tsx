@@ -9,6 +9,7 @@ import BrandName from '@/components/ui/BrandName'
 import SectionRewriter from '@/components/tenders/SectionRewriter'
 import DocumentsPanel from '@/components/tenders/DocumentsPanel'
 import { uploadTenderFile } from '@/lib/tenders/upload-client'
+import { trackPage, trackAction } from '@/lib/activity-client'
 
 // Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
 // el Cerebro) + flujo de 3 pasos: pegar pliego → criterios → memoria guiada.
@@ -91,6 +92,9 @@ export default function LicitacionesPage() {
   }, [clientId])
 
   useEffect(() => { loadList() }, [loadList])
+  // Seguimiento: saber que alguien ha ABIERTO el módulo, aunque luego no haga
+  // nada, es justo lo que faltaba el 30-sep para entender la sesión de Usoa.
+  useEffect(() => { if (clientId) trackPage('/licitaciones', clientId) }, [clientId])
 
   /**
    * Guarda el expediente. Devuelve su id si ha guardado y null si no.
@@ -153,6 +157,7 @@ export default function LicitacionesPage() {
   const open = async (id: string) => {
     if (!clientId) return
     if (id !== currentId && !confirmDiscard()) return
+    trackAction('/licitaciones', 'abrir-expediente', clientId, { id })
     setError(null)
     try {
       const res = await fetch(`/api/tender/saved?id=${id}&clientId=${clientId}`)
@@ -179,7 +184,7 @@ export default function LicitacionesPage() {
     lastClient.current = clientId
   }, [clientId])
 
-  const setStatus = async (status: string) => { await save({ status }) }
+  const setStatus = async (status: string) => { trackAction('/licitaciones', 'marcar-estado', clientId, { status }); await save({ status }) }
 
   const runRadar = async () => {
     if (!clientId) return
@@ -200,8 +205,9 @@ export default function LicitacionesPage() {
     try {
       // Subida directa al almacenamiento: Vercel corta en ~4,5 MB y la mitad
       // de los pliegos reales pesan más.
+      trackAction('/licitaciones', 'subir-pliego', clientId, { bytes: file.size, tipo: file.type })
       const up = await uploadTenderFile(clientId, file)
-      if ('error' in up) { setError(up.error); return }
+      if ('error' in up) { trackAction('/licitaciones', 'subir-pliego-error', clientId, { error: up.error }); setError(up.error); return }
       const res = await fetch('/api/tender/pliego', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ clientId, path: up.path, filename: file.name, mime: file.type }),
@@ -224,6 +230,7 @@ export default function LicitacionesPage() {
   // guarda: si no, se bajaría la versión anterior sin que nadie lo note.
   const exportMemoria = async () => {
     if (!clientId || !memoria) return
+    trackAction('/licitaciones', 'exportar-word', clientId, { kind: 'memoria' })
     setExporting(true); setError(null)
     try {
       // Se exporta lo GUARDADO. Si el guardado falla, no se descarga nada: si
@@ -256,6 +263,7 @@ export default function LicitacionesPage() {
   // guarda nada hasta que una persona la acepta.
   const pedirMejoraMemoria = (i: number) => async (instruccion: string) => {
     if (!clientId || !currentId) return { error: 'Guarda el expediente antes de pedir mejoras' }
+    trackAction('/licitaciones', 'mejorar-seccion', clientId, { seccion: i })
     const res = await fetch('/api/tender/rewrite', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clientId, target: 'memoria', tenderId: currentId, sectionIndex: i, instruction: instruccion }),
@@ -268,6 +276,7 @@ export default function LicitacionesPage() {
   // La oferta económica también se entrega: sale con su tabla de precios.
   const exportOferta = async () => {
     if (!clientId || !currentId) return
+    trackAction('/licitaciones', 'exportar-word', clientId, { kind: 'oferta' })
     setExporting(true); setError(null)
     try {
       const id = await save()
@@ -309,6 +318,7 @@ export default function LicitacionesPage() {
     // null en la base de datos sin preguntar. Los criterios nuevos se usan la
     // próxima vez que se genere; lo escrito se queda.
     setStep('extracting'); setError(null)
+    trackAction('/licitaciones', 'extraer-criterios', clientId, { pliegoChars: pliego.length })
     try {
       const res = await fetch('/api/tender/extract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId }) })
       const data = await res.json()
@@ -335,6 +345,7 @@ export default function LicitacionesPage() {
       if (!backup.ok) { setError('Could not keep a copy of the current proposal, so it has not been replaced.'); return }
     }
     setStep('generating'); setError(null)
+    trackAction('/licitaciones', 'generar-memoria', clientId, { criterios: criteria.criteria.length, regenerar: !!memoria })
     try {
       const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId, tenderId: currentId }) })
       const data = await res.json()
@@ -764,7 +775,7 @@ export default function LicitacionesPage() {
                 className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
                 {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save</>}
               </button>
-              <button onClick={() => setEditing((v) => !v)}
+              <button onClick={() => { if (!editing) trackAction('/licitaciones', 'editar-memoria', clientId); setEditing((v) => !v) }}
                 className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs transition-colors hover:text-ink"
                 style={editing ? { color: brand } : undefined}>
                 <Pencil size={13} /> {editing ? 'Done editing' : 'Edit'}

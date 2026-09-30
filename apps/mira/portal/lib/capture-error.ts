@@ -25,4 +25,22 @@ export function captureError(err: unknown, context?: Record<string, unknown>): v
   if (SENTRY_ENABLED) {
     Sentry.captureException(err, context ? { extra: context } : undefined)
   }
+
+  // Sin DSN de Sentry (el caso hoy), un error de servidor solo quedaba en la
+  // consola de Vercel, que no se puede leer hacia atrás. Se apunta también en
+  // mira_activity para poder reconstruir qué le pasó a alguien. Solo servidor:
+  // el import es dinámico para que la clave de servicio no entre en el bundle
+  // del navegador.
+  if (typeof window === 'undefined') {
+    void import('@/lib/activity').then(({ logActivity }) => {
+      const ctx = (context || {}) as Record<string, unknown>
+      logActivity({
+        userId: typeof ctx.userId === 'string' ? ctx.userId : null,
+        clientId: typeof ctx.clientId === 'string' ? ctx.clientId : null,
+        kind: 'error',
+        route: typeof ctx.route === 'string' ? ctx.route : 'unknown',
+        meta: { message: err instanceof Error ? err.message : String(err), ...ctx },
+      })
+    }).catch(() => { /* nunca molesta */ })
+  }
 }

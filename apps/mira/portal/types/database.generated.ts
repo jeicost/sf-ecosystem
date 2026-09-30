@@ -9,7 +9,7 @@
 //   SUPABASE_ACCESS_TOKEN=<token> npx supabase gen types typescript \
 //     --project-id nnevhtfxuawexliwlbmh --schema public > types/database.generated.ts
 //
-// 95 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
+// 96 tablas. El cliente de servicio (lib/supabase.ts) ya los usa.
 export type Json =
   | string
   | number
@@ -3025,6 +3025,44 @@ export type Database = {
           type?: string | null
         }
         Relationships: []
+      }
+      mira_activity: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          id: string
+          kind: string
+          meta: Json
+          route: string
+          user_id: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          kind: string
+          meta?: Json
+          route: string
+          user_id?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          meta?: Json
+          route?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "mira_activity_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mira_project_access: {
         Row: {

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { trackRoute } from '@/lib/activity'
 import { requireTool } from '@/lib/tools/access'
 import { adminClient } from '@/lib/supabase'
 import { writable } from '@/lib/db-json'
@@ -53,10 +54,12 @@ export async function GET(req: NextRequest) {
 
 /** Crea o actualiza el expediente. Con body.id actualiza; sin él, crea. */
 export async function POST(req: NextRequest) {
+  let done: ReturnType<typeof trackRoute> | null = null
   try {
     const body = await req.json()
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
+    done = trackRoute('tender/saved', access)
     const db = adminClient()
 
     const STATUSES = ['borrador', 'preparando', 'presentada', 'ganada', 'perdida']
@@ -84,7 +87,7 @@ export async function POST(req: NextRequest) {
         .eq('id', body.id).eq('client_id', access.clientId).select(COLS).maybeSingle()
       if (error) throw error
       if (!data) return NextResponse.json({ error: 'No encontrada' }, { status: 404 })
-      return NextResponse.json(data)
+      done({ modo: 'update', status: body.status || null, memoria: 'memoria' in body, oferta: 'oferta' in body }); return NextResponse.json(data)
     }
 
     const { data, error } = await db.from('tenders')
@@ -104,9 +107,10 @@ export async function POST(req: NextRequest) {
       })
       .select(COLS).single()
     if (error) throw error
-    return NextResponse.json(data)
+    done({ modo: 'insert', status: body.status || null }); return NextResponse.json(data)
   } catch (error) {
     console.error('tender/saved POST error:', error)
+    done?.error(500, error instanceof Error ? error.message : 'Error')
     return NextResponse.json({ error: error instanceof Error ? error.message : 'Error' }, { status: 500 })
   }
 }

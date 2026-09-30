@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { Loader2, Upload, Download, FileText, Trash2, ChevronDown, ChevronRight, Save, AlertTriangle } from 'lucide-react'
 import SectionRewriter from './SectionRewriter'
 import { uploadTenderFile } from '@/lib/tenders/upload-client'
+import { trackAction } from '@/lib/activity-client'
 
 // Los documentos de la licitación que NO son la memoria del expediente.
 //
@@ -49,6 +50,7 @@ export default function DocumentsPanel({ clientId, tenderId, brand }: {
 
   const subir = async (file: File) => {
     setBusy('upload'); setError(null)
+    trackAction('/licitaciones', 'subir-documento', clientId, { bytes: file.size, tipo: file.type })
     try {
       const up = await uploadTenderFile(clientId, file)
       if ('error' in up) { setError(up.error); return }
@@ -79,6 +81,7 @@ export default function DocumentsPanel({ clientId, tenderId, brand }: {
   }
 
   const exportar = async (doc: TenderDoc) => {
+    trackAction('/licitaciones', 'exportar-word', clientId, { kind: doc.kind })
     // Se exporta lo GUARDADO: si hay cambios sin guardar, primero se guardan,
     // porque si no se bajaría una versión anterior sin que nadie lo note.
     if (sucio[doc.id]) await guardar(doc)
@@ -114,6 +117,7 @@ export default function DocumentsPanel({ clientId, tenderId, brand }: {
   }
 
   const pedirMejora = (docId: string, i: number) => async (instruccion: string) => {
+    trackAction('/licitaciones', 'mejorar-seccion-documento', clientId, { seccion: i })
     const res = await fetch('/api/tender/rewrite', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ clientId, target: 'documento', documentId: docId, sectionIndex: i, instruction: instruccion }),

@@ -1,88 +1,74 @@
-Destinatarios (uno a uno, mismo texto):
-  ibicrom@ibicrom.es                        (Ibicrom, Ibi - Alicante)
-  serijerez@serijerez.com                   (Serijerez, Jerez)
-  info@todoglass.es                         (Todoglass, Jerez)
-  serigrafia.portal@serigrafiaportal.com    (S. Portal, Barcelona)
+PRIMER CONTACTO · SERIGRAFÍA SOBRE VIDRIO
+==========================================
 
-  ADJUNTAR: la carpeta proveedores/paquetes/serigrafia/ ENTERA
-            (renders + desarrollo 360º en PNG + FICHA-ARTE.txt con todo
-            el dato técnico; y el plano de Estal si lo tienes a mano)
+Mandar UNO A UNO (no en copia: que cada taller crea que compite, porque
+compite). El mismo texto a los cuatro.
 
-Asunto: Presupuesto serigrafía 360º magnum 150 cl Estal Essentia - 1 tinta
+  ibicrom@ibicrom.es                      Ibicrom · Ibi, Alicante
+                                          965 552 846 · 40 años en vidrio.
+                                          Mínimo ~600 uds. LLAMAR PRIMERO
+  serijerez@serijerez.com                 Serijerez · Jerez
+  info@todoglass.es                       Todoglass · Jerez
+  serigrafia.portal@serigrafiaportal.com  S. Portal · Montcada, Barcelona
+                                          937 152 562
+
+ADJUNTAR: proveedores/paquetes/serigrafia.zip (1,9 MB — pesa poco a
+propósito: un correo en frío de 8 MB se queda en la cuarentena del
+servidor del taller y no se entera nadie). Dentro van cinco ficheros:
+
+  ESPECIFICACION-TECNICA.pdf   ← el documento; lleva todo el detalle
+  desarrollo-plano.png         ← el 360º desplegado
+  botella-vino.png             ← el resultado buscado
+  botella-vacia.png            ← la versión rellenable
+  INFORME-IMPRIMIBILIDAD.md    ← la medición pieza a pieza
+
+Si prefieres mandarlos sueltos en vez del zip, están los cinco en
+proveedores/paquetes/serigrafia/.
+
+Si Ibicrom coge el teléfono, llamar antes de mandar nada: en una
+conversación de dos minutos se sabe si trabajan magnum, y eso decide.
+
+
+──────────────────────────────────────────────────────────────────────
+Asunto: Serigrafía 360º en magnum 150 cl · 1 tinta · 1.000 uds · consulta previa
+──────────────────────────────────────────────────────────────────────
 
 Buenos días,
 
-Somos una marca de vino y de botella de cristal decorada en lanzamiento
-(Madrid) y queremos serigrafiar nuestra botella con cobertura integral.
-Les paso la especificación y unas preguntas concretas para poder comparar
-presupuestos. Adjunto un render del resultado que buscamos.
+Somos una marca de vino y de botella decorada que lanza desde Aranjuez
+(Madrid). Queremos serigrafiar una magnum de 150 cl con cobertura
+integral: una sola tinta blanca sobre vidrio antico, sin etiqueta
+frontal. Primera tirada de 1.000 unidades y reposiciones por tandas.
 
-EL ENVASE - ya está elegido
-- Estal SM BG MG ESSENTIA, acabado de boca Sommelier Long
-- Magnum de 150 cl, color ANTICO
-- 900 g · altura total 380,9 mm · diámetro de cuerpo 105 mm (perímetro
-  329,9 mm) · boca interior 18,5 mm · cuello de 32 mm y 115 mm de largo
-- Culo hundido (punt) de 30 mm
+Antes de pedirles precio hay una pregunta que decide nuestro arte, y
+preferimos hacerla la primera:
 
-LA DECORACIÓN
-- Serigrafía cerámica vitrificada, UNA tinta BLANCA
-- Banda principal: 360º sobre el cuerpo cilíndrico, aprox. 330 x 140 mm
-- Además queremos subir por el HOMBRO con piezas sueltas. El hombro de esta
-  botella mide unos 126 mm y es cónico: entendemos que ahí no cabe una banda
-  corrida y que las piezas tienen que ir sueltas y pequeñas. Nos interesa
-  mucho su criterio en este punto concreto
-- El cuello NO se decora
-- Diseño: alta densidad tipográfica (57 piezas entre palabras y pictogramas),
-  trazo mínimo previsto de 0,8 mm
-- Sin etiquetas: todo el grafismo va serigrafiado, incluido el bloque de
-  marca. La botella no lleva etiqueta frontal
-- Única zona libre de tinta: 80 x 58 mm en la trasera, para una
-  contraetiqueta adhesiva pequeña con los datos que cambian por lote
-- Uso final: la botella se vende también VACÍA como botella rellenable, así
-  que la decoración debe aguantar lavavajillas
+  ¿Cuál es el trazo mínimo que garantizan con su malla sobre vidrio?
 
-PREGUNTAS
-1. Precio por unidad a 600, 1.000 y 3.000 unidades.
-2. Coste de pantallas, fotolitos y puesta a punto, desglosado del precio
-   por unidad.
-3. ¿Trabajan el formato MAGNUM en línea, o les obliga a cambiar utillaje?
-   Preguntamos porque casi todo el mercado está montado para 75 cl y no
-   queremos llevarnos la sorpresa al final.
-4. ¿Pueden suministrar ustedes también la botella? Es de Estal (Girona).
-   Nos interesa evitar el doble porte de ida y vuelta desde Madrid.
-5. ¿Hasta qué altura del hombro pueden decorar con garantías de registro,
-   y con qué deformación? Si nos dan la altura máxima real, adaptamos el
-   diseño a ella en vez de forzarlo.
-6. ¿Qué zona muerta exigen bajo el arranque del hombro y sobre la base?
-7. Trazo mínimo real que garantizan con su malla.
-8. ¿Han decorado antes esta referencia de Estal o similares de 150 cl?
-9. ¿Pueden hacernos una o dos botellas de muestra antes de la tirada?
-10. Plazo de entrega desde arte final aprobado.
-11. Formato de arte que necesitan (vectorial, sobredimensión, separación).
-    El nuestro va con TODO EL TEXTO VECTORIZADO, sin fuentes vivas.
+Lo preguntamos porque nuestro diseño está medido. Hemos simulado pieza a
+pieza qué sobrevive a la impresión en dos escenarios: con 0,35 mm el arte
+entra tal cual, y con 0,8 mm tenemos veintiséis piezas que redibujar
+antes del fotolito. Preferimos rehacerlas ahora que descubrirlo con las
+pantallas hechas.
 
-LAS TRES QUE MÁS NOS PREOCUPAN
-12. ¿El 360 grados es real y sin junta, o queda un solape? Todo el diseño
-    son bandas justificadas que dan la vuelta a la botella. Si hay que dejar
-    unos milímetros muertos, preferimos saberlo ahora y rehacer la retícula,
-    no después.
-13. ¿Cuántas PASADAS de blanco hacen falta? El vidrio es ANTICO, un oliva
-    casi negro, y entendemos que una sola pasada puede no opacar. Si son
-    dos, queremos el precio de las dos.
-14. La merma: si se rompen o salen mal botellas en su taller, ¿quién las
-    paga? El vidrio lo compramos nosotros y se lo mandamos, así que no es
-    un detalle menor.
+Va adjunta la especificación técnica completa: el envase con sus medidas
+(Estal SM BG MG Essentia, magnum, antico), la decoración, el desarrollo
+360º y doce preguntas concretas para poder comparar presupuestos. Las
+tres que más nos preocupan, por si quieren ir directos:
 
-DOCUMENTACIÓN
-Necesitamos con el pedido:
-- Declaración de conformidad para contacto alimentario del vidrio
-  (Reg. UE 1935/2004)
-- Certificado de las tintas cerámicas con límites de plomo y cadmio
-- Confirmación por escrito de aptitud para lavavajillas
+  · ¿Trabajan el formato MAGNUM en línea, o les obliga a cambiar
+    utillaje? Sabemos que casi todo el mercado está montado para 75 cl.
+  · ¿El 360º es real y sin junta, o queda solape? Todo el diseño da la
+    vuelta; si hay milímetros muertos, rehacemos la retícula.
+  · ¿Cuántas pasadas de blanco hacen falta sobre un vidrio casi negro?
+    Si son dos, necesitamos el precio de las dos.
 
-Quedamos a la espera. Si les viene mejor, podemos hablarlo por teléfono
-y les enviamos el desarrollo plano.
+Si les encaja, nos gustaría hacer una o dos botellas de muestra antes de
+la tirada. Y si prefieren hablarlo por teléfono, encantados: díganme
+cuándo les viene bien y les llamo.
 
 Un saludo,
+
 Carlos Jacoste
+Lágrimas de Sánchez · Aranjuez, Madrid
 lagrimasdesanchez.com
