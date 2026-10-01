@@ -35,6 +35,8 @@ export default function IdealSidebarNav({
 }) {
   const isActive = (href: string) => path === href || (href !== '/' && path.startsWith(href + '/'))
   const { activeClient } = useActiveClient()
+  // Color de la marca activa para las cabeceras de sección (índigo de MIRA si no hay marca).
+  const brand = activeClient?.primaryColor || '#6366F1'
   const { locale } = useLocaleContext()
   // Qué módulos tiene abiertos la marca, según la BD (client_tools). Mientras
   // carga se usa la allowlist de código, que es exactamente lo que sembró la
@@ -123,14 +125,18 @@ export default function IdealSidebarNav({
         const hiddenBadge = !open && pendingCount > 0 && items.some((i) => i.href === '/approvals')
         return (
         <div key={space.key}>
+          {/* Los títulos de sección iban en gris apagado de 9 px y no se distinguían de los
+              ítems (Carlos, 1-oct). Ahora llevan el color de la marca activa, 10 px y una
+              barra corta del mismo color: se leen como cabeceras sin gritar. */}
           <button
             type="button"
             onClick={() => toggle(space.key)}
             aria-expanded={open}
-            className="w-full flex items-center gap-1.5 px-2 mb-1 rounded transition-colors hover:text-ink-tertiary group"
+            className="w-full flex items-center gap-2 px-2 mb-1.5 rounded transition-opacity hover:opacity-80 group"
           >
-            <space.icon size={12} className="text-ink-muted shrink-0" />
-            <span className="text-[9px] uppercase tracking-widest font-semibold text-ink-muted">
+            <span aria-hidden className="h-3 w-[2px] shrink-0 rounded-full" style={{ background: brand }} />
+            <space.icon size={12} className="shrink-0" style={{ color: brand }} />
+            <span className="text-[10px] uppercase tracking-[0.16em] font-bold" style={{ color: brand }}>
               {space.labelKey ? t(space.labelKey, locale) : space.label}
             </span>
             {hiddenBadge && (
