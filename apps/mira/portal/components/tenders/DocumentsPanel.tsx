@@ -48,10 +48,12 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
     const url = tenderId
       ? `/api/tender/documents?clientId=${clientId}&tenderId=${tenderId}`
       : `/api/tender/documents?clientId=${clientId}`
-    const res = await fetch(url)
-    const data = await res.json()
-    if (res.ok) setDocs(data.documents || [])
-    setLoading(false)
+    try {
+      const res = await fetch(url)
+      const data = await res.json()
+      if (res.ok) setDocs(data.documents || [])
+      else setError(data.error || 'Could not load the documents')
+    } catch { setError('Network error while loading the documents: reload the page.') } finally { setLoading(false) }
   }, [clientId, tenderId])
   useEffect(() => { load() }, [load, refreshKey])
   useEffect(() => { if (openId) { setAbierto(openId); document.getElementById('documentos')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) } }, [openId])
@@ -98,23 +100,26 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
     }
   }
 
-  const guardar = async (doc: TenderDoc) => {
+  /** Devuelve true solo si quedó guardado: quien exporta no debe seguir si no. */
+  const guardar = async (doc: TenderDoc): Promise<boolean> => {
     setBusy(doc.id); setError(null)
-    const res = await fetch('/api/tender/documents', {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ clientId, id: doc.id, title: doc.title, sections: doc.sections }),
-    })
-    const data = await res.json()
-    if (!res.ok) setError(data.error || 'Error')
-    else setSucio((s) => ({ ...s, [doc.id]: false }))
-    setBusy(null)
+    try {
+      const res = await fetch('/api/tender/documents', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, id: doc.id, title: doc.title, sections: doc.sections }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error || 'Could not save'); return false }
+      setSucio((s) => ({ ...s, [doc.id]: false }))
+      return true
+    } catch { setError('Network error while saving: your changes are still on screen, try again.'); return false } finally { setBusy(null) }
   }
 
   const exportar = async (doc: TenderDoc) => {
     trackAction('/licitaciones', 'exportar-word', clientId, { kind: doc.kind })
     // Se exporta lo GUARDADO: si hay cambios sin guardar, primero se guardan,
     // porque si no se bajaría una versión anterior sin que nadie lo note.
-    if (sucio[doc.id]) await guardar(doc)
+    if (sucio[doc.id] && !(await guardar(doc))) return
     setBusy(doc.id + ':export')
     try {
       const res = await fetch('/api/tender/export', {

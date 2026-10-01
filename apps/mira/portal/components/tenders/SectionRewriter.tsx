@@ -44,14 +44,18 @@ export default function SectionRewriter({ titulo, brand, onRewrite, onAccept }: 
   const pedir = async () => {
     if (!instruccion.trim()) return
     setBusy(true); setError(null); setPropuesta(null); setAvisos([]); setLessonSaved(false)
-    const res = await onRewrite(instruccion.trim(), { remember })
-    setBusy(false)
-    if ('error' in res) { setError(res.error); return }
-    setPropuesta(res.propuesta); setAvisos(res.avisos || [])
-    if (remember && res.lessonId) { setLessonSaved(true); setRemember(false) }
+    try {
+      const res = await onRewrite(instruccion.trim(), { remember })
+      if ('error' in res) { setError(res.error); return }
+      setPropuesta(res.propuesta); setAvisos(res.avisos || [])
+      if (remember && res.lessonId) { setLessonSaved(true); setRemember(false) }
+    } catch {
+      // Red caída o un 504 con HTML: antes dejaba «Rewriting…» bloqueado hasta recargar.
+      setError('Network error: check your connection and try again.')
+    } finally { setBusy(false) }
   }
 
-  const cerrar = () => { setAbierto(false); setPropuesta(null); setAvisos([]); setError(null); setInstruccion(''); setRemember(false); setLessonSaved(false) }
+  const cerrar = () => { setAbierto(false); setBusy(false); setPropuesta(null); setAvisos([]); setError(null); setInstruccion(''); setRemember(false); setLessonSaved(false) }
 
   if (!abierto) {
     return (

@@ -117,14 +117,18 @@ export async function POST(req: NextRequest) {
             String(l.servicio || l.seccion || ''),
             String(l.tramo || '—'),
             eur(l.max_sin_iva),
-            eur(l.precio_ofertado),
+            // Un precio propuesto por analogía NO puede salir igual que uno firme en un entregable.
+            l.a_confirmar ? `${eur(l.precio_ofertado)} (a confirmar)` : eur(l.precio_ofertado),
             // Coma decimal: esto lo lee una administración española.
             typeof l.baja_pct === 'number' ? `${l.baja_pct.toLocaleString('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} %` : '—',
           ]),
           pie: typeof oferta.suma_ponderada === 'number' ? `Puntuación ponderada estimada: ${oferta.suma_ponderada}` : undefined,
         },
         bloques,
-        porConfirmar: [...(oferta.a_confirmar_global || []), ...(oferta.avisos || [])],
+        porConfirmar: [
+          ...oferta.lineas.filter((l) => l.a_confirmar).map((l) => `«${String(l.servicio || l.seccion || '')}${l.tramo ? ` ${l.tramo}` : ''}»: ${eur(l.precio_ofertado)} propuesto por analogía${l.motivo ? ` — ${l.motivo}` : ''}`),
+          ...(oferta.a_confirmar_global || []), ...(oferta.avisos || []),
+        ],
       }
     } else {
       tipoRegistro = 'memoria'

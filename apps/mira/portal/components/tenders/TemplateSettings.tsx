@@ -171,7 +171,10 @@ export default function TemplateSettings({ clientId, brand }: { clientId: string
                 ) : (
                   <span className="text-xs text-ink-muted">No logo yet</span>
                 )}
-                <p className="text-[11px] text-ink-tertiary">Logo comes from Brand settings. It goes on the cover and in the page header; without it the brand name is printed instead.</p>
+                {/* El Word solo puede incrustar PNG/JPG: un SVG o WebP se ve aquí pero no saldría en el fichero. */}
+                {defaults?.logo_url && !/\.(png|jpe?g)(\?|$)/i.test(String(defaults.logo_url))
+                  ? <p className="text-[11px] text-amber-400">This logo is not a PNG or JPG, so Word cannot embed it: the brand name will be printed instead. Upload a PNG or JPG in Brand settings.</p>
+                  : <p className="text-[11px] text-ink-tertiary">Logo comes from Brand settings. It goes on the cover and in the page header; without it the brand name is printed instead.</p>}
               </div>
 
               <div className="mt-3 flex flex-wrap items-center justify-between gap-3">

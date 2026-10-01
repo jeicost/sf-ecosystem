@@ -150,7 +150,7 @@ export default function LicitacionesPage() {
     const mem = patch && 'memoria' in patch ? patch.memoria : memoria
     const ofe = patch && 'oferta' in patch ? patch.oferta : oferta
     if (!clientId) return null
-    if (!currentId && !crit && !mem && !pliego.trim() && !instructions.trim()) {
+    if (!currentId && !crit && !mem && !pliego.trim() && !instructions.trim() && !baseTenderId) {
       setError('There is nothing to save yet: upload or paste the tender documents first.')
       return null
     }
@@ -225,6 +225,8 @@ export default function LicitacionesPage() {
   useEffect(() => {
     if (lastClient.current && clientId && lastClient.current !== clientId) {
       setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false); setInstructions(''); setBaseTenderId(null)
+      // El apartado libre también: un fichero adjunto de la marca anterior no puede generarse en la nueva.
+      setBrief(''); setBriefFile(null); setBriefAvisos([])
     }
     lastClient.current = clientId
   }, [clientId])
@@ -311,7 +313,7 @@ export default function LicitacionesPage() {
       document.body.appendChild(a); a.click(); a.remove()
       URL.revokeObjectURL(url)
     } catch {
-      setError('No se ha podido exportar')
+      setError('Network error while exporting: check your connection and try again.')
     } finally {
       setExporting(false)
     }
@@ -351,7 +353,7 @@ export default function LicitacionesPage() {
       a.href = url; a.download = 'oferta-economica.docx'
       document.body.appendChild(a); a.click(); a.remove()
       URL.revokeObjectURL(url)
-    } finally { setExporting(false) }
+    } catch { setError('Network error while exporting: check your connection and try again.') } finally { setExporting(false) }
   }
 
   /**

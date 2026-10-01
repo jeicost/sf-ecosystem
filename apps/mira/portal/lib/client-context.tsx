@@ -102,7 +102,12 @@ export function ClientProvider({ children }: { children: ReactNode }) {
         }
         // Super admin sin selección: sin cliente activo (verá /admin).
       } catch (error) {
-        console.error('Client context error:', error)
+        // Justo tras el login la app navega a /home y el navegador aborta el
+        // fetch en vuelo: llega como TypeError «Failed to fetch». No es un fallo
+        // (el siguiente montaje carga bien) y como console.error asustaba en
+        // cada E2E. Lo demás sigue siendo error.
+        if (error instanceof TypeError && /failed to fetch|load failed/i.test(error.message)) console.warn('Client context: fetch interrumpido por la navegación')
+        else console.error('Client context error:', error)
       } finally {
         setLoading(false)
       }

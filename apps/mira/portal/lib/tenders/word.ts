@@ -292,7 +292,7 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   const altoLogo = Math.round(altoBloque * 0.38)
   const celdaPortada = (alto: number, valign: (typeof VerticalAlignTable)[keyof typeof VerticalAlignTable], hijos: InstanceType<typeof Paragraph>[]) =>
     new TableRow({
-      height: { value: alto, rule: HeightRule.EXACT },
+      height: { value: alto, rule: HeightRule.ATLEAST },
       children: [new TableCell({
         borders: sinBordes, verticalAlign: valign,
         width: { size: ANCHO_UTIL, type: WidthType.DXA },
@@ -481,5 +481,7 @@ export function rotuloPorKind(kind: string | null | undefined): string {
   if (k === 'memoria') return 'MEMORIA TÉCNICA'
   if (k === 'oferta') return 'OFERTA ECONÓMICA'
   if (k === 'anexo') return 'ANEXO'
-  return (k || 'documento').replace(/[_-]+/g, ' ').toUpperCase()
+  // Lo que sube la persona (kind 'subido') no puede salir rotulado «SUBIDO» en la portada: es su memoria del año pasado.
+  if (k === 'subido' || !k) return 'DOCUMENTO'
+  return k.replace(/[_-]+/g, ' ').toUpperCase()
 }
