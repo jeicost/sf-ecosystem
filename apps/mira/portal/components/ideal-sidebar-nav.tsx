@@ -105,10 +105,12 @@ export default function IdealSidebarNav({
     try { localStorage.setItem(OPEN_SPACE_KEY, next) } catch {}
   }
 
+  // Un ítem: icono en caja fija (los textos alinean aunque el icono cambie), 13 px,
+  // activo con fondo y acento de marca a la izquierda, hover suave. Los sub-ítems
+  // (p. ej. el calendario bajo Marketing) van indentados con el mismo gesto.
   const itemClass = (active: boolean, child = false) => clsx(
-    'flex items-center gap-3 py-2 rounded-lg text-sm transition-all duration-150',
-    // Sub-item (p. ej. el calendario bajo Marketing): indentado, mismo gesto.
-    child ? 'pl-8 pr-3' : 'px-3',
+    'relative flex items-center gap-2.5 rounded-lg text-[13px] leading-none transition-colors duration-150',
+    child ? 'py-1.5 pl-9 pr-3 text-[12px]' : 'py-2 pl-3 pr-2.5',
     active
       ? 'bg-surface-hover text-ink font-medium'
       : 'text-ink-tertiary hover:text-ink hover:bg-surface'
@@ -132,29 +134,32 @@ export default function IdealSidebarNav({
             type="button"
             onClick={() => toggle(space.key)}
             aria-expanded={open}
-            className="w-full flex items-center gap-2 px-2 mb-1.5 rounded transition-opacity hover:opacity-80 group"
+            className="group flex w-full items-center gap-2 rounded-lg py-1.5 pl-2 pr-1.5 transition-colors hover:bg-surface"
           >
             <span aria-hidden className="h-3 w-[2px] shrink-0 rounded-full" style={{ background: brand }} />
             <space.icon size={12} className="shrink-0" style={{ color: brand }} />
-            <span className="text-[10px] uppercase tracking-[0.16em] font-bold" style={{ color: brand }}>
+            <span className="text-[10px] font-bold uppercase tracking-[0.16em]" style={{ color: brand }}>
               {space.labelKey ? t(space.labelKey, locale) : space.label}
             </span>
             {hiddenBadge && (
-              <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full font-bold"
+              <span className="ml-auto rounded-full px-1.5 py-0.5 text-[9px] font-bold"
                 style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24' }}>
                 {pendingCount}
               </span>
             )}
+            {/* El desplegable se ve SIEMPRE (Carlos, 1-oct): antes solo aparecía al pasar el
+                ratón y no se sabía que la sección se podía plegar. Gira al abrir. */}
             <ChevronDown
-              size={11}
+              size={13}
               className={clsx(
-                'shrink-0 text-ink-muted transition-transform duration-200',
+                'shrink-0 text-ink-muted transition-transform duration-200 group-hover:text-ink-secondary',
                 hiddenBadge ? 'ml-1.5' : 'ml-auto',
-                open ? 'opacity-0 group-hover:opacity-100' : 'opacity-60 -rotate-90'
+                open ? 'rotate-0' : '-rotate-90'
               )}
             />
           </button>
-          <div className={clsx('space-y-0.5', !open && 'hidden')}>
+          {/* Los ítems cuelgan de una guía fina alineada con la barra de la cabecera. */}
+          <div className={clsx('ml-[3px] mt-1 space-y-0.5 border-l border-line-subtle pl-1.5', !open && 'hidden')}>
             {items.map((item) => {
               const { href, icon: Icon } = item
               const label = item.labelKey ? t(item.labelKey, locale) : item.label
@@ -170,9 +175,12 @@ export default function IdealSidebarNav({
               const active = isActive(href)
               const showBadge = href === '/approvals' && pendingCount > 0
               return (
-                <Link key={href} href={href} className={itemClass(active, item.child)}>
-                  <Icon size={item.child ? 13 : 15} className={active ? 'text-ink' : 'text-ink-tertiary'} />
-                  {label}
+                <Link key={href} href={href} className={itemClass(active, item.child)} aria-current={active ? 'page' : undefined}>
+                  {active && <span aria-hidden className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full" style={{ background: brand }} />}
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                    <Icon size={item.child ? 13 : 15} className={active ? '' : 'text-ink-tertiary'} style={active ? { color: brand } : undefined} />
+                  </span>
+                  <span className="truncate">{label}</span>
                   {showBadge && (
                     <span className="ml-auto text-[9px] px-1.5 py-0.5 rounded-full font-bold animate-pulse"
                       style={{ background: 'rgba(245,158,11,0.2)', color: '#fbbf24' }}>
@@ -188,22 +196,23 @@ export default function IdealSidebarNav({
       })}
 
       {/* Secundarios: se conservan, fuera de los 6 espacios principales */}
-      <div className="pt-2 border-t border-line-subtle space-y-0.5">
-        <Link href="/integrations"
-          className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
-            isActive('/integrations') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <Zap size={13} /> {t('sidebar.item.connections', locale)}
-        </Link>
-        <Link href="/billing"
-          className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
-            isActive('/billing') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <CreditCard size={13} /> {t('sidebar.item.billing', locale)}
-        </Link>
-        <Link href="/resources"
-          className={clsx('flex items-center gap-3 px-3 py-2 rounded-lg text-[11px] transition-all',
-            isActive('/resources') ? 'bg-surface-hover text-ink' : 'text-ink-tertiary hover:text-ink hover:bg-surface')}>
-          <BookOpen size={13} /> {t('sidebar.item.resources', locale)}
-        </Link>
+      <div className="mt-1 space-y-0.5 border-t border-line-subtle pt-3">
+        {([
+          { href: '/integrations', icon: Zap, label: t('sidebar.item.connections', locale) },
+          { href: '/billing', icon: CreditCard, label: t('sidebar.item.billing', locale) },
+          { href: '/resources', icon: BookOpen, label: t('sidebar.item.resources', locale) },
+        ] as const).map(({ href, icon: Icon, label }) => {
+          const active = isActive(href)
+          return (
+            <Link key={href} href={href} className={clsx(itemClass(active), 'text-[12px]')} aria-current={active ? 'page' : undefined}>
+              {active && <span aria-hidden className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full" style={{ background: brand }} />}
+              <span className="flex h-4 w-4 shrink-0 items-center justify-center">
+                <Icon size={14} className={active ? '' : 'text-ink-tertiary'} style={active ? { color: brand } : undefined} />
+              </span>
+              <span className="truncate">{label}</span>
+            </Link>
+          )
+        })}
       </div>
     </nav>
   )

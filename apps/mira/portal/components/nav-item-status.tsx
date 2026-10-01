@@ -65,7 +65,7 @@ export function UnavailableNavItem({
         aria-disabled="true"
         className={clsx(className, 'w-full text-left cursor-not-allowed opacity-70 hover:opacity-100')}
       >
-        <Icon size={iconSize} className="text-ink-muted" />
+        <span className="flex h-4 w-4 shrink-0 items-center justify-center"><Icon size={iconSize} className="text-ink-muted" /></span>
         <span className="truncate">{label}</span>
         {isSoon ? (
           <span className="ml-auto inline-flex items-center gap-1 text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wide"
