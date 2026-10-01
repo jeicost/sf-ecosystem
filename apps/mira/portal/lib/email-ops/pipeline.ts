@@ -9,7 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { adminClient } from '@/lib/supabase'
 import { captureError } from '@/lib/capture-error'
 import { extractPdfText } from '@/lib/pdf-extract'
-import { resolveImageType } from '@/lib/vision'
+import { resolveImageType, sniffImageType } from '@/lib/vision'
 import { fetchReceivedEmail, fetchAttachment, extractAddress, extractDisplayName, type ReceivedEmail } from './resend-inbound'
 import { resolveThreadKey } from './threading'
 import { getSchemaForClient, requiredFieldsFor } from './schema'
@@ -33,7 +33,7 @@ export interface ProcessResult {
   ok: boolean
   messageId: string
   ticketId?: string
-  skipped?: 'not-claimable' | 'daily-cap'
+  skipped?: 'not-claimable' | 'daily-cap' | 'auto-reply'
   error?: string
 }
 
@@ -169,7 +169,8 @@ async function ingestAttachments(
         const mammoth = await import('mammoth')
         extracted = (await mammoth.extractRawText({ buffer })).value
       } else if (ct.startsWith('image/')) {
-        const mediaType = resolveImageType(ct, entry.filename)
+        // El tipo lo dicen los bytes, no la cabecera del correo (un «png» que era JPEG → 400 del modelo).
+        const mediaType = sniffImageType(buffer) ?? resolveImageType(ct, entry.filename)
         if (mediaType && images.length < 4) {
           images.push({ type: 'image', source: { type: 'base64', media_type: mediaType, data: buffer.toString('base64') } })
           extracted = '[imagen adjunta, enviada al modelo]'
@@ -292,6 +293,20 @@ async function markFailed(db: SupabaseClient, messageId: string, err: unknown): 
   await db.from('email_messages').update({ status: 'failed', last_error: message.slice(0, 500), updated_at: new Date().toISOString() }).eq('id', messageId)
 }
 
+/**
+ * Correos que no hace falta leer con el modelo: respuestas automáticas, rebotes,
+ * notificaciones de sistema. Cada uno costaba una llamada (Sonnet, ~5k tokens)
+ * para acabar en «other». Devuelve el motivo o null. Regla, no IA: barato y
+ * predecible; si duda, deja pasar (null) y el modelo decide.
+ */
+export function autoReplyReason(from: string, subject: string): string | null {
+  const f = (from || '').toLowerCase()
+  const s = (subject || '').trim().toLowerCase()
+  if (/(^|[<\s"'])(no-?reply|noreply|donotreply|do-not-reply|mailer-daemon|postmaster)@/.test(f)) return 'Remitente automático (no-reply / mailer-daemon)'
+  if (/^(respuesta autom[aá]tica|automatic reply|auto(matic)? ?(reply|response)|autoreply|out of office|fuera de (la )?oficina|ausente|undeliverable|undelivered mail|no se (ha )?pu(ede|do) entregar|delivery (status )?notification|mail delivery (failed|failure|subsystem)|entrega fallida|failure notice)\b/.test(s)) return 'Respuesta automática o aviso de entrega'
+  return null
+}
+
 export type AttachmentFetcher = (
   resendEmailId: string,
   attachmentId: string
@@ -359,6 +374,17 @@ export async function processMessage(messageId: string, opts: ProcessOptions = {
     const references = parseReferences(received.headers['references'])
     const messageIdHeader = received.messageId || msg.message_id
     const fromRaw = received.from || msg.from_address || ''
+
+    // 1b. Correo automático: se archiva sin modelo (ni adjuntos, ni ticket).
+    const auto = autoReplyReason(fromRaw, received.subject || msg.subject || '')
+    if (auto) {
+      const now = new Date().toISOString()
+      await db.from('email_messages').update({
+        status: 'ignored', last_error: null, processed_at: now, updated_at: now,
+        extraction: toJson({ kind: 'other', summary: auto, original_sender: null, urgency: 0, fields: {}, confidence: {}, evidence: {}, notes: 'Clasificado por regla, sin modelo' } satisfies Extraction),
+      }).eq('id', messageId)
+      return { ok: true, messageId, skipped: 'auto-reply' }
+    }
 
     // 2. Adjuntos
     const metas = received.attachments.length

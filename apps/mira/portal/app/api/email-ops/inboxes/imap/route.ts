@@ -78,7 +78,9 @@ export async function POST(req: NextRequest) {
 
     // Primera lectura inmediata: el cliente ve tickets reales en el momento,
     // sin esperar al cron de 10 minutos.
-    const poll = await pollImapInbox({ ...(data as unknown as ImapInboxRow), imap_password: encryptSecret(password), imap_last_uid: null })
+    // Solo se TRAEN los últimos correos (segundos); el modelo los procesa desde el
+    // cron en los minutos siguientes. Procesarlos aquí superaba los 120 s de la función.
+    const poll = await pollImapInbox({ ...(data as unknown as ImapInboxRow), imap_password: encryptSecret(password), imap_last_uid: null }, { process: false })
     return NextResponse.json({ ok: true, inbox: data, firstPoll: { fetched: poll.fetched, processed: poll.processed, error: poll.error } })
   } catch (error) {
     console.error('email-ops/inboxes/imap error:', error)

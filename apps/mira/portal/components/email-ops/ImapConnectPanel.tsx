@@ -63,7 +63,7 @@ export default function ImapConnectPanel({ clientId, locale, brand, onSaved }: {
         kind: 'saved',
         text: p?.error
           ? `${t('emailops.imap.saved', locale)} ⚠️ ${p.error}`
-          : t('emailops.imap.saved-poll', locale).replace('{n}', String(p?.processed ?? 0)),
+          : t('emailops.imap.saved-poll', locale).replace('{n}', String(p?.fetched ?? 0)),
       })
       onSaved?.()
     } catch {

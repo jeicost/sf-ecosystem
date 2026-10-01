@@ -26,7 +26,12 @@ const PER_INBOX_LIMIT = 15
 /** En el primer arranque no se traga el histórico: solo los últimos. */
 const FIRST_RUN_LIMIT = 10
 
-export async function pollImapInbox(row: ImapInboxRow): Promise<PollResult> {
+/**
+ * opts.process=false: solo trae e inserta (cola 'received'); el cron procesa después.
+ * Lo usa el alta del buzón: procesar 10 correos con el modelo dentro de la petición
+ * pasaba de los 120 s de la función y la pantalla veía «Network error» (1-oct).
+ */
+export async function pollImapInbox(row: ImapInboxRow, opts: { process?: boolean } = {}): Promise<PollResult> {
   const db = adminClient()
   const result: PollResult = { inboxId: row.id, address: row.address, fetched: 0, processed: 0 }
   let lastUid = row.imap_last_uid ?? null
@@ -69,8 +74,10 @@ export async function pollImapInbox(row: ImapInboxRow): Promise<PollResult> {
 
       // El contenido ya está en memoria: se le pasa al pipeline para no volver
       // a descargarlo del servidor de correo.
-      const res = await processMessage(data.id as string, imapProcessOptions(m))
-      if (res.ok) result.processed++
+      if (opts.process !== false) {
+        const res = await processMessage(data.id as string, imapProcessOptions(m))
+        if (res.ok) result.processed++
+      }
       // La marca avanza aunque la IA falle: el mensaje queda en la cola con su
       // propio reintento. Si no avanzara, el buzón se releería en bucle.
       lastUid = Math.max(lastUid ?? 0, m.uid)

@@ -11,7 +11,8 @@ import { computePriority } from '../../lib/email-ops/priority'
 import { COURIER_V1_FIELDS, coerceFields, computeMissingFields, requiredFieldsFor } from '../../lib/email-ops/schema'
 import { verifySvixSignature, parseInboundEvent, extractAddress, extractDisplayName } from '../../lib/email-ops/resend-inbound'
 import { validateExtraction } from '../../lib/email-ops/extract'
-import { htmlToText } from '../../lib/email-ops/pipeline'
+import { htmlToText, autoReplyReason } from '../../lib/email-ops/pipeline'
+import { sniffImageType } from '../../lib/vision'
 import type { Extraction } from '../../lib/email-ops/types'
 
 let failures = 0
@@ -21,6 +22,15 @@ function check(name: string, cond: boolean, detail?: unknown) {
 }
 
 // ── threading ────────────────────────────────────────────────────────────
+// Filtro barato de automáticos (1-oct): sin modelo para rebotes y out-of-office.
+check('autoReplyReason: respuesta automática', autoReplyReason('ana@cliente.es', 'Respuesta automática: PROBLEMAS CON LA LLEGADA') !== null)
+check('autoReplyReason: no-reply', autoReplyReason('"GLS" <no-reply@gls-spain.es>', 'Tu envío') !== null)
+check('autoReplyReason: mailer-daemon', autoReplyReason('MAILER-DAEMON@mx.es', 'Undelivered Mail Returned to Sender') !== null)
+check('autoReplyReason: encargo real pasa', autoReplyReason('maria@museo.es', 'Recogida en Museoteca envío internacional') === null)
+check('autoReplyReason: RE: INCIDENCIAS pasa (lo decide el modelo)', autoReplyReason('ops@cliente.es', 'RE: INCIDENCIAS.') === null)
+check('sniffImageType: PNG', sniffImageType(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a,0,0,0,0,0])) === 'image/png')
+check('sniffImageType: JPEG declarado como png', sniffImageType(Buffer.from([0xff,0xd8,0xff,0xe0,0,0x10,0x4a,0x46,0x49,0x46,0,1])) === 'image/jpeg')
+check('sniffImageType: PDF no es imagen', sniffImageType(Buffer.from('%PDF-1.4 hola mundo')) === null)
 check('normalizeSubject quita RE/FW anidados', normalizeSubject('RE: Fwd: RV: Recogida urgente  mañana') === 'recogida urgente mañana')
 check('normalizeSubject con [n]', normalizeSubject('Re[2]: Pedido 4411') === 'pedido 4411')
 check('isGenericSubject', isGenericSubject('pedido') && !isGenericSubject('pedido 4411'))
