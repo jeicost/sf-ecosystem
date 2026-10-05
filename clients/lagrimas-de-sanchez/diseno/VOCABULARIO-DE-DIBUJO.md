@@ -239,3 +239,116 @@ tiene dos arreglos posibles y son opuestos:
 Distinguir las dos cosas no lo puede hacer una métrica de grosor, porque las
 dos dan el mismo número. Requiere saber qué es cada elemento. Por eso no hay
 herramienta automática para esto y se quitó la que había.
+
+---
+
+# Apéndice II · Lo aprendido midiendo el tamaño (5-oct)
+
+## Una pieza «rota» puede no estar rota: puede estar pequeña
+
+Durante tres semanas la lista de piezas rotas se trató como lista de
+redibujo. Era mentira, y bastó medirlo para verlo: `medir-suelo.py` busca
+por bisección la altura impresa mínima a la que cada pieza deja de romperse,
+y **las 66 pasan a alguna altura de 23 mm o menos**. Ninguna estaba rota por
+dibujo.
+
+Lo que estaba roto era el reparto. El RITMO del empaquetador da el contraste
+de escala que impide que el tejido parezca una tabla, pero reparte alto por
+POSICIÓN DE FILA y no sabe qué aguanta cada pieza: a `15-felpudo` le tocó una
+fila de 9 mm y perdió las cerdas sin que nadie tocara su dibujo.
+
+**Antes de redibujar una pieza que no imprime, mídele el suelo.** Si el suelo
+está por debajo de lo que el reparto puede darle, es trabajo de layout. Solo
+si pide más de lo que cabe es trabajo de dibujo.
+
+## Al rótulo le falta ANCHO, no cuerpo
+
+Las cuatro piezas que sí había que redibujar fallaban por lo mismo, y no era
+el dibujo: era el rótulo. Medido por separado, en las cuatro el dibujo perdía
+entre el 0,1 % y el 12 % de su tinta —o sea, perfecto— y el nombre perdía
+entre el 77 % y el 100 %, y era él las islas muertas que condenaban la pieza.
+
+El reflejo es engordar la letra. No funciona, y tiene una razón geométrica:
+en el empaquetador el ANCHO de una pieza sale de su proporción por el alto de
+su fila. Un delantal de proporción 0,39 a 9 mm de alto mide 3,5 mm de ancho, y
+«GRACITA BOLAÑOS» en dos líneas dentro de 3,5 mm son renglones de 0,9 mm.
+Agrandar la letra ×1,6 —el tope de `agrandar-rotulos.py`— los deja en 1,4. No
+hay cuerpo que arregle eso.
+
+Lo que se cambia es la PROPORCIÓN DE LA PIEZA:
+
+- **El rótulo AL LADO del dibujo, no debajo.** El delantal pasó de 0,39 a 1,75
+  y el nombre del 10 % al 62 % del alto. La gota igual: su aviso iba calado
+  dentro y una gota es alta y estrecha, así que salió a tinta maciza al lado.
+- **Una línea larga, en dos.** «IZQUIERDA CAVIAR», dieciséis caracteres en una
+  línea, se lleva casi el doble de cuerpo partida en dos para el mismo ancho.
+- **El objeto es el marco del rótulo, no al revés.** En TELEPEDRO el mueble se
+  llevaba el alto y a la palabra le quedaba el 10 %; con la tele baja y ancha,
+  bisel fino y sin mandos, la palabra ocupa el 39 % y la pieza imprime hasta
+  a 9 mm.
+
+Dicho corto: **si el nombre tiene que leerse, el nombre decide la proporción
+de la pieza.**
+
+## El calado no es negociable en una forma estrecha
+
+Texto CALADO dentro de un objeto —el PLORA MIQUES de la referencia— solo
+funciona si el objeto es ancho. En una gota, las letras caladas a 11 mm tienen
+0,15 mm de calado y la ganancia de tinta las cierra enteras. Tinta MACIZA no
+tiene contraforma que cerrar, así que imprime mucho más abajo: el mismo texto,
+calado pedía 16 mm y macizo pide 11.
+
+## El punto ciego que queda: dos letras que se sueldan
+
+`medir-imprimibilidad.py` ve tres cosas —tinta que adelgaza, contraformas que
+se cierran, islas que desaparecen— y **no ve que dos letras se junten**. El
+hueco entre dos letras se escapa por arriba y por abajo, así que está
+conectado con el borde de la imagen y no cuenta como contraforma cerrada. Una
+palabra convertida en losa saca buena nota.
+
+Se vio en `NO DORMIRÍA TRANQUILO` a 7,4 mm y en `ALMA SOCIALISTA, MENTE DE
+TIBURÓN` a 9,7: ilegibles, y las dos «limpias» según la medición.
+
+La causa es una pescadilla: `medir-suelo.py` mide la pieza tal como está,
+`normalizar-trazo.py` le sube el trazo DESPUÉS según la altura que le haya
+tocado, y el trazo crece por los dos lados del contorno — medio por cada
+letra se come el hueco. O sea, el suelo se mide sobre un dibujo distinto del
+que imprime.
+
+Se intentaron dos arreglos y los dos se retiraron, por honestidad con lo que
+midieron:
+
+1. **Contar franjas horizontales de tinta** (si al dilatar quedan menos, se
+   han fundido renglones). No sirve: la soldadura que importa es entre letras
+   de la MISMA línea, que es horizontal, y además daba cuatro piezas por
+   imposibles que estaban bien.
+2. **Topar el trazo al que no suelde**, midiendo cuántas manchas separadas
+   quedan. Tampoco: se medía sobre el SVG que YA lleva trazo aplicado, así
+   que cualquier engorde fundía algo y acababa dejando 42 piezas a 0,10 mm,
+   muy por debajo de lo que imprime. El remedio era peor.
+
+Lo que haría falta de verdad es medir sobre el arte SIN trazo y comparar
+contra el número de manchas de ese original. Queda apuntado, no hecho.
+Mientras tanto, la regla de mano: **una frase de dos líneas por debajo de
+unos 11 mm impresos hay que mirarla con los ojos**, porque la medición la va
+a dar por buena.
+
+## Un trazo que solo sabe subir se queda gordo para siempre
+
+`normalizar-trazo.py` calculaba el grosor contra la altura IMPRESA y solo lo
+SUBÍA. Suena inofensivo y no lo es: una pieza que un día cae en una fila baja
+se lleva un trazo gordo **en unidades de dibujo**, y cuando el reparto le da
+después una fila alta, ese grosor no se deshace. La frase sigue soldada en una
+losa por mucho que la pieza crezca.
+
+Costó media tarde porque la prueba obvia engaña: renderizar la pieza más
+grande no la arregla —es el mismo dibujo escalado— y parece que el tamaño no
+es el problema. Lo era, pero solo si se REGENERA el arte a esa altura.
+
+Arreglado fijando el trazo EXACTO en las piezas de texto, donde no es
+jerarquía de dibujo sino refuerzo de impresión. En las ilustraciones se sigue
+solo subiendo: ahí la diferencia de grosores sí es deliberada.
+
+La regla general, que vale para cualquier tubería: **un paso que solo sabe
+empujar en una dirección no es idempotente, y el día que la entrada baje te
+deja el valor de ayer sin avisar.**

@@ -237,14 +237,26 @@ function empaquetar(cola, yIni, yFin, altoIdeal) {
       const suyas = enFila.filter((m) => m.tramo === t);
       if (!suyas.length) continue;
       const [ta, tb] = libres[t];
-      const anchos = suyas.map((m) => (m.a.w / m.a.h) * pesoDe(m.id) * altoFila);
+      const suma = suyas.reduce((s, m) => s + (m.a.w / m.a.h) * pesoDe(m.id), 0);
+      // ⚠️ El alto de fila va acotado por abajo (alto*0.55) para que el ritmo
+      // no se desfonde, y cuando las piezas de la fila son MUY apaisadas ese
+      // suelo deja el ancho necesario por encima del tramo. Antes se repartía
+      // igualmente y el hueco salía NEGATIVO: las piezas se montaban unas
+      // sobre otras —«rufián», «NO DORMIRÍA TRANQUILO» y «SON LAS 5» salieron
+      // apiladas en el mismo sitio y la última recortada a «ON LAS»—. Solapar
+      // no es una opción: antes de eso, la fila encoge.
+      const altoCabe = (tb - ta - 4 * (suyas.length - 1)) / suma;
+      const altoT = Math.min(altoFila, altoCabe);
+      const anchos = suyas.map((m) => (m.a.w / m.a.h) * pesoDe(m.id) * altoT);
       const usado = anchos.reduce((a, b) => a + b, 0);
       const suelta = !suyas[0].lleno;
-      const hueco = suelta || suyas.length < 2 ? 15 : (tb - ta - usado) / (suyas.length - 1);
+      const hueco = suelta || suyas.length < 2
+        ? 15
+        : Math.max(4, (tb - ta - usado) / (suyas.length - 1));
       const ocupa = usado + hueco * (suyas.length - 1);
       let x = suelta || suyas.length < 2 ? ta + (tb - ta - ocupa) / 2 : ta;
       suyas.forEach((m, k) => {
-        const h = altoFila * pesoDe(m.id);
+        const h = altoT * pesoDe(m.id);
         piezas.push({ ...m, x, y: y + (altoFila - h) / 2, w: anchos[k], h });
         x += anchos[k] + hueco;
       });
@@ -361,7 +373,18 @@ for (let k = 0; k < 4; k++) {
   puestas = empaquetar(COLA_CUERPO, Y_INI, Y_FIN, ideal);
 }
 {
-  const r = repartirPorSuelo(COLA_CUERPO, Y_INI, Y_FIN, ideal);
+  // Tres cosas que cumplir, por orden: que ENTREN TODAS, que ninguna baje de
+  // su suelo, y que el tejido llene la banda. Las dos primeras mandan: una
+  // pieza fuera es una pieza que no se imprime, y el autoajuste solo mira la
+  // tercera. Si falta alguna se aprieta el alto ideal y se vuelve a repartir.
+  let r = repartirPorSuelo(COLA_CUERPO, Y_INI, Y_FIN, ideal);
+  for (let k = 0; k < 8 && r.puestas.length < COLA_CUERPO.length; k++) {
+    ideal *= 0.97;
+    r = repartirPorSuelo(COLA_CUERPO, Y_INI, Y_FIN, ideal);
+  }
+  if (r.puestas.length < COLA_CUERPO.length) {
+    console.log(`  ⚠️  ${COLA_CUERPO.length - r.puestas.length} pieza(s) siguen sin entrar tras apretar el alto`);
+  }
   puestas = r.puestas;
   const cortas = porDebajo(puestas);
   if (cortas.length) {
@@ -448,6 +471,53 @@ if (errores.length) {
   console.error(`\n⛔ La lámina está MAL FORMADA y saldría en blanco:`);
   for (const e of errores.slice(0, 5)) console.error("   " + e);
   process.exit(1);
+}
+
+// ⚠️ Que dos piezas no se pisen tampoco se ve en la lámina a ojo: salen
+// superpuestas, la de abajo asoma por los lados y parece textura. Pasó al
+// ensanchar varias piezas —«rufián», «NO DORMIRÍA TRANQUILO» y «SON LAS 5»
+// apiladas en el mismo hueco— y solo se vio recortando el PNG al 400 %.
+{
+  const caja = (p) => [p.x, p.y, p.x + p.w, p.y + p.h];
+  const todas = [...puestas, ...hombro.filter((p) => p.x !== undefined)];
+  const choques = [];
+  for (let i = 0; i < todas.length; i++) {
+    for (let j = i + 1; j < todas.length; j++) {
+      const [ax0, ay0, ax1, ay1] = caja(todas[i]);
+      const [bx0, by0, bx1, by1] = caja(todas[j]);
+      // 1 unidad de tolerancia: los remates se tocan a propósito.
+      const solapeX = Math.min(ax1, bx1) - Math.max(ax0, bx0);
+      const solapeY = Math.min(ay1, by1) - Math.max(ay0, by0);
+      if (solapeX > 1 && solapeY > 1) {
+        choques.push(`${slugDe(todas[i].id)} ↔ ${slugDe(todas[j].id)} `
+          + `(${solapeX.toFixed(0)}×${solapeY.toFixed(0)} u)`);
+      }
+    }
+  }
+  if (choques.length) {
+    console.error(`\n⛔ ${choques.length} par(es) de piezas se pisan:`);
+    for (const c of choques.slice(0, 8)) console.error("   · " + c);
+    process.exit(1);
+  }
+}
+
+// ⚠️ Que el arte EXISTA no es que se haya COLOCADO. El empaquetador corta
+// cuando se le acaba el alto, así que una pieza puede quedarse fuera y la
+// lámina sale entera, bonita y sin ella — y es la lámina que recibe el
+// taller. Al añadir el reparto por suelo pasó: la cuenta bajó de 68 a 67 y
+// solo se vio porque alguien miró el número. Ahora se comprueba pieza a
+// pieza y se para.
+{
+  const esperadas = new Set([...COLA, ...HOMBRO_PIEZAS, 54].map(slugDe).filter(Boolean));
+  const dentro = new Set([...puestas.map((p) => p.id), ...hombro.map((p) => p.id), 54]
+    .map(slugDe).filter(Boolean));
+  const fuera = [...esperadas].filter((s) => !dentro.has(s));
+  if (fuera.length) {
+    console.error(`\n⛔ ${fuera.length} pieza(s) NO han entrado en el desarrollo:`);
+    for (const s of fuera) console.error("   · " + s);
+    console.error("   El taller recibiría un arte incompleto. Se para.");
+    process.exit(1);
+  }
 }
 
 console.log(`${colocadas} piezas colocadas · sin arte aún: ${[...saltadas].join(", ") || "ninguna"}`);

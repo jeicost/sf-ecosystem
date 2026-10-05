@@ -13,6 +13,7 @@ un arte que ya no existe.
 Salida: paquetes/serigrafia/ESPECIFICACION-TECNICA.pdf
 """
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -52,6 +53,8 @@ code { font:9.5pt "SF Mono",Menlo,monospace; background:#f2f0ec; padding:1pt 3pt
 
 
 def main() -> int:
+    # Las cifras de imprimibilidad salen de la medición, no de la memoria.
+    subprocess.run([sys.executable, str(AQUI / "actualizar-cifras.py")], check=True)
     if not FUENTE.exists():
         print(f"no encuentro {FUENTE}", file=sys.stderr)
         return 1

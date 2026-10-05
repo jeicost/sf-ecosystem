@@ -29,12 +29,30 @@ from medir_comun import ICONOS, MALLA_FINA_MM, RES, medir, rasterizar, rota
 AQUI = Path(__file__).resolve().parent
 SALIDA = AQUI.parent / "suelo-piezas.json"
 
-#: Escalera de alturas en mm. Por debajo de 6 mm no hay pieza que aguante y
-#: por encima de 26 el empaquetador no llega nunca (salvo el instrumento, que
-#: va por su carril y se excluye).
-ESCALERA = [6, 7.5, 9, 11, 13.5, 16, 19, 23]
+#: Escalera de alturas en mm. Fina a propósito: con escalones gruesos el
+#: suelo sale redondeado hacia arriba y el reparto se pone a intercambiar
+#: piezas para cumplir una exigencia que no es real — `43-izquierda-caviar`
+#: constaba de 16 mm cuando imprime bien a 14,3, y los remates no podían
+#: bajar de 6 aunque aguantasen 4, porque 6 era el primer escalón.
+ESCALERA = [3.5, 4.5, 5.5, 6.5, 7.5, 8.5, 9.5, 11, 12.5, 14, 15.5, 17.5, 20, 23]
 #: Piezas con carril propio: su alto no lo decide el reparto.
 EXENTAS = {"54-lagrimometro"}
+
+#: Suelos puestos A OJO, porque la medición no los ve.
+#:
+#: `medir-imprimibilidad` no detecta que dos letras se SUELDEN: el hueco entre
+#: ellas se escapa por arriba y por abajo, así que está conectado con el borde
+#: y no cuenta como contraforma cerrada (ver el apéndice del vocabulario).
+#: Estas frases de dos líneas sacaban buena nota siendo losas ilegibles.
+#:
+#: Y no se arreglan agrandando el fichero: el trazo se recalcula según la
+#: altura asignada —`normalizar-trazo.py` sube al mínimo imprimible en
+#: MILÍMETROS—, así que la pieza solo deja de soldarse si el reparto le da
+#: sitio. De ahí que el arreglo sea un suelo y no un redibujo.
+A_OJO = {
+    "t-no-dormiria-tranquilo": 12.5,
+    "t-alma-socialista-mente-de-tiburon": 14.0,
+}
 
 
 def main() -> int:
@@ -57,6 +75,8 @@ def main() -> int:
                 else:
                     bueno = ESCALERA[m]
                     hi = m - 1
+            if f.stem in A_OJO:
+                bueno = max(bueno or 0, A_OJO[f.stem])
             suelo[f.stem] = bueno
             marca = "—" if bueno is None else f"{bueno:>4} mm"
             print(f"  {marca}  {f.stem}")

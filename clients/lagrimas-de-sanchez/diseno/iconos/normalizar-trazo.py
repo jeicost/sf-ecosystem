@@ -76,10 +76,27 @@ def main() -> int:
         # imprimiría: un trazo por debajo de 0,85 mm sobre el vidrio.
         objetivo = MINIMO_TEXTO_MM if f.name.startswith("t-") else MINIMO_MM
         minimo = objetivo * (alto / mm_impresos)
+        # En las piezas de TEXTO el trazo no es jerarquía de dibujo: es solo
+        # el refuerzo para que la letra imprima, así que se fija EXACTO.
+        #
+        # ⚠️ Subirlo sin poder bajarlo tiene una consecuencia que costó media
+        # tarde: el grosor se calcula contra la altura impresa, así que una
+        # pieza que un día cae en una fila baja se lleva un trazo gordo en
+        # unidades de dibujo — y si al repartir de nuevo le toca una fila
+        # alta, ese grosor NO se deshace y la frase sigue soldada en una losa
+        # ilegible por mucho que crezca. Pasó con «NO DORMIRÍA TRANQUILO» y
+        # «ALMA SOCIALISTA, MENTE DE TIBURÓN», y el único arreglo era acordarse
+        # de regenerar el arte antes de normalizar. Acordarse no es un arreglo.
+        exacto_texto = f.name.startswith("t-")
         cambiado = False
         def sube(m):
             nonlocal cambiado
             v = float(m.group(1))
+            if exacto_texto:
+                if abs(v - minimo) > 0.01:
+                    cambiado = True
+                    return f'stroke-width="{minimo:.2f}"'
+                return m.group(0)
             if v < minimo:
                 cambiado = True
                 return f'stroke-width="{minimo:.2f}"'

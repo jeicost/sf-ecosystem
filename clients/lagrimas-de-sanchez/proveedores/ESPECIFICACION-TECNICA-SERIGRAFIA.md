@@ -1,7 +1,7 @@
 # Especificación técnica de serigrafía
 ## Lágrimas de Sánchez · magnum 150 cl · 1 tinta blanca sobre vidrio antico
 
-Documento para el taller. Rev. 2 · 30 de septiembre de 2026.
+Documento para el taller. Rev. 3 · 5 de octubre de 2026.
 Contacto: Carlos Jacoste · Aranjuez, Madrid · lagrimasdesanchez.com
 
 ---
@@ -99,17 +99,24 @@ Y lo hacemos en **dos escenarios**, porque el suelo lo ponen ustedes:
 
 | Escenario | Trazo mínimo | Resultado |
 |---|---|---|
-| **Estricto** | 0,80 mm | 21 piezas limpias · 14 con riesgo asumible |
-| **Malla fina** | 0,35 mm | 26 piezas más entran sin problema — 61 de 67 en total |
-| **Rotas en ambos** | — | **6 piezas**, y las estamos rehaciendo |
+| **Estricto** | 0,80 mm | 20 piezas limpias · 16 con riesgo asumible |
+| **Malla fina** | 0,35 mm | 31 piezas más entran sin problema — 67 de 67 en total |
+| **Rotas en ambos** | — | **ninguna** — las 67 entran |
 
 **Lo que esto significa para el presupuesto y para el arte:** si su malla
 garantiza ≤0,5 mm, el arte entra tal cual. Si su suelo real es 0,8 mm,
-tenemos 26 piezas que redibujar antes del fotolito — y preferimos hacerlo
+tenemos 31 piezas que redibujar antes del fotolito — y preferimos hacerlo
 ahora que descubrirlo con las pantallas hechas.
 
+Y hay un tercer número, que es el que de verdad nos deja dormir: a cada
+pieza le hemos medido su **suelo** — la altura impresa mínima a la que deja
+de romperse — y el montaje del desarrollo está hecho de manera que **ninguna
+pieza cae por debajo del suyo**. No es una declaración de intenciones: el
+generador no produce la lámina si alguna lo incumple, igual que no la produce
+si alguna pieza se queda fuera del desarrollo.
+
 Alturas de impresión del arte: de **3,6 mm** la pieza más pequeña a **128 mm**
-la columna vertical del instrumento, con una **mediana de 13,8 mm**.
+la columna vertical del instrumento, con una **mediana de 13,5 mm**.
 
 Los grosores están fijados en **milímetros impresos**, no en unidades de
 dibujo: mínimo 0,85 mm en los pictogramas, 0,50 mm en los textos y 1,00 mm en

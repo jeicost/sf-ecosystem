@@ -14,12 +14,14 @@ cuarentena del servidor del taller y no se entera nadie. El proveedor mira
 estas imágenes en pantalla —el arte vectorial va aparte—, así que se
 reducen a lo que se ve bien en un monitor.
 """
-import shutil
+import base64
+import re
 import subprocess
 import sys
 from pathlib import Path
 
 from PIL import Image
+from playwright.sync_api import sync_playwright
 
 AQUI = Path(__file__).resolve().parent
 RENDERS = AQUI.parent / "diseno" / "renders"
@@ -59,6 +61,27 @@ EXIGIDOS = {
 }
 
 
+def rasterizar_desarrollo(destino: Path, ancho: int = 3300) -> None:
+    """El 360° desplegado, del SVG que genera `generar-desarrollo.mjs`.
+
+    Se rasteriza aquí y no a mano porque el PNG que se manda al taller tiene
+    que ser el desarrollo VIGENTE: el 30 de septiembre los paquetes llevaban
+    uno del 23, anterior a los redibujos, y nadie se habría enterado.
+    """
+    svg = (DISENO / "desarrollo-plano.svg").read_text()
+    vb = [float(x) for x in re.search(r'viewBox="([\d.\- ]+)"', svg).group(1).split()]
+    alto = round(ancho * vb[3] / vb[2])
+    uri = "data:image/svg+xml;base64," + base64.b64encode(svg.encode()).decode()
+    with sync_playwright() as pw:
+        b = pw.chromium.launch()
+        pg = b.new_page(viewport={"width": ancho, "height": min(alto, 4000)})
+        pg.set_content(f'<body style="margin:0;background:#12140f">'
+                       f'<img src="{uri}" style="width:{ancho}px;display:block">')
+        pg.wait_for_timeout(2500)
+        pg.locator("img").screenshot(path=str(destino))
+        b.close()
+
+
 def encoger(origen: Path, destino: Path, ancho: int) -> str:
     im = Image.open(origen)
     if im.width > ancho:
@@ -72,6 +95,10 @@ def encoger(origen: Path, destino: Path, ancho: int) -> str:
 
 def main() -> int:
     fallos = []
+    maestro_dev = DISENO / "desarrollo-plano.png"
+    print("desarrollo 360° desde el SVG vigente…")
+    rasterizar_desarrollo(maestro_dev)
+    print(f"  ✓ {maestro_dev.name}: {maestro_dev.stat().st_size/1024/1024:.1f} MB")
     for paquete, ficheros in CONTENIDO.items():
         carpeta = PAQUETES / paquete
         carpeta.mkdir(parents=True, exist_ok=True)
