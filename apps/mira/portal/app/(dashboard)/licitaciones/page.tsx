@@ -482,7 +482,10 @@ export default function LicitacionesAssistantPage() {
             break
           }
           case 'error': {
-            patchMsg(assistantMsgId, (m) => ({ ...m, error: String(data.message || 'Something went wrong') }))
+            // Un error del servidor (p. ej. sin saldo) cierra el stream a propósito: no es un
+            // corte de red, así que no se pinta además «The connection dropped».
+            finished = true
+            patchMsg(assistantMsgId, (m) => ({ ...m, error: String(data.message || 'Something went wrong'), streaming: false }))
             break
           }
           case 'done': {
