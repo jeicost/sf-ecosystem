@@ -5,6 +5,7 @@ import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { toJson, writable } from '@/lib/db-json'
+import { estructurarDocumento } from '@/lib/generation/tender-documento'
 import {
   extractTenderCriteria, generateTenderMemoria, maskOrganos, maskPalabras, palabrasAEnmascarar,
   type TenderCriteria,
@@ -39,6 +40,7 @@ export interface ChatDeps {
   generateMemoria: typeof generateTenderMemoria
   loadTenderTeaching: typeof loadTenderTeaching
   addLesson: typeof addLesson
+  estructurar?: typeof estructurarDocumento
 }
 export const defaultDeps = (): ChatDeps => ({
   knowledge: getKnowledgeContext,
@@ -46,6 +48,7 @@ export const defaultDeps = (): ChatDeps => ({
   generateMemoria: generateTenderMemoria,
   loadTenderTeaching,
   addLesson,
+  estructurar: estructurarDocumento,
 })
 
 export type Emit = (event: string, data: unknown) => void
@@ -369,6 +372,81 @@ async function run(ctx: ChatContext, t: ToolInput): Promise<ToolOutcome> {
       return out({ ok: true, leccion: l.text }, `Lección guardada: «${l.text.slice(0, 80)}»`)
     }
 
+    case 'guardar_version_final': {
+      // Carlos (5-oct): «que se le pueda subir al chat y le indiquemos que lo guarde
+      // en MIRA y aprenda de ello». Lo que enseña a MIRA son las memorias de los
+      // expedientes presentados/ganados/perdidos (loadMemoriaExamples): por eso la
+      // versión final se escribe en tenders.memoria y el expediente cambia de estado.
+      let secciones: SeccionDoc[] = []
+      let titulo = t.titulo || ''
+      let docId: string | null = null
+      if (t.adjunto_id) {
+        const { texto, faltan } = pliegoDeAdjuntos(ctx, [t.adjunto_id])
+        if (faltan.length) return fail(`No existe el adjunto ${t.adjunto_id}.`, toolLabel('guardar_version_final'))
+        if (texto.length < 800) return fail('Ese adjunto casi no tiene texto (¿PDF escaneado?): no se puede aprender de él.', toolLabel('guardar_version_final'))
+        const adj = ctx.attachments.find((a) => a.id === t.adjunto_id)!
+        const est = await (ctx.deps.estructurar ?? estructurarDocumento)({ clientId, texto: adj.text, filename: adj.filename })
+        secciones = est.secciones.map((s) => ({ titulo: String(s.titulo).slice(0, 200), contenido: String(s.contenido) }))
+        titulo = titulo || est.titulo || adj.filename.replace(/\.[a-z0-9]+$/i, '')
+      } else {
+        const { data, error } = await db.from('tender_documents').select('id,title,sections').eq('id', t.document_id!).eq('client_id', clientId).maybeSingle()
+        if (error) throw error
+        if (!data) return fail('Ese documento no existe o no es de esta marca.', toolLabel('guardar_version_final'))
+        secciones = seccionesDe(data.sections).map((s) => ({ titulo: s.titulo, contenido: s.contenido }))
+        titulo = titulo || data.title
+        docId = data.id
+      }
+      secciones = secciones.filter((s) => s.contenido.trim().length > 0)
+      if (secciones.length < 2) return fail('No se han podido separar apartados en ese documento: revisa que sea la memoria completa.', toolLabel('guardar_version_final'))
+
+      // Expediente: el de la conversación o uno nuevo con el título del documento.
+      let tenderId = ctx.tenderId
+      if (!tenderId) {
+        const { data, error } = await db.from('tenders').insert({ client_id: clientId, title: titulo.slice(0, 200), status: t.estado, created_by: ctx.userId })
+          .select('id,title').single()
+        if (error) throw error
+        tenderId = data.id
+        await db.from('tender_chats').update({ tender_id: tenderId, updated_at: new Date().toISOString() }).eq('id', ctx.chatId).eq('client_id', clientId)
+        ctx.tenderId = tenderId
+        ctx.emit('chat', { chatId: ctx.chatId, title: ctx.chatTitle, tenderId, tenderTitle: data.title })
+      }
+      const { data: prev, error: e1 } = await db.from('tenders').select('title,memoria').eq('id', tenderId).eq('client_id', clientId).maybeSingle()
+      if (e1) throw e1
+      if (!prev) return fail('El expediente de esta conversación ya no existe.', toolLabel('guardar_version_final'))
+      // La memoria que hubiera se conserva como documento antes de sustituirla.
+      const prevSecs = Array.isArray((prev.memoria as { secciones?: unknown[] } | null)?.secciones) ? seccionesDe((prev.memoria as { secciones: unknown[] }).secciones) : []
+      if (prevSecs.length) {
+        const { error } = await db.from('tender_documents').insert(writable({
+          client_id: clientId, tender_id: tenderId, kind: 'memoria', status: 'borrador',
+          title: `${(prev.memoria as { titulo?: string }).titulo || prev.title} — previous version (${fechaCorta()})`,
+          sections: toJson(prevSecs), created_by: ctx.userId, updated_by: ctx.userId,
+        }))
+        if (error) throw error
+      }
+      const memoria = { titulo, secciones: secciones.map((s) => ({ titulo: s.titulo, contenido: s.contenido })), fuente: 'version_final', guardada: new Date().toISOString() }
+      const { error: e2 } = await db.from('tenders').update(writable({ memoria: toJson(memoria), status: t.estado, updated_at: new Date().toISOString() }))
+        .eq('id', tenderId).eq('client_id', clientId)
+      if (e2) throw e2
+      // El documento queda en Documents como «final».
+      if (docId) {
+        const { error } = await db.from('tender_documents').update(writable({ status: 'final', tender_id: tenderId, updated_at: new Date().toISOString(), updated_by: ctx.userId }))
+          .eq('id', docId).eq('client_id', clientId)
+        if (error) throw error
+      } else {
+        const { data, error } = await db.from('tender_documents').insert(writable({
+          client_id: clientId, tender_id: tenderId, kind: 'memoria', status: 'final', title: titulo.slice(0, 200),
+          sections: toJson(secciones), created_by: ctx.userId, updated_by: ctx.userId,
+        })).select('id').single()
+        if (error) throw error
+        docId = data.id
+        ctx.createdNow.add(data.id)
+      }
+      ctx.emit('document', { id: docId, title: titulo })
+      return out({ ok: true, tender_id: tenderId, estado: t.estado, secciones: secciones.length, copia_anterior: prevSecs.length > 0 },
+        `Versión final guardada (${secciones.length} apartados) y expediente marcado como ${t.estado}: MIRA la usará de referencia`,
+        { id: docId!, titulo, accion: 'creado' })
+    }
+
     case 'asociar_expediente': {
       let tender: { id: string; title: string }
       if (t.tender_id) {
@@ -420,6 +498,7 @@ export const REGLAS_DESTILADAS: string[] = [
   'Nunca escribas precios, tarifas, importes ni descuentos, ni orientativos: los pone el equipo comercial ([FALTA: tarifa]).',
   'Respeta los términos exactos que usa la persona y el vocabulario del pliego; registro institucional, español de España salvo que pidan otro idioma.',
   'Guarda con crear_documento lo que la persona vaya a querer conservar, y cuando cambies un documento guardado di qué sección y qué cambió.',
+  'Cuando la persona diga que un documento es la versión final, la presentada o la ganada, y que MIRA aprenda de él, usa guardar_version_final (pregunta el estado si no lo dijo). Así entra en las referencias de las memorias siguientes.',
 ]
 
 export function buildSystemPrompt(parts: {

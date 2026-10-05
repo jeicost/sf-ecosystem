@@ -155,6 +155,7 @@ export type ToolInput =
   | { name: 'exportar_word'; document_id: string }
   | { name: 'recordar_leccion'; texto: string }
   | { name: 'asociar_expediente'; tender_id: string | null; titulo?: string }
+  | { name: 'guardar_version_final'; adjunto_id?: string; document_id?: string; estado: 'presentada' | 'ganada' | 'perdida'; titulo?: string }
 
 export const SECTION_TITLE_MAX = 200
 export const SECTION_CONTENT_MAX = 40_000
@@ -244,6 +245,14 @@ export function validateToolInput(name: string, raw: unknown): Valid<ToolInput> 
       }
       if (!isUuid(i.tender_id)) return bad('tender_id no válido: usa listar_expedientes.')
       return { ok: true, value: { name, tender_id: i.tender_id, titulo } }
+    }
+    case 'guardar_version_final': {
+      const adjunto_id = typeof i.adjunto_id === 'string' && /^a\d{1,3}$/.test(i.adjunto_id) ? i.adjunto_id : undefined
+      const document_id = isUuid(i.document_id) ? (i.document_id as string) : undefined
+      if (!adjunto_id === !document_id) return bad('Indica UNA fuente: adjunto_id (el Word/PDF subido, a1…) o document_id (un documento guardado).')
+      const estado = i.estado === 'ganada' || i.estado === 'perdida' ? i.estado : i.estado === 'presentada' || i.estado === undefined ? 'presentada' : null
+      if (!estado) return bad('estado debe ser presentada, ganada o perdida.')
+      return { ok: true, value: { name, adjunto_id, document_id, estado, titulo: str(i.titulo, 200) || undefined } }
     }
     default:
       return bad(`Herramienta desconocida: ${name}`)
@@ -342,6 +351,16 @@ export const TOOL_DEFS: Anthropic.Tool[] = [
       tender_id: { type: ['string', 'null'] },
       titulo: { type: 'string' },
     }, required: ['tender_id'] },
+  },
+  {
+    name: 'guardar_version_final',
+    description: 'Úsala cuando la persona diga que un documento es la versión FINAL (la que presentó, ganó o perdió) y que MIRA aprenda de ella. Guarda ese texto como la memoria del expediente (lo crea con titulo si la conversación no tiene uno), marca el expediente con su estado y lo convierte en referencia para las memorias siguientes. La memoria anterior del expediente, si la había, se guarda como copia. Fuente: adjunto_id (el Word/PDF que ha subido) o document_id (un documento guardado). Confirma antes el estado si no lo ha dicho.',
+    input_schema: { type: 'object', properties: {
+      adjunto_id: { type: 'string' },
+      document_id: { type: 'string' },
+      estado: { type: 'string', enum: ['presentada', 'ganada', 'perdida'] },
+      titulo: { type: 'string', description: 'Título del expediente si hay que crearlo' },
+    }, required: ['estado'] },
   },
 ]
 
@@ -485,6 +504,7 @@ export function toolLabel(name: string): string {
     crear_documento: 'Guardando documento', leer_documento: 'Leyendo documento', editar_seccion: 'Editando sección',
     generar_memoria_completa: 'Generando la memoria completa (2-4 min)', exportar_word: 'Preparando Word',
     recordar_leccion: 'Guardando lección', asociar_expediente: 'Asociando expediente',
+    guardar_version_final: 'Guardando la versión final para aprender de ella',
   }
   return L[name] || name
 }

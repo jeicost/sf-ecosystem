@@ -112,6 +112,7 @@ function toolLabel(t: { name: string; summary?: string }, brandName: string): st
     exportar_word: 'Preparing the Word document…',
     recordar_leccion: 'Saving the lesson…',
     asociar_expediente: 'Linking the tender…',
+    guardar_version_final: 'Saving the final version so MIRA learns from it…',
   }
   if (exact[t.name]) return exact[t.name]
   const n = t.name.toLowerCase()

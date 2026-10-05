@@ -131,7 +131,7 @@ check('descuento sustituido, KPI no', so.texto.includes('[FALTA: descuento]') &&
 
 console.log('\nPrompt: reglas destiladas presentes')
 const sp = buildSystemPrompt({ brandName: 'Marca Ejemplo', brainBlock: 'BRAIN', teachingText: 'LECCIONES — 1. x' })
-check('22 reglas destiladas en el prompt', REGLAS_DESTILADAS.length === 22 && sp.includes('22. ') && sp.includes('separación de sobres'))
+check('23 reglas destiladas en el prompt', REGLAS_DESTILADAS.length === 23 && sp.includes('23. ') && sp.includes('separación de sobres'))
 check('el prompt lleva enseñanza, brain y contrato', sp.includes('LECCIONES') && sp.includes('BRAIN') && sp.includes('GROUNDING'))
 check('precios prohibidos en las reglas', REGLAS_DESTILADAS.some((r) => /precios/i.test(r)))
 
