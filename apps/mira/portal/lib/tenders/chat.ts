@@ -551,6 +551,30 @@ export interface TurnResult {
 /** Pasado este tiempo no se empieza otra vuelta: la ruta muere a los 300 s y se perdería todo. */
 const TURN_DEADLINE_MS = 240_000
 
+/**
+ * Marca la caché sobre el último bloque de la conversación. Sin esto, cada una de
+ * las hasta 8 vueltas de herramientas de un mensaje reenviaba TODA la conversación
+ * (pliegos leídos incluidos) a precio completo: el 5-oct, 930.000 tokens de entrada
+ * sin caché en 50 llamadas. Con la marca, la vuelta siguiente lee ese prefijo de la
+ * caché (~10 % del precio). Copia superficial: el historial guardado no se toca.
+ */
+export function conCacheAlFinal(conv: Anthropic.MessageParam[]): Anthropic.MessageParam[] {
+  if (!conv.length) return conv
+  const out = conv.slice()
+  const last = out[out.length - 1]
+  const blocks: Anthropic.ContentBlockParam[] = typeof last.content === 'string'
+    ? [{ type: 'text', text: last.content }]
+    : last.content.slice()
+  const i = blocks.length - 1
+  if (i < 0) return conv
+  const b = blocks[i] as Anthropic.ContentBlockParam & { cache_control?: unknown }
+  // Los bloques de pensamiento no admiten marca de caché.
+  if (b.type === 'thinking' || b.type === 'redacted_thinking') return conv
+  blocks[i] = { ...b, cache_control: { type: 'ephemeral' } } as Anthropic.ContentBlockParam
+  out[out.length - 1] = { ...last, content: blocks }
+  return out
+}
+
 export async function runTenderChat(opts: {
   ctx: ChatContext
   history: Anthropic.MessageParam[]
@@ -586,7 +610,7 @@ export async function runTenderChat(opts: {
       }
       let first = true
       const stream = client.messages.stream({
-        model: CHAT_MODEL, max_tokens: MAX_TOKENS_TURN, system: systemBlocks, tools: toolDefs, messages: conversation,
+        model: CHAT_MODEL, max_tokens: MAX_TOKENS_TURN, system: systemBlocks, tools: toolDefs, messages: conCacheAlFinal(conversation),
       })
       stream.on('text', (t) => {
         // Entre vueltas, un salto: si no, «Voy a leer el pliego.» y «El pliego pide…» salen pegados.
