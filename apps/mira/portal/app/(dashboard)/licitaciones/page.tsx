@@ -4,8 +4,9 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
   FileText, Loader2, Plus, Settings, X, Paperclip, Send, Square, MessageSquare, FolderOpen,
-  Download, Pencil, Trash2, Check, AlertTriangle, RotateCcw, Link2, Wrench,
+  Download, Pencil, Trash2, Check, AlertTriangle, RotateCcw, Link2, Wrench, Radar,
 } from 'lucide-react'
+import TenderRadar, { type RadarItem } from '@/components/tenders/TenderRadar'
 import { useActiveClient } from '@/lib/client-context'
 import { useClientTools } from '@/lib/hooks/useClientTools'
 import BrandName from '@/components/ui/BrandName'
@@ -202,6 +203,7 @@ export default function LicitacionesAssistantPage() {
 
   // ── Cajones ──
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [radarOpen, setRadarOpen] = useState(false)
   const [docOpenId, setDocOpenId] = useState<string | null>(null)
   const [docsRefresh, setDocsRefresh] = useState(0)
   const [busyDoc, setBusyDoc] = useState<string | null>(null)
@@ -248,7 +250,7 @@ export default function LicitacionesAssistantPage() {
     setMessages([]); setStreaming(false); setError(null)
     setInput(''); setFiles([])
     setChats([]); setDocs([]); setTenders([])
-    setDocOpenId(null); setSettingsOpen(false); setRenamingId(null)
+    setDocOpenId(null); setSettingsOpen(false); setRadarOpen(false); setRenamingId(null)
     if (!clientId) return
     trackPage('/licitaciones', clientId)
     setListsLoading(true)
@@ -635,6 +637,9 @@ export default function LicitacionesAssistantPage() {
             <p className="mt-0.5 text-sm text-ink-tertiary">Tell it what you need — read a tender, adapt last year’s proposal, write a section, get the Word. It works with everything {brandName} has submitted before.</p>
           </div>
           <div className="flex shrink-0 items-center gap-1">
+            <button onClick={() => setRadarOpen(true)} className="flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors hover:bg-surface-hover" style={{ color: brand }}>
+              <Radar size={14} /> Find tenders
+            </button>
             <Link href="/licitaciones/clasico" className="rounded-lg px-2 py-1.5 text-xs text-ink-tertiary transition-colors hover:text-ink">Classic view</Link>
             <button onClick={() => setSettingsOpen(true)} aria-label="Settings: Teach MIRA and Word template" title="Teach MIRA · Word template"
               className="rounded-lg p-2 text-ink-tertiary transition-colors hover:bg-surface-hover hover:text-ink">
@@ -923,6 +928,25 @@ export default function LicitacionesAssistantPage() {
               mejoras, guardar y Word ya están resueltos ahí. openId deja abierto
               el que se ha pulsado. */}
           <DocumentsPanel key={`docs-${clientId}`} clientId={clientId} tenderId={null} brand={brand} openId={docOpenId} refreshKey={docsRefresh} />
+        </Drawer>
+      )}
+
+      {/* ── Cajón: buscador de licitaciones (PLACSP) ── */}
+      {radarOpen && clientId && (
+        <Drawer onClose={() => setRadarOpen(false)} title="Find tenders" icon={<Radar size={15} style={{ color: brand }} />}>
+          <TenderRadar key={`radar-${clientId}`} clientId={clientId} brand={brand} onWorkOn={(it: RadarItem) => {
+            // Conversación nueva con los datos del concurso ya escritos; la persona
+            // adjunta los pliegos de PLACSP y envía.
+            newChat(); setRadarOpen(false)
+            setInput([
+              `Quiero preparar esta licitación: «${it.title}».`,
+              it.org ? `Órgano: ${it.org}.` : '', it.expediente ? `Expediente: ${it.expediente}.` : '',
+              it.amount != null ? `Importe: ${new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(it.amount)}.` : '',
+              it.deadline ? `Plazo: ${new Date(it.deadline).toLocaleDateString('es-ES')}.` : '', it.link ? `PLACSP: ${it.link}` : '',
+              'Te adjunto los pliegos. Dime qué pide, cómo se puntúa y por dónde empezamos.',
+            ].filter(Boolean).join('\n'))
+            setTimeout(() => taRef.current?.focus(), 50)
+          }} />
         </Drawer>
       )}
 
