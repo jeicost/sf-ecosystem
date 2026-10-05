@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { clsx } from 'clsx'
 import {
   FileText, Loader2, Plus, Settings, X, Paperclip, Send, Square, MessageSquare, FolderOpen,
-  Download, Pencil, Trash2, Check, AlertTriangle, RotateCcw, Link2, Wrench, Radar,
+  Download, Pencil, Trash2, Check, AlertTriangle, RotateCcw, Link2, Wrench, Radar, Upload,
 } from 'lucide-react'
 import TenderRadar, { type RadarItem } from '@/components/tenders/TenderRadar'
 import { useActiveClient } from '@/lib/client-context'
@@ -206,6 +206,10 @@ export default function LicitacionesAssistantPage() {
   const [radarOpen, setRadarOpen] = useState(false)
   const [docOpenId, setDocOpenId] = useState<string | null>(null)
   const [docsRefresh, setDocsRefresh] = useState(0)
+  // Subir un Word/PDF ya trabajado fuera para seguir con él (Carlos, 5-oct: «no sé dónde se subiría el documento»).
+  const docUploadRef = useRef<HTMLInputElement>(null)
+  const [docUploading, setDocUploading] = useState(false)
+  const [docUploadError, setDocUploadError] = useState<string | null>(null)
   const [busyDoc, setBusyDoc] = useState<string | null>(null)
 
   // ─── Listas ──────────────────────────────────────────────────────────────
@@ -596,6 +600,31 @@ export default function LicitacionesAssistantPage() {
 
   const openDoc = (id: string) => { setDocOpenId(id); setDocsRefresh((n) => n + 1) }
 
+  // El fichero se sube directo a Storage (Vercel corta cuerpos de más de 4,5 MB) y el
+  // servidor lo lee, lo trocea en secciones editables y lo borra. Si falla, no queda huérfano.
+  const uploadDoc = async (file: File) => {
+    if (!clientId) return
+    setDocUploading(true); setDocUploadError(null)
+    trackAction('/licitaciones', 'subir-documento', clientId, { bytes: file.size, tipo: file.type, origen: 'tira' })
+    let subido: string | null = null
+    try {
+      const up = await uploadTenderFile(clientId, file)
+      if ('error' in up) { setDocUploadError(up.error); return }
+      subido = up.path
+      const res = await fetch('/api/tender/documents/upload', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, tenderId: chatTenderId, path: up.path, filename: file.name, mime: file.type }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { if (res.status >= 500) void removeTenderFile(clientId, subido); setDocUploadError(data.error || 'Could not read the document'); return }
+      await loadDocs(); setTab('docs')
+      if (data.document?.id) openDoc(data.document.id)
+    } catch {
+      if (subido) void removeTenderFile(clientId, subido)
+      setDocUploadError('Network error while uploading: check your connection and try again.')
+    } finally { setDocUploading(false); if (docUploadRef.current) docUploadRef.current.value = '' }
+  }
+
   // Selector móvil: un solo <select> con los tres grupos.
   const onMobilePick = (v: string) => {
     const [kind, id] = v.split(':')
@@ -698,6 +727,20 @@ export default function LicitacionesAssistantPage() {
                     )}
                   </div>
                 )))}
+              {tab === 'docs' && (
+                <div className="w-56 shrink-0">
+                  <input ref={docUploadRef} type="file" accept={ACCEPT} className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) void uploadDoc(f) }} />
+                  <button onClick={() => docUploadRef.current?.click()} disabled={docUploading || !clientId}
+                    className="flex h-full w-full flex-col justify-center rounded-xl border border-dashed px-3 py-2 text-left transition-colors hover:bg-surface disabled:opacity-60"
+                    style={{ borderColor: brand }}>
+                    <span className="flex items-center gap-1.5 text-xs font-medium" style={{ color: brand }}>
+                      {docUploading ? <Loader2 size={12} className="animate-spin" /> : <Upload size={12} />}
+                      {docUploading ? 'Reading the document…' : 'Upload Word or PDF'}
+                    </span>
+                    <span className="mt-0.5 block text-[10px] text-ink-muted">{docUploadError || 'Your final version or a draft, to keep working on it'}</span>
+                  </button>
+                </div>
+              )}
               {tab === 'docs' && (docs.length === 0
                 ? <p className="py-2 text-xs text-ink-muted">{listsLoading ? 'Loading…' : 'No documents yet. The ones the assistant writes are saved here.'}</p>
                 : docs.map((d) => (
