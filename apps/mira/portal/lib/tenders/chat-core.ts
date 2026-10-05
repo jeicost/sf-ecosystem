@@ -354,7 +354,7 @@ export const TOOL_DEFS: Anthropic.Tool[] = [
   },
   {
     name: 'guardar_version_final',
-    description: 'Úsala cuando la persona diga que un documento es la versión FINAL (la que presentó, ganó o perdió) y que MIRA aprenda de ella. Guarda ese texto como la memoria del expediente (lo crea con titulo si la conversación no tiene uno), marca el expediente con su estado y lo convierte en referencia para las memorias siguientes. La memoria anterior del expediente, si la había, se guarda como copia. Fuente: adjunto_id (el Word/PDF que ha subido) o document_id (un documento guardado). Confirma antes el estado si no lo ha dicho.',
+    description: 'Úsala cuando la persona diga que un documento es la versión FINAL (la que presentó, ganó o perdió) y que MIRA aprenda de ella. Guarda ese texto como la memoria del expediente (lo crea con titulo si la conversación no tiene uno), marca el expediente con su estado y lo convierte en referencia para las memorias siguientes. La memoria anterior del expediente, si la había, se guarda como copia. Fuente: adjunto_id (el Word/PDF que ha subido) o document_id (un documento guardado). El estado se deduce de lo que diga («la presentamos» = presentada, «la ganamos» = ganada); pregunta solo si no hay forma de saberlo. Puedes comentar lo que veas, pero guarda en el mismo turno.',
     input_schema: { type: 'object', properties: {
       adjunto_id: { type: 'string' },
       document_id: { type: 'string' },

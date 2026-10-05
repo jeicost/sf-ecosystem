@@ -173,11 +173,13 @@ export async function POST(req: NextRequest) {
         // 5. El agente.
         const r = await runTenderChat({ ctx, history, system, state })
         const capError = r.error && /Monthly generation cap/.test(r.error)
+        // Sin saldo en la API (5-oct): decirlo claro; «vuelve a intentarlo» no sirve de nada.
+        const sinSaldo = r.error && /credit balance|billing/i.test(r.error)
         const assistantMsg: ChatMessage = {
           id: randomUUID(), n: messages.length + 1, role: 'assistant', content: r.text, at: new Date().toISOString(),
           ...(r.tools.length ? { tools: r.tools } : {}),
           ...(r.documentos.length ? { documentos: r.documentos } : {}),
-          ...(r.error ? { error: capError ? r.error : 'La respuesta no se ha completado. Vuelve a intentarlo.' } : {}),
+          ...(r.error ? { error: capError ? r.error : sinSaldo ? 'MIRA no puede usar la IA ahora mismo: la cuenta del proveedor se ha quedado sin saldo. Avisa a Startup Factory; lo que has escrito queda guardado.' : 'La respuesta no se ha completado. Vuelve a intentarlo.' } : {}),
           _model: r.model,
         }
         messages = [...messages, assistantMsg]
