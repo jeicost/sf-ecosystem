@@ -4019,6 +4019,57 @@ export type Database = {
         }
         Relationships: []
       }
+      tender_chats: {
+        Row: {
+          attachments: Json
+          client_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          messages: Json
+          tender_id: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          attachments?: Json
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          messages?: Json
+          tender_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Update: {
+          attachments?: Json
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          messages?: Json
+          tender_id?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tender_chats_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tender_chats_tender_id_fkey"
+            columns: ["tender_id"]
+            isOneToOne: false
+            referencedRelation: "tenders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tender_documents: {
         Row: {
           client_id: string

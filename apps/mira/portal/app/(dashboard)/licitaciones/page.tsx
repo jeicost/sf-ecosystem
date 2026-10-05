@@ -1,544 +1,609 @@
 'use client'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from 'react'
+import Link from 'next/link'
 import { clsx } from 'clsx'
-import { MessageSquare, Loader2, FileText, ListChecks, Sparkles, Copy, Check, Radar, ExternalLink, Building2, CalendarClock, Save, FolderOpen, Plus, SlidersHorizontal, X, BookOpen, Upload, Download, Pencil } from 'lucide-react'
-import { useActiveClient, type ActiveClient } from '@/lib/client-context'
-import { cpvFor, CPV_LABEL } from '@/lib/entitlements'
+import {
+  FileText, Loader2, Plus, Settings, X, Paperclip, Send, Square, MessageSquare, FolderOpen,
+  Download, Pencil, Trash2, Check, AlertTriangle, RotateCcw, Link2, Wrench,
+} from 'lucide-react'
+import { useActiveClient } from '@/lib/client-context'
 import { useClientTools } from '@/lib/hooks/useClientTools'
 import BrandName from '@/components/ui/BrandName'
-import SectionRewriter from '@/components/tenders/SectionRewriter'
+import ChatMarkdown from '@/components/chat/ChatMarkdown'
 import DocumentsPanel from '@/components/tenders/DocumentsPanel'
-import TemplateSettings from '@/components/tenders/TemplateSettings'
 import TeachPanel from '@/components/tenders/TeachPanel'
+import TemplateSettings from '@/components/tenders/TemplateSettings'
+import TenderBrandSwitch from '@/components/tenders/TenderBrandSwitch'
 import { uploadTenderFile, removeTenderFile } from '@/lib/tenders/upload-client'
 import { trackPage, trackAction } from '@/lib/activity-client'
 
-// Herramienta de licitaciones (D4 Entrega). Radar (concursos PLACSP puntuados por
-// el Cerebro) + flujo de 3 pasos: pegar pliego → criterios → memoria guiada.
-interface Criterion { group: string; name: string; points: number | null; sub?: { name: string; points: number | null }[]; requires?: string }
-interface Criteria { object?: string; expediente?: string; deadline?: string; total_points: number | null; criteria: Criterion[]; data_gaps?: string[] }
-interface Section { criterio: string; puntos_objetivo: number | null; titulo: string; contenido: string; datos_a_confirmar?: string[] }
-interface Memoria { titulo?: string; resumen_ejecutivo?: string; secciones?: Section[]; checklist_qa?: string[]; data_gaps?: string[]; instrucciones_aplicadas?: string[]; instrucciones_no_aplicadas?: { instruccion: string; motivo: string }[] }
-interface OfertaLinea { seccion: string; servicio: string; tramo: string | null; max_sin_iva: number | null; factor: number | null; precio_ofertado: number | null; baja_pct: number | null; motivo: string; a_confirmar: boolean }
-interface OfertaCriterioAuto { nombre: string; opciones: string | null; respuesta: string; puntos: number | null; motivo: string }
-interface Oferta { lote: string | null; formula_precio: string | null; estrategia: string; lineas: OfertaLinea[]; criterios_automaticos: OfertaCriterioAuto[]; a_confirmar_global: string[]; avisos: string[]; suma_ponderada: number | null }
-interface RadarScore { fit: number; verdict: 'go' | 'revisar' | 'no-go'; reason: string }
-interface RadarItem { id: string; expediente: string; title: string; org: string; cpv: string[]; amount: number | null; deadline: string | null; link: string; score: RadarScore | null }
-interface RadarMeta { total_found: number; scored: number; capped: boolean; pagesRead: number; stopReason: string }
-interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string; has_memoria: boolean; has_oferta: boolean }
+// Licitaciones como ASISTENTE (Carlos, 05-oct): «que sea solamente un chatbot
+// donde se le empieza a decir lo que queremos y nos va ayudando a conseguirlo».
+// Usoa trabajaba así con ChatGPT: pega un apartado de la memoria del año
+// pasado y el punto del PPT, pide «adáptalo», corrige términos, adjunta
+// pliegos y pide el Word. Arriba queda todo lo trabajado (conversaciones,
+// documentos, expedientes) para retomarlo; el resto es la conversación.
+// La pantalla de pasos sigue entera en /licitaciones/clasico.
 
-const STATUS_LABEL: Record<string, string> = { borrador: 'Draft', preparando: 'Preparing', presentada: 'Submitted', ganada: 'Won', perdida: 'Lost' }
+// ─── Contrato con /api/tender/chat (lo construye otro módulo) ──────────────
+interface ChatSummary { id: string; title: string; tender_id: string | null; updated_at: string; messages_count: number }
+interface SavedMessage {
+  id: string; role: 'user' | 'assistant'; content: string; at: string
+  tools?: { name: string; summary?: string }[]
+  documents?: { id: string; title: string }[]
+  documentos?: { id: string; titulo: string }[]
+  adjuntos?: { filename: string; chars?: number }[]
+  attachments?: { filename: string; chars?: number }[]
+}
+interface DocSummary { id: string; tender_id: string | null; kind: string; title: string; sections?: unknown[]; updated_at: string }
+interface SavedTender { id: string; title: string; expediente: string | null; deadline: string | null; status: string; updated_at: string }
+
+// ─── Estado de pantalla ─────────────────────────────────────────────────────
+interface ToolRun { key: string; name: string; summary?: string; status: 'start' | 'done' }
+interface UIMessage {
+  id: string
+  role: 'user' | 'assistant'
+  content: string
+  tools: ToolRun[]
+  documents: { id: string; title: string }[]
+  downloads: string[]
+  attachments: { filename: string; chars?: number }[]
+  /** El flujo se cortó (red o «Stop»): se deja lo recibido y se ofrece reintentar. */
+  interrupted?: 'network' | 'stopped'
+  error?: string
+  streaming?: boolean
+}
+interface PendingFile { key: string; file: File; status: 'uploading' | 'ready' | 'error'; path?: string; error?: string }
+interface SentAttachment { path: string; filename: string; mime: string }
+/** Lo necesario para repetir un envío que se cortó a mitad. */
+interface LastSend { message: string; attachments: SentAttachment[]; tenderId: string | null; userMsgId: string; assistantMsgId: string }
+
 const STATUS_COLOR: Record<string, string> = { borrador: '#94A3B8', preparando: '#F59E0B', presentada: '#6366F1', ganada: '#10B981', perdida: '#EF4444' }
+const KIND_LABEL: Record<string, string> = { subido: 'Uploaded', anexo: 'Annex', memoria: 'Proposal', oferta: 'Bid' }
+const ACCEPT = '.pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown'
 
-const VERDICT_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
-  go: { bg: 'rgba(16,185,129,.14)', fg: '#10B981', label: 'Good fit' },
-  revisar: { bg: 'rgba(245,158,11,.14)', fg: '#F59E0B', label: 'Review' },
-  'no-go': { bg: 'rgba(148,163,184,.14)', fg: '#94A3B8', label: 'No fit' },
+// Sacadas de cómo trabaja Usoa hoy con ChatGPT: son las seis cosas que hace.
+const SUGGESTIONS = [
+  'Here is the tender: tell me what it asks for and the scoring',
+  "Adapt this section of last year's proposal to this year's PPT",
+  'Write a new section the PPT asks for',
+  'Review my whole proposal against the tender',
+  'Translate this tender section from English',
+  'Turn this into a Word document',
+]
+
+const uid = () => Math.random().toString(36).slice(2, 10) + Date.now().toString(36)
+
+function relTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime()
+  if (Number.isNaN(diff)) return ''
+  const m = Math.round(diff / 60000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m} min ago`
+  const h = Math.round(m / 60)
+  if (h < 24) return `${h} h ago`
+  const d = Math.round(h / 24)
+  if (d < 7) return `${d} d ago`
+  return new Date(iso).toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })
 }
-const fmtEur = (n: number | null) => (n == null ? '—' : new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 }).format(n))
-const daysLeft = (iso: string | null) => (iso ? Math.ceil((new Date(iso).getTime() - Date.now()) / 86400000) : null)
 
-const GROUP_LABEL: Record<string, string> = { juicio_valor: 'Qualitative', automatico_tecnico: 'Automatic (technical)', precio: 'Price' }
-
-// Qué documento pide el apartado libre. Espejo de KindLibre en
-// lib/generation/tender-libre.ts ('carta' se guarda como 'anexo' en la BD).
-type BriefKind = 'memoria' | 'oferta' | 'anexo' | 'carta'
-const BRIEF_KIND_LABEL: Record<BriefKind, string> = {
-  memoria: 'Technical proposal',
-  oferta: 'Commercial proposal / offer without prices',
-  anexo: 'Annex',
-  carta: 'Letter or short reply',
+/**
+ * Texto del chip de una herramienta en curso. El backend manda `summary` cuando
+ * sabe decir algo concreto («Writing section 3…»); si no, se traduce el nombre
+ * por palabras clave, porque un nombre interno tipo `read_pliego` no le dice
+ * nada a quien está esperando.
+ */
+function toolLabel(t: { name: string; summary?: string }, brandName: string): string {
+  if (t.summary) return t.summary
+  // Nombres reales de las herramientas de lib/tenders/chat-core.ts (en español):
+  // sin este mapa el chip enseñaba «Leer adjunto…» en una UI en inglés.
+  const exact: Record<string, string> = {
+    leer_adjunto: 'Reading the attachment…',
+    buscar_en_material: `Searching ${brandName} material…`,
+    listar_memorias_pasadas: 'Looking at past proposals…',
+    listar_expedientes: 'Looking at saved tenders…',
+    leer_memoria_pasada: 'Reading a past proposal…',
+    extraer_criterios: 'Reading the tender…',
+    crear_documento: 'Writing the document…',
+    leer_documento: 'Reading the document…',
+    editar_seccion: 'Writing the section…',
+    generar_memoria_completa: 'Writing the full proposal…',
+    exportar_word: 'Preparing the Word document…',
+    recordar_leccion: 'Saving the lesson…',
+    asociar_expediente: 'Linking the tender…',
+  }
+  if (exact[t.name]) return exact[t.name]
+  const n = t.name.toLowerCase()
+  if (/pliego|tender|ppt|pcap|read/.test(n)) return 'Reading the tender…'
+  if (/search|corpus|knowledge|buscar|memoria_pasada|past/.test(n)) return `Searching ${brandName} material…`
+  if (/word|export|docx/.test(n)) return 'Preparing the Word document…'
+  if (/section|seccion|write|redact|draft/.test(n)) return 'Writing…'
+  if (/review|revis|check/.test(n)) return 'Reviewing…'
+  if (/translat|traduc/.test(n)) return 'Translating…'
+  if (/document|save|guardar/.test(n)) return 'Saving the document…'
+  return n.replace(/[_-]+/g, ' ').replace(/^\w/, (c) => c.toUpperCase()) + '…'
 }
-const BRIEF_MIN = 80
-const BRIEF_ACCEPT = '.pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain'
 
-export default function LicitacionesPage() {
+/** Descarga el Word de un documento (mismo camino que DocumentsPanel). */
+async function downloadWord(clientId: string, documentId: string, title?: string): Promise<string | null> {
+  try {
+    const res = await fetch('/api/tender/export', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ clientId, documentId }),
+    })
+    if (!res.ok) { const d = await res.json().catch(() => ({})); return d.error || 'Could not export the document' }
+    const blob = await res.blob()
+    // El nombre lo pone el servidor si lo manda; si no, el título del documento.
+    const cd = res.headers.get('Content-Disposition') || ''
+    const fromHeader = /filename\*?=(?:UTF-8'')?"?([^";]+)"?/i.exec(cd)?.[1]
+    const name = fromHeader ? decodeURIComponent(fromHeader)
+      : `${(title || 'document').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim() || 'document'}.docx`
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url; a.download = name
+    document.body.appendChild(a); a.click(); a.remove()
+    URL.revokeObjectURL(url)
+    return null
+  } catch { return 'Network error while exporting: try again.' }
+}
+
+/** Convierte un mensaje guardado a la forma de pantalla. */
+function fromSaved(m: SavedMessage): UIMessage {
+  return {
+    id: m.id, role: m.role, content: m.content || '',
+    tools: (m.tools || []).map((t, i) => ({ key: `${m.id}-${i}`, name: t.name, summary: t.summary, status: 'done' as const })),
+    // El motor guarda «documentos» {id,titulo} y «adjuntos»; se aceptan también los nombres en inglés.
+    documents: (m.documentos || []).map((d) => ({ id: d.id, title: d.titulo })).concat(m.documents || []),
+    downloads: [], attachments: m.adjuntos || m.attachments || [],
+  }
+}
+
+export default function LicitacionesAssistantPage() {
   const { activeClient, setActiveClient } = useActiveClient()
-  const { tools, isLoading: toolsLoading } = useClientTools(activeClient?.id)
+  const { tools: clientTools, isLoading: toolsLoading } = useClientTools(activeClient?.id)
   const clientId = activeClient?.id
   const brand = activeClient?.primaryColor || '#6366F1'
+  const brandName = activeClient?.name || 'your company'
 
-  const [pliego, setPliego] = useState('')
-  // Subir el pliego en vez de pegarlo, editar la memoria dentro del módulo y
-  // sacarla en Word: los tres pasos que antes había que hacer fuera.
-  const [reading, setReading] = useState(false)
-  // Un fichero subido como pliego que parece una MEMORIA: se retiene y se
-  // pregunta, en vez de extraer criterios de la propia propuesta (Usoa, 30-sep).
-  const [pendingProposal, setPendingProposal] = useState<{ file: File; text: string; filename: string } | null>(null)
-  const [docFile, setDocFile] = useState<File | null>(null)
-  // Apartado libre (Usoa, 30-sep): un encargo en texto, sin pliego, y MIRA
-  // produce el documento pedido leyendo todo el corpus. Va a Documentos.
-  const [brief, setBrief] = useState('')
-  const [briefBusy, setBriefBusy] = useState(false)
-  const [briefAvisos, setBriefAvisos] = useState<string[]>([])
-  // 01-oct: Usoa quería SUBIR su documento, no pegarlo («con ChatGPT lo puedo
-  // hacer así»). Un solo fichero (la petición del cliente o su borrador) y el
-  // tipo de documento que espera de vuelta. El fichero se sube al GENERAR, no al
-  // elegirlo: así un «Remove» no deja huérfanos en el almacenamiento.
-  const [briefFile, setBriefFile] = useState<File | null>(null)
-  const [briefKind, setBriefKind] = useState<BriefKind>('memoria')
-  const briefFileRef = useRef<HTMLInputElement>(null)
-  const [docsRefresh, setDocsRefresh] = useState(0)
-  const [docOpenId, setDocOpenId] = useState<string | null>(null)
-  const [rowStatusBusy, setRowStatusBusy] = useState<string | null>(null)
-  const [opening, setOpening] = useState<string | null>(null)
-  const contenidoRef = useRef<HTMLDivElement>(null)
-  const [corpus, setCorpus] = useState<{ documentos: number; memoriasPresentadas: number } | null>(null)
-  const [exporting, setExporting] = useState(false)
-  const [editing, setEditing] = useState(false)
-  const fileRef = useRef<HTMLInputElement>(null)
-  const [criteria, setCriteria] = useState<Criteria | null>(null)
-  const [memoria, setMemoria] = useState<Memoria | null>(null)
-  const [oferta, setOferta] = useState<Oferta | null>(null)
-  const [step, setStep] = useState<'idle' | 'extracting' | 'generating' | 'generating-oferta'>('idle')
+  // La marca activa en un ref: las respuestas que llegan tarde comparan contra
+  // ella y se descartan si la marca ha cambiado entretanto (no se pinta el chat
+  // de A con B ya activa).
+  const clientRef = useRef(clientId)
+  useLayoutEffect(() => { clientRef.current = clientId }, [clientId])
+
+  // ── Tira «Your work» ──
+  const [chats, setChats] = useState<ChatSummary[]>([])
+  const [docs, setDocs] = useState<DocSummary[]>([])
+  const [tenders, setTenders] = useState<SavedTender[]>([])
+  const [listsLoading, setListsLoading] = useState(false)
+  const [tab, setTab] = useState<'chats' | 'docs' | 'tenders'>('chats')
+  const [renamingId, setRenamingId] = useState<string | null>(null)
+  const [renameText, setRenameText] = useState('')
+
+  // ── Conversación abierta ──
+  const [chatId, setChatId] = useState<string | null>(null)
+  const [chatTitle, setChatTitle] = useState<string | null>(null)
+  const [chatTenderId, setChatTenderId] = useState<string | null>(null)
+  const [messages, setMessages] = useState<UIMessage[]>([])
+  const [streaming, setStreaming] = useState(false)
+  const [openingChat, setOpeningChat] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
-  const [copied, setCopied] = useState(false)
-  const [radarLoading, setRadarLoading] = useState(false)
-  const [radarItems, setRadarItems] = useState<RadarItem[] | null>(null)
-  const [radarMeta, setRadarMeta] = useState<RadarMeta | null>(null)
-  const [radarError, setRadarError] = useState<string | null>(null)
-  // El criterio de búsqueda, visible y editable ANTES de buscar: sin esto el
-  // radar es una caja negra y no se entiende por qué trae lo que trae.
-  const [cpv, setCpv] = useState<string[]>([])
-  const [days, setDays] = useState(21)
-  const [showFilters, setShowFilters] = useState(false)
-  const [newCpv, setNewCpv] = useState('')
-  useEffect(() => { setCpv(cpvFor(clientId)) }, [clientId])
-  const pliegoRef = useRef<HTMLTextAreaElement>(null)
-  // Expediente persistido: sin esto, la memoria se perdía al recargar.
-  const [saved, setSaved] = useState<SavedTender[]>([])
-  const [savedMeta, setSavedMeta] = useState<{ total: number; capped: boolean } | null>(null)
-  // Cambios que solo existen en pantalla. Mientras sea true, cambiar de
-  // expediente, empezar otro o cerrar la pestaña PREGUNTA antes de tirarlos.
-  const [dirty, setDirty] = useState(false)
-  const [currentId, setCurrentId] = useState<string | null>(null)
-  // Lo que la persona le dice a MIRA ANTES de generar (Usoa, 30-sep: «tengo que
-  // tener la libertad de explicar a MIRA todo lo que me pasa por la cabeza»), y
-  // de qué memoria pasada partir. Viajan con el expediente (0084).
-  const [instructions, setInstructions] = useState('')
-  const [baseTenderId, setBaseTenderId] = useState<string | null>(null)
-  const [saving, setSaving] = useState(false)
-  const [savedAt, setSavedAt] = useState<string | null>(null)
+  const abortRef = useRef<AbortController | null>(null)
+  const lastSendRef = useRef<LastSend | null>(null)
+  const autoDownloaded = useRef<Set<string>>(new Set())
 
-  const loadList = useCallback(async () => {
+  // ── Composer ──
+  const [input, setInput] = useState('')
+  const [files, setFiles] = useState<PendingFile[]>([])
+  const fileRef = useRef<HTMLInputElement>(null)
+  const taRef = useRef<HTMLTextAreaElement>(null)
+  const scrollRef = useRef<HTMLDivElement>(null)
+  const stickBottom = useRef(true)
+
+  // ── Cajones ──
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [docOpenId, setDocOpenId] = useState<string | null>(null)
+  const [docsRefresh, setDocsRefresh] = useState(0)
+  const [busyDoc, setBusyDoc] = useState<string | null>(null)
+
+  // ─── Listas ──────────────────────────────────────────────────────────────
+  const loadChats = useCallback(async () => {
+    if (!clientId) return
+    try {
+      const res = await fetch(`/api/tender/chat?clientId=${clientId}`)
+      if (!res.ok || clientRef.current !== clientId) return
+      const data = await res.json()
+      if (clientRef.current === clientId) setChats((data.chats || []).map((c: ChatSummary & { messages?: number }) => ({ ...c, messages_count: c.messages_count ?? c.messages ?? 0 })))
+    } catch { /* la tira es accesoria: el chat sigue usable sin ella */ }
+  }, [clientId])
+
+  const loadDocs = useCallback(async () => {
+    if (!clientId) return
+    try {
+      const res = await fetch(`/api/tender/documents?clientId=${clientId}`)
+      if (!res.ok || clientRef.current !== clientId) return
+      const data = await res.json()
+      if (clientRef.current === clientId) setDocs(data.documents || [])
+    } catch { /* accesoria */ }
+  }, [clientId])
+
+  const loadTenders = useCallback(async () => {
     if (!clientId) return
     try {
       const res = await fetch(`/api/tender/saved?clientId=${clientId}`)
-      if (!res.ok) return
+      if (!res.ok || clientRef.current !== clientId) return
       const data = await res.json()
-      setSaved(data.tenders || [])
-      setSavedMeta({ total: data.total ?? (data.tenders || []).length, capped: !!data.capped })
-    } catch { /* la lista es accesoria: si falla, la página sigue usable */ }
+      if (clientRef.current === clientId) setTenders(data.tenders || [])
+    } catch { /* accesoria */ }
   }, [clientId])
 
-  useEffect(() => { loadList() }, [loadList])
-  // Seguimiento: saber que alguien ha ABIERTO el módulo, aunque luego no haga
-  // nada, es justo lo que faltaba el 30-sep para entender la sesión de Usoa.
-  useEffect(() => { if (clientId) trackPage('/licitaciones', clientId) }, [clientId])
-
-  /**
-   * Guarda el expediente. Devuelve su id si ha guardado y null si no.
-   *
-   * Antes salía EN SILENCIO cuando no había criterios ni pliego, y eso es justo
-   * lo que tienen las 37 memorias presentadas que se cargaron como ejemplo:
-   * marcar una como «ganada», guardar una edición o exportar no hacían nada y
-   * nadie se enteraba. Un expediente que ya existe se puede guardar siempre; uno
-   * nuevo sin nada dentro lo dice en vez de callarse.
-   */
-  const save = async (patch?: { status?: string; criteria?: Criteria | null; memoria?: Memoria | null; oferta?: Oferta | null }): Promise<string | null> => {
-    const crit = patch && 'criteria' in patch ? patch.criteria : criteria
-    const mem = patch && 'memoria' in patch ? patch.memoria : memoria
-    const ofe = patch && 'oferta' in patch ? patch.oferta : oferta
-    if (!clientId) return null
-    if (!currentId && !crit && !mem && !pliego.trim() && !instructions.trim() && !baseTenderId) {
-      setError('There is nothing to save yet: upload or paste the tender documents first.')
-      return null
-    }
-    setSaving(true)
-    try {
-      const title = mem?.titulo || crit?.object || (pliego.trim() ? pliego.trim().slice(0, 80) : (instructions.trim() ? instructions.trim().slice(0, 80) : undefined))
-      const res = await fetch('/api/tender/saved', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          id: currentId, clientId,
-          ...(title ? { title } : {}),
-          // Solo lo que la pantalla CONOCE: al actualizar, la ruta deja intacto
-          // lo que no viaja (órgano, enlace a la PLACSP…).
-          ...(crit ? { expediente: crit.expediente || null, deadline: crit.deadline || null } : {}),
-          pliego_text: pliego, criteria: crit, memoria: mem, oferta: ofe,
-          instructions: instructions.trim() || null, base_tender_id: baseTenderId,
-          ...(patch?.status ? { status: patch.status } : {}),
-        }),
-      })
-      const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Could not save'); return null }
-      setCurrentId(data.id)
-      setDirty(false)
-      setSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
-      loadList()
-      return data.id as string
-    } catch {
-      setError('Network error while saving: your changes are still on screen, try again.')
-      return null
-    } finally { setSaving(false) }
-  }
-
-  /** Antes de tirar lo que hay en pantalla, se pregunta. */
-  const confirmDiscard = () =>
-    !dirty || window.confirm('You have unsaved changes in this tender. Discard them?')
-
-  // Cerrar o recargar la pestaña con cambios sin guardar también pregunta.
+  // Cambio de marca: se corta lo que esté en vuelo, se vacía el chat abierto
+  // y se recargan las listas de la marca nueva.
   useEffect(() => {
-    if (!dirty) return
-    const h = (e: BeforeUnloadEvent) => { e.preventDefault(); e.returnValue = '' }
-    window.addEventListener('beforeunload', h)
-    return () => window.removeEventListener('beforeunload', h)
-  }, [dirty])
-
-  const open = async (id: string) => {
+    abortRef.current?.abort()
+    abortRef.current = null
+    lastSendRef.current = null
+    autoDownloaded.current = new Set()
+    setChatId(null); setChatTitle(null); setChatTenderId(null)
+    setMessages([]); setStreaming(false); setError(null)
+    setInput(''); setFiles([])
+    setChats([]); setDocs([]); setTenders([])
+    setDocOpenId(null); setSettingsOpen(false); setRenamingId(null)
     if (!clientId) return
-    if (id !== currentId && !confirmDiscard()) return
-    trackAction('/licitaciones', 'abrir-expediente', clientId, { id })
-    setError(null); setOpening(id)
-    try {
-      const res = await fetch(`/api/tender/saved?id=${id}&clientId=${clientId}`)
-      if (!res.ok) { setError('Could not open'); return }
-      const t = await res.json()
-      setCurrentId(t.id); setPliego(t.pliego_text || '')
-      setCriteria(t.criteria || null); setMemoria(t.memoria || null); setOferta(t.oferta || null); setSavedAt(null); setDirty(false)
-      setInstructions(t.instructions || ''); setBaseTenderId(t.base_tender_id || null)
-      // Antes saltaba ARRIBA y la memoria quedaba abajo, fuera de la vista:
-      // Usoa pulsó la misma fila siete veces creyendo que no abría. Ahora se
-      // baja hasta el contenido del expediente.
-      setTimeout(() => contenidoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 80)
-    } catch { setError('Network error') } finally { setOpening(null) }
-  }
-
-  const startNew = () => {
-    if (!confirmDiscard()) return
-    setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false); setInstructions(''); setBaseTenderId(null)
-  }
-
-  // Cambiar de marca vacía la pantalla: si no, se podía generar la oferta de un
-  // pliego de GTD con la doctrina de precios de GLS.
-  const lastClient = useRef<string | undefined>(clientId)
-  useEffect(() => {
-    if (lastClient.current && clientId && lastClient.current !== clientId) {
-      setCurrentId(null); setPliego(''); setCriteria(null); setMemoria(null); setOferta(null); setSavedAt(null); setError(null); setDirty(false); setInstructions(''); setBaseTenderId(null)
-      // El apartado libre también: un fichero adjunto de la marca anterior no puede generarse en la nueva.
-      setBrief(''); setBriefFile(null); setBriefAvisos([])
-    }
-    lastClient.current = clientId
-  }, [clientId])
-
-  const setStatus = async (status: string) => { trackAction('/licitaciones', 'marcar-estado', clientId, { status }); await save({ status }) }
-
-  const runRadar = async () => {
-    if (!clientId) return
-    setRadarLoading(true); setRadarError(null)
-    try {
-      const res = await fetch('/api/tender/radar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, cpvPrefixes: cpv, maxAgeDays: days }) })
-      const data = await res.json()
-      if (!res.ok) { setRadarError(data.error || 'Could not fetch tenders'); return }
-      setRadarItems(data.results || []); setRadarMeta(data.meta || null)
-    } catch { setRadarError('Network error') } finally { setRadarLoading(false) }
-  }
-
-  // Un pliego real son 40-80 páginas en PDF: pedir que se peguen a mano
-  // significaba, en la práctica, extraer criterios de un trozo.
-  const readPliegoFile = async (file: File) => {
-    if (!clientId) return
-    setReading(true); setError(null)
-    // Fuera del try: si /pliego no llega (red) o cae con 5xx, el fichero ya
-    // subido se borra del bucket; si no, se quedaría huérfano.
-    let subidoPath: string | null = null
-    try {
-      // Subida directa al almacenamiento: Vercel corta en ~4,5 MB y la mitad
-      // de los pliegos reales pesan más.
-      trackAction('/licitaciones', 'subir-pliego', clientId, { bytes: file.size, tipo: file.type })
-      const up = await uploadTenderFile(clientId, file)
-      if ('error' in up) { trackAction('/licitaciones', 'subir-pliego-error', clientId, { error: up.error }); setError(up.error); return }
-      subidoPath = up.path
-      const res = await fetch('/api/tender/pliego', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, path: up.path, filename: file.name, mime: file.type }),
-      })
-      const data = await res.json()
-      if (!res.ok) {
-        if (res.status >= 500) void removeTenderFile(clientId, subidoPath)
-        setError(data.error || 'No se ha podido leer el fichero'); return
-      }
-      if (data.looksLikeProposal) {
-        trackAction('/licitaciones', 'pliego-parece-memoria', clientId, { filename: data.filename })
-        setPendingProposal({ file, text: data.text, filename: data.filename })
-        return
-      }
-      // Se AÑADE, no se pisa: un expediente lleva PCAP y PPT en ficheros
-      // distintos y los dos hacen falta para sacar los criterios.
-      setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${data.filename} ---\n${data.text}` : data.text))
-      setDirty(true)
-    } catch {
-      if (subidoPath) void removeTenderFile(clientId, subidoPath)
-      setError('No se ha podido leer el fichero')
-    } finally {
-      setReading(false)
-      if (fileRef.current) fileRef.current.value = ''
-    }
-  }
-
-  // Descargar la memoria como .docx. Se exporta lo GUARDADO, así que primero se
-  // guarda: si no, se bajaría la versión anterior sin que nadie lo note.
-  const exportMemoria = async () => {
-    if (!clientId || !memoria) return
-    trackAction('/licitaciones', 'exportar-word', clientId, { kind: 'memoria' })
-    setExporting(true); setError(null)
-    try {
-      // Se exporta lo GUARDADO. Si el guardado falla, no se descarga nada: si
-      // no, saldría la versión anterior como si fuera la buena.
-      const id = await save()
-      if (!id) return
-      const res = await fetch('/api/tender/export', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, tenderId: id }),
-      })
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        setError(data.error || 'No se ha podido exportar'); return
-      }
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url
-      a.download = `${(memoria.titulo || 'memoria').replace(/[^\p{L}\p{N}\-_ ]/gu, '').trim() || 'memoria'}.docx`
-      document.body.appendChild(a); a.click(); a.remove()
-      URL.revokeObjectURL(url)
-    } catch {
-      setError('Network error while exporting: check your connection and try again.')
-    } finally {
-      setExporting(false)
-    }
-  }
-
-  // Mejora asistida de una sección de la memoria. Devuelve la propuesta; no
-  // guarda nada hasta que una persona la acepta.
-  const pedirMejoraMemoria = (i: number) => async (instruccion: string, opts?: { remember?: boolean }) => {
-    if (!clientId || !currentId) return { error: 'Save the tender before asking for improvements' }
-    trackAction('/licitaciones', 'mejorar-seccion', clientId, { seccion: i, recordar: !!opts?.remember })
-    const res = await fetch('/api/tender/rewrite', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      // remember: la instrucción pasa a ser una lección de la marca (tender_lessons).
-      body: JSON.stringify({ clientId, target: 'memoria', tenderId: currentId, sectionIndex: i, instruction: instruccion, remember: !!opts?.remember }),
+    trackPage('/licitaciones', clientId)
+    setListsLoading(true)
+    Promise.allSettled([loadChats(), loadDocs(), loadTenders()]).finally(() => {
+      if (clientRef.current === clientId) setListsLoading(false)
     })
-    const data = await res.json()
-    if (!res.ok) return { error: data.error || 'Error' }
-    return { propuesta: data.propuesta as string, avisos: (data.avisos || []) as string[], lessonId: (data.lessonId ?? null) as string | null }
+  }, [clientId, loadChats, loadDocs, loadTenders])
+
+  // El asistente puede ligar la conversación a un expediente a mitad
+  // (herramienta asociar_expediente): la lista recargada tras cada respuesta
+  // trae el tender_id vigente y se sincroniza aquí.
+  useEffect(() => {
+    if (!chatId) return
+    const c = chats.find((x) => x.id === chatId)
+    if (c) setChatTenderId(c.tender_id)
+  }, [chats, chatId])
+
+  // Al salir de la página, se corta el flujo: si no, seguiría leyendo en vano.
+  useEffect(() => () => abortRef.current?.abort(), [])
+
+  // ─── Scroll: pegado abajo mientras la persona no suba a leer ────────────
+  const onScroll = () => {
+    const el = scrollRef.current
+    if (!el) return
+    stickBottom.current = el.scrollHeight - el.scrollTop - el.clientHeight < 120
+  }
+  useEffect(() => {
+    const el = scrollRef.current
+    if (el && stickBottom.current) el.scrollTop = el.scrollHeight
+  }, [messages])
+
+  // ─── Textarea que crece ─────────────────────────────────────────────────
+  useEffect(() => {
+    const ta = taRef.current
+    if (!ta) return
+    ta.style.height = 'auto'
+    ta.style.height = `${Math.min(ta.scrollHeight, 240)}px`
+  }, [input])
+
+  const patchMsg = (id: string, fn: (m: UIMessage) => UIMessage) =>
+    setMessages((prev) => prev.map((m) => (m.id === id ? fn(m) : m)))
+
+  // ─── Conversaciones ─────────────────────────────────────────────────────
+  const newChat = (tender?: SavedTender) => {
+    if (streaming) abortRef.current?.abort()
+    setChatId(null); setChatTitle(null)
+    setChatTenderId(tender?.id ?? null)
+    setMessages([]); setError(null)
+    lastSendRef.current = null
+    stickBottom.current = true
+    if (clientId) trackAction('/licitaciones', 'chat-nuevo', clientId, tender ? { tenderId: tender.id } : undefined)
+    setTimeout(() => taRef.current?.focus(), 0)
   }
 
-  // La oferta económica también se entrega: sale con su tabla de precios.
-  const exportOferta = async () => {
-    if (!clientId || !currentId) return
-    trackAction('/licitaciones', 'exportar-word', clientId, { kind: 'oferta' })
-    setExporting(true); setError(null)
+  const openChat = async (id: string) => {
+    if (!clientId || id === chatId) return
+    if (streaming) abortRef.current?.abort()
+    setOpeningChat(id); setError(null)
+    trackAction('/licitaciones', 'chat-abrir', clientId)
     try {
-      const id = await save()
-      if (!id) return
-      const res = await fetch('/api/tender/export', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, tenderId: id, kind: 'oferta' }),
-      })
-      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error || 'No se ha podido exportar'); return }
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement('a')
-      a.href = url; a.download = 'oferta-economica.docx'
-      document.body.appendChild(a); a.click(); a.remove()
-      URL.revokeObjectURL(url)
-    } catch { setError('Network error while exporting: check your connection and try again.') } finally { setExporting(false) }
-  }
-
-  /**
-   * Encargo libre → documento en Documentos. Tarda uno o dos minutos.
-   * Con fichero, el brief es opcional; sin fichero hacen falta ≥ 80 caracteres.
-   * El fichero sube directo al almacenamiento (Vercel corta cuerpos > 4,5 MB) y
-   * a la API solo viaja su ruta; el servidor lo lee y lo borra.
-   */
-  const generarDesdeEncargo = async (args: { texto: string; file?: File | null; kind?: BriefKind }) => {
-    if (!clientId) return
-    const texto = args.texto.trim()
-    const file = args.file ?? null
-    const kind = args.kind ?? briefKind
-    if (!file && texto.length < BRIEF_MIN) {
-      setError(`Write at least two or three sentences (${BRIEF_MIN} characters) about what you need, or attach the request or your draft.`)
-      return
-    }
-    setBriefBusy(true); setError(null); setBriefAvisos([])
-    trackAction('/licitaciones', 'generar-desde-encargo', clientId, { chars: texto.length, kind, conFichero: !!file })
-    // Fuera del try: si la llamada a /libre no llega (red) o cae con 5xx, el
-    // fichero ya subido se borra del bucket; si no, se quedaría huérfano.
-    let subido: { path: string; filename: string; mime: string } | null = null
-    try {
-      if (file) {
-        const up = await uploadTenderFile(clientId, file)
-        if ('error' in up) {
-          trackAction('/licitaciones', 'generar-desde-encargo-error', clientId, { paso: 'subida', error: up.error })
-          setError(`${up.error} Try again, or paste the text of the document in the box instead.`)
-          return
-        }
-        subido = { path: up.path, filename: file.name, mime: file.type }
-      }
-      const res = await fetch('/api/tender/libre', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, brief: texto, kind, path: subido?.path, filename: subido?.filename, mime: subido?.mime, tenderId: currentId }),
-      })
+      const res = await fetch(`/api/tender/chat?clientId=${clientId}&id=${id}`)
       const data = await res.json().catch(() => ({}))
-      if (!res.ok) {
-        trackAction('/licitaciones', 'generar-desde-encargo-error', clientId, { paso: 'generar', status: res.status })
-        // Un 4xx ya consumió el fichero (la ruta lo lee lo primero); un 5xx
-        // puede haber caído antes de leerlo.
-        if (res.status >= 500 && subido) void removeTenderFile(clientId, subido.path)
-        setError(data.error || 'Could not generate the document. Try again in a minute; if it keeps failing, paste the text instead of attaching the file.')
-        return
-      }
-      setBriefAvisos(data.avisos || [])
-      setBrief(''); setBriefFile(null)
-      setDocsRefresh((n) => n + 1)
-      setDocOpenId(data.document.id)
+      if (clientRef.current !== clientId) return
+      if (!res.ok || !data.chat) { setError(data.error || 'Could not open the conversation'); return }
+      const c = data.chat as { id: string; title: string; tender_id: string | null; messages: SavedMessage[] }
+      setChatId(c.id); setChatTitle(c.title); setChatTenderId(c.tender_id)
+      setMessages((c.messages || []).map(fromSaved))
+      lastSendRef.current = null
+      stickBottom.current = true
     } catch {
-      if (subido) void removeTenderFile(clientId, subido.path)
-      setError('Network error while generating: check your connection and try again. No document was created.')
-    } finally {
-      setBriefBusy(false)
-      if (briefFileRef.current) briefFileRef.current.value = ''
-    }
+      setError('Network error while opening the conversation: try again.')
+    } finally { setOpeningChat(null) }
   }
 
-  // Marcar el estado desde la LISTA, sin abrir el expediente. Usoa tuvo que
-  // abrir nueve memorias una a una, con la página subiendo y bajando cada vez,
-  // para marcarlas como ganadas.
-  const setRowStatus = async (id: string, status: string) => {
-    if (!clientId) return
-    setRowStatusBusy(id)
-    trackAction('/licitaciones', 'marcar-estado-lista', clientId, { status })
+  const renameChat = async (id: string, title: string) => {
+    const t = title.trim()
+    setRenamingId(null)
+    if (!clientId || !t) return
+    setChats((prev) => prev.map((c) => (c.id === id ? { ...c, title: t } : c)))
+    if (id === chatId) setChatTitle(t)
     try {
-      const res = await fetch('/api/tender/saved', {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id, clientId, status }),
+      const res = await fetch('/api/tender/chat', {
+        method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, id, title: t }),
       })
-      if (!res.ok) { const d = await res.json().catch(() => ({})); setError(d.error || 'Could not save the status'); return }
-      await loadList()
-    } finally { setRowStatusBusy(null) }
+      // Se relee la lista pase lo que pase: si no guardó, vuelve el título real
+      // en vez de quedarse uno que solo existe en pantalla.
+      if (!res.ok) setError('Could not rename the conversation')
+    } catch { setError('Network error while renaming') } finally { void loadChats() }
   }
 
-  /** Edición a mano de una sección. La memoria generada es un borrador, no un acta. */
-  const editSection = (i: number, patch: Partial<Section>) => {
-    if (!memoria?.secciones) return
-    setMemoria({ ...memoria, secciones: memoria.secciones.map((s, idx) => (idx === i ? { ...s, ...patch } : s)) })
-    setDirty(true)
-  }
-
-  // Con qué material cuenta el generador. Se consulta al abrir, no al generar:
-  // enterarse de que no hay corpus DESPUÉS de esperar una memoria es tarde.
-  useEffect(() => {
-    if (!clientId) { setCorpus(null); return }
-    fetch(`/api/tender/corpus?clientId=${clientId}`)
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => setCorpus(j ? { documentos: j.documentos, memoriasPresentadas: j.memoriasPresentadas } : null))
-      .catch(() => {})
-  }, [clientId])
-
-  const extract = async () => {
-    if (pliego.trim().length < 200 || !clientId) return
-    // Re-extraer ya no borra la memoria ni la oferta: antes escribía memoria:
-    // null en la base de datos sin preguntar. Los criterios nuevos se usan la
-    // próxima vez que se genere; lo escrito se queda.
-    setStep('extracting'); setError(null)
-    trackAction('/licitaciones', 'extraer-criterios', clientId, { pliegoChars: pliego.length })
+  const deleteChat = async (c: ChatSummary) => {
+    if (!clientId) return
+    if (!window.confirm(`Delete the conversation “${c.title}”? The documents it created are kept.`)) return
     try {
-      const res = await fetch('/api/tender/extract', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId }) })
-      const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Could not extract criteria'); return }
-      setCriteria(data)
-      save({ criteria: data })  // guarda el expediente en cuanto hay algo que perder
-    } catch { setError('Network error') } finally { setStep('idle') }
+      const res = await fetch('/api/tender/chat', {
+        method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, id: c.id }),
+      })
+      if (!res.ok) { setError('Could not delete the conversation'); return }
+      if (c.id === chatId) newChat()
+      void loadChats()
+    } catch { setError('Network error while deleting') }
   }
 
-  const generate = async () => {
-    if (!criteria || !clientId) return
-    if (memoria?.secciones?.length) {
-      if (!window.confirm('Generating again replaces the current proposal. The current version will be kept in Documents so nothing is lost. Continue?')) return
-      // La versión anterior —con las ediciones a mano— se archiva ANTES de
-      // pedir la nueva: dos horas de ajuste fino no pueden depender de un clic.
-      const backup = await fetch('/api/tender/documents', {
+  // ─── Adjuntos: se suben al elegirlos, viaja solo la ruta ────────────────
+  const addFiles = (list: FileList | null) => {
+    if (!list || !clientId) return
+    const cid = clientId
+    const nuevos: PendingFile[] = Array.from(list).map((file) => ({ key: uid(), file, status: 'uploading' }))
+    setFiles((prev) => [...prev, ...nuevos])
+    trackAction('/licitaciones', 'chat-adjuntar', cid, { n: nuevos.length, bytes: nuevos.reduce((s, f) => s + f.file.size, 0) })
+    for (const pf of nuevos) {
+      void uploadTenderFile(cid, pf.file).then((up) => {
+        if (clientRef.current !== cid) return
+        setFiles((prev) => {
+          const sigue = prev.some((f) => f.key === pf.key)
+          // Quitado mientras subía: se borra del almacenamiento para no dejar huérfanos.
+          if (!sigue) { if ('path' in up) void removeTenderFile(cid, up.path); return prev }
+          return prev.map((f) => f.key !== pf.key ? f
+            : 'error' in up ? { ...f, status: 'error', error: up.error } : { ...f, status: 'ready', path: up.path })
+        })
+      })
+    }
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  const removeFile = (pf: PendingFile) => {
+    setFiles((prev) => prev.filter((f) => f.key !== pf.key))
+    if (pf.path && clientId) void removeTenderFile(clientId, pf.path)
+  }
+
+  // ─── Envío y lectura del flujo ──────────────────────────────────────────
+  const stream = async (payload: { message: string; attachments: SentAttachment[]; tenderId: string | null }, userMsgId: string, assistantMsgId: string) => {
+    if (!clientId) return
+    const cid = clientId
+    const ctrl = new AbortController()
+    abortRef.current = ctrl
+    setStreaming(true); setError(null)
+    lastSendRef.current = { ...payload, userMsgId, assistantMsgId }
+    let gotAnything = false
+    let finished = false
+
+    try {
+      const res = await fetch('/api/tender/chat', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          clientId, tenderId: currentId, kind: 'memoria',
-          title: `${memoria.titulo || 'Proposal'} — previous version (${new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })})`,
-          sections: memoria.secciones.map((sec) => ({ titulo: sec.titulo, contenido: sec.contenido, criterio: sec.criterio, puntos_objetivo: sec.puntos_objetivo })),
+          clientId: cid,
+          ...(chatId ? { chatId } : {}),
+          message: payload.message,
+          ...(payload.attachments.length ? { attachments: payload.attachments } : {}),
+          // Solo en el primer mensaje: después la conversación ya está ligada.
+          ...(!chatId && payload.tenderId ? { tenderId: payload.tenderId } : {}),
         }),
+        signal: ctrl.signal,
       })
-      if (!backup.ok) { setError('Could not keep a copy of the current proposal, so it has not been replaced.'); return }
+      if (!res.ok || !res.body) {
+        const d = await res.json().catch(() => ({}))
+        // Antes de que empiece el flujo no se ha perdido nada: el texto y los
+        // adjuntos vuelven a la caja para reintentar sin reescribir.
+        setMessages((prev) => prev.filter((m) => m.id !== userMsgId && m.id !== assistantMsgId))
+        setInput(payload.message)
+        setFiles(payload.attachments.map((a) => ({ key: uid(), file: new File([], a.filename, { type: a.mime }), status: 'ready', path: a.path })))
+        setError(d.error || `The assistant could not answer (${res.status}).`)
+        finished = true
+        return
+      }
+
+      const reader = res.body.getReader()
+      const decoder = new TextDecoder()
+      let buf = ''
+      const handle = (event: string, raw: string) => {
+        let data: Record<string, unknown> = {}
+        try { data = raw ? JSON.parse(raw) : {} } catch { return }
+        if (clientRef.current !== cid) return
+        gotAnything = true
+        switch (event) {
+          case 'chat': {
+            if (typeof data.chatId === 'string') setChatId(data.chatId)
+            if (typeof data.title === 'string') setChatTitle(data.title)
+            break
+          }
+          case 'delta': {
+            const text = typeof data.text === 'string' ? data.text : ''
+            if (text) patchMsg(assistantMsgId, (m) => ({ ...m, content: m.content + text }))
+            break
+          }
+          case 'tool': {
+            const name = String(data.name || 'tool')
+            const summary = typeof data.summary === 'string' && data.summary ? data.summary : undefined
+            const status = data.status === 'done' ? 'done' : 'start'
+            patchMsg(assistantMsgId, (m) => {
+              // «done» cierra la última ejecución abierta con ese nombre; si no
+              // la hay (llegó solo el done), se añade ya cerrada.
+              const idx = status === 'done' ? m.tools.map((t) => t.name === name && t.status === 'start').lastIndexOf(true) : -1
+              if (idx >= 0) {
+                const tools = m.tools.slice()
+                tools[idx] = { ...tools[idx], status: 'done', summary: summary ?? tools[idx].summary }
+                return { ...m, tools }
+              }
+              return { ...m, tools: [...m.tools, { key: uid(), name, summary, status }] }
+            })
+            break
+          }
+          case 'document': {
+            const id = String(data.id || '')
+            if (!id) break
+            const title = String(data.title || 'Document')
+            patchMsg(assistantMsgId, (m) => m.documents.some((d) => d.id === id) ? m : { ...m, documents: [...m.documents, { id, title }] })
+            void loadDocs()
+            setDocsRefresh((n) => n + 1)
+            break
+          }
+          case 'download': {
+            const documentId = String(data.documentId || '')
+            if (!documentId) break
+            patchMsg(assistantMsgId, (m) => m.downloads.includes(documentId) ? m : { ...m, downloads: [...m.downloads, documentId] })
+            // Se intenta bajar solo una vez; el botón de la tarjeta queda por si
+            // el navegador lo bloquea por no venir de un clic.
+            if (!autoDownloaded.current.has(documentId)) {
+              autoDownloaded.current.add(documentId)
+              void downloadWord(cid, documentId).then((err) => { if (err) patchMsg(assistantMsgId, (m) => ({ ...m, error: err })) })
+            }
+            break
+          }
+          case 'error': {
+            patchMsg(assistantMsgId, (m) => ({ ...m, error: String(data.message || 'Something went wrong') }))
+            break
+          }
+          case 'done': {
+            finished = true
+            if (typeof data.messageId === 'string') {
+              const realId = data.messageId
+              setMessages((prev) => prev.map((m) => (m.id === assistantMsgId ? { ...m, id: realId, streaming: false } : m)))
+            } else {
+              patchMsg(assistantMsgId, (m) => ({ ...m, streaming: false }))
+            }
+            break
+          }
+        }
+      }
+
+      while (true) {
+        const { value, done } = await reader.read()
+        if (done) break
+        buf += decoder.decode(value, { stream: true })
+        // Los eventos SSE van separados por una línea en blanco.
+        let sep: number
+        while ((sep = buf.search(/\r?\n\r?\n/)) >= 0) {
+          const block = buf.slice(0, sep)
+          buf = buf.slice(sep).replace(/^\r?\n\r?\n/, '')
+          let event = 'message'
+          const dataLines: string[] = []
+          for (const line of block.split(/\r?\n/)) {
+            if (line.startsWith('event:')) event = line.slice(6).trim()
+            else if (line.startsWith('data:')) dataLines.push(line.slice(5).replace(/^ /, ''))
+          }
+          handle(event, dataLines.join('\n'))
+        }
+      }
+      if (!finished && clientRef.current === cid) {
+        // El servidor cerró sin «done»: se trata como corte de red.
+        patchMsg(assistantMsgId, (m) => ({ ...m, streaming: false, interrupted: 'network' }))
+      }
+    } catch (e) {
+      if (clientRef.current !== cid) return
+      const aborted = e instanceof DOMException && e.name === 'AbortError'
+      if (!gotAnything && !aborted) {
+        // No llegó ni un byte: mismo trato que un error HTTP, nada se pierde.
+        setMessages((prev) => prev.filter((m) => m.id !== userMsgId && m.id !== assistantMsgId))
+        setInput(payload.message)
+        setFiles(payload.attachments.map((a) => ({ key: uid(), file: new File([], a.filename, { type: a.mime }), status: 'ready', path: a.path })))
+        setError('Network error: the message was not sent. Check your connection and try again.')
+      } else {
+        patchMsg(assistantMsgId, (m) => ({ ...m, streaming: false, interrupted: aborted ? 'stopped' : 'network' }))
+      }
+    } finally {
+      if (abortRef.current === ctrl) abortRef.current = null
+      if (clientRef.current === cid) {
+        setStreaming(false)
+        void loadChats()
+      }
     }
-    setStep('generating'); setError(null)
-    trackAction('/licitaciones', 'generar-memoria', clientId, { criterios: criteria.criteria.length, regenerar: !!memoria })
-    try {
-      const res = await fetch('/api/tender/generate', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, criteria, clientId, tenderId: currentId, instructions, baseTenderId }) })
-      const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Could not generate the proposal'); return }
-      setMemoria(data)
-      save({ memoria: data, status: 'preparando' })  // la memoria nunca se pierde al recargar
-    } catch { setError('Network error') } finally { setStep('idle') }
   }
 
-  const generateOferta = async () => {
-    if (!clientId || pliego.trim().length < 200) return
-    setStep('generating-oferta'); setError(null)
-    try {
-      const res = await fetch('/api/tender/oferta', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ pliego, clientId, tenderId: currentId, instructions }) })
-      const data = await res.json()
-      if (!res.ok) { setError(data.error || 'Could not generate the economic offer'); return }
-      setOferta(data)
-      save({ oferta: data, status: 'preparando' })
-    } catch { setError('Network error') } finally { setStep('idle') }
+  const send = async (text?: string) => {
+    if (!clientId || streaming) return
+    const message = (text ?? input).trim()
+    if (!message) return
+    if (files.some((f) => f.status === 'uploading')) { setError('Wait until the attachments finish uploading.'); return }
+    const ready = files.filter((f) => f.status === 'ready' && f.path)
+    const attachments: SentAttachment[] = ready.map((f) => ({ path: f.path!, filename: f.file.name, mime: f.file.type || 'application/octet-stream' }))
+    trackAction('/licitaciones', 'chat-enviar', clientId, { chars: message.length, adjuntos: attachments.length, nuevo: !chatId })
+
+    const userMsgId = uid(), assistantMsgId = uid()
+    setMessages((prev) => [
+      ...prev,
+      { id: userMsgId, role: 'user', content: message, tools: [], documents: [], downloads: [], attachments: attachments.map((a) => ({ filename: a.filename })) },
+      { id: assistantMsgId, role: 'assistant', content: '', tools: [], documents: [], downloads: [], attachments: [], streaming: true },
+    ])
+    setInput(''); setFiles(files.filter((f) => f.status === 'error'))
+    stickBottom.current = true
+    await stream({ message, attachments, tenderId: chatTenderId }, userMsgId, assistantMsgId)
   }
 
-  // Edición en la revisión: el precio es de la persona; la baja se recalcula aquí.
-  const editPrecio = (idx: number, value: string) => {
-    if (!oferta) return
-    const precio = value.trim() === '' ? null : Number(value.replace(',', '.'))
-    const lineas = oferta.lineas.map((l, i) => {
-      if (i !== idx) return l
-      const p = precio != null && Number.isFinite(precio) ? Math.round(precio * 100) / 100 : null
-      const baja = p != null && l.max_sin_iva != null && l.max_sin_iva > 0 ? Math.round(((l.max_sin_iva - p) / l.max_sin_iva) * 1000) / 10 : null
-      return { ...l, precio_ofertado: p, baja_pct: baja }
-    })
-    const pond = lineas.filter((l) => l.factor != null && l.precio_ofertado != null)
-    const suma = pond.length ? Math.round(pond.reduce((a, l) => a + (l.precio_ofertado as number) * (l.factor as number), 0) * 100) / 100 : null
-    setOferta({ ...oferta, lineas, suma_ponderada: suma })
+  // Reintento tras un corte: se quita el intento fallido y se repite el mismo
+  // mensaje con los mismos adjuntos.
+  const retry = async () => {
+    const last = lastSendRef.current
+    if (!last || streaming) return
+    const userMsgId = uid(), assistantMsgId = uid()
+    setMessages((prev) => [
+      ...prev.filter((m) => m.id !== last.userMsgId && m.id !== last.assistantMsgId),
+      { id: userMsgId, role: 'user', content: last.message, tools: [], documents: [], downloads: [], attachments: last.attachments.map((a) => ({ filename: a.filename })) },
+      { id: assistantMsgId, role: 'assistant', content: '', tools: [], documents: [], downloads: [], attachments: [], streaming: true },
+    ])
+    stickBottom.current = true
+    // Si la conversación ya existe, el servidor guardó el mensaje y consumió los adjuntos al abrir
+    // el stream: repetirlo duplicaría el mensaje y apuntaría a ficheros borrados. Se pide que siga.
+    const yaGuardado = !!chatId
+    await stream(yaGuardado
+      ? { message: 'The previous reply was cut off. Continue from where you left off.', attachments: [], tenderId: last.tenderId }
+      : { message: last.message, attachments: last.attachments, tenderId: last.tenderId }, userMsgId, assistantMsgId)
   }
 
-  const copyOferta = () => {
-    if (!oferta) return
-    const rows = oferta.lineas.map((l) => [l.seccion, l.servicio, l.tramo || '', l.max_sin_iva ?? '', l.factor ?? '', l.precio_ofertado ?? ''].join('\t'))
-    const txt = ['Sección\tServicio\tTramo\tMáx sin IVA\tFactor\tOfertado sin IVA', ...rows].join('\n')
-    navigator.clipboard.writeText(txt); setCopied(true); setTimeout(() => setCopied(false), 1500)
+  const stop = () => abortRef.current?.abort()
+
+  const onKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault()
+      void send()
+    }
   }
 
-  const copyMemoria = () => {
-    if (!memoria?.secciones) return
-    const txt = [memoria.titulo, '', memoria.resumen_ejecutivo, '', ...memoria.secciones.map(s => `\n## ${s.titulo}${s.puntos_objetivo ? ` (${s.puntos_objetivo} pts)` : ''}\n${s.contenido}`)].join('\n')
-    navigator.clipboard.writeText(txt); setCopied(true); setTimeout(() => setCopied(false), 1500)
+  const exportDoc = async (id: string, title?: string) => {
+    if (!clientId) return
+    setBusyDoc(id)
+    trackAction('/licitaciones', 'exportar-word', clientId, { origen: 'chat' })
+    const err = await downloadWord(clientId, id, title)
+    setBusyDoc(null)
+    if (err) setError(err)
   }
 
-  const byGroup = (g: string) => criteria?.criteria.filter(c => c.group === g) || []
+  const openDoc = (id: string) => { setDocOpenId(id); setDocsRefresh((n) => n + 1) }
 
-  // Guard suave: la herramienta solo aplica a clientes que licitan. Si se llega por
-  // URL con un cliente sin entitlement, se explica en vez de operar en vano.
-  //
-  // Se espera a que cargue: antes esto llamaba a hasTenderTool(id) SIN isAgency,
-  // así que la propia agencia veía "no está habilitada" en su herramienta. El
-  // estado viene de /api/tools, que ya resuelve el caso agencia en el servidor.
-  const notEnabled = !!activeClient && !toolsLoading && !tools.some((t) => t.id === 'tenders' && t.enabled)
+  // Selector móvil: un solo <select> con los tres grupos.
+  const onMobilePick = (v: string) => {
+    const [kind, id] = v.split(':')
+    if (kind === 'chat') void openChat(id)
+    else if (kind === 'doc') openDoc(id)
+    else if (kind === 'tender') { const t = tenders.find((x) => x.id === id); if (t) newChat(t) }
+  }
 
+  // ─── Pantallas sin herramienta ──────────────────────────────────────────
+  const notEnabled = !!activeClient && !toolsLoading && !clientTools.some((t) => t.id === 'tenders' && t.enabled)
   if (notEnabled && activeClient) {
     return (
       <div className="mx-auto max-w-2xl px-8 py-16 text-center">
@@ -550,776 +615,346 @@ export default function LicitacionesPage() {
     )
   }
 
+  const linkedTender = chatTenderId ? tenders.find((t) => t.id === chatTenderId) : null
+  const empty = messages.length === 0
+  const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant')
+  const uploading = files.some((f) => f.status === 'uploading')
+
   return (
-    <div className="mx-auto max-w-5xl px-8 py-10">
-      <div className="mb-6">
-        <p className="mb-1 flex items-center gap-2 text-[10px] uppercase tracking-widest font-semibold" style={{ color: brand }}>
-          <FileText size={13} /> Tenders
-        </p>
-        <h1 className="text-2xl font-semibold text-ink">From tender documents to technical proposal</h1>
-        <p className="mt-1 text-sm text-ink-tertiary">Paste the tender documents, extract the scoring criteria and generate the proposal criterion by criterion, using the corpus of {activeClient?.name || 'your company'}.</p>
-      </div>
+    // Alto completo de la zona principal (en móvil, menos su barra superior):
+    // la conversación se desplaza por dentro y la caja de entrada queda fija.
+    <div className="flex h-[calc(100dvh-57px)] flex-col md:h-[100dvh]">
+      {/* ── Cabecera ── */}
+      <div className="shrink-0 border-b border-line-subtle px-4 pt-5 pb-3 md:px-8">
+        <div className="mx-auto flex max-w-5xl items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="mb-1 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-widest" style={{ color: brand }}>
+              <FileText size={13} /> Tenders
+            </p>
+            <h1 className="text-xl font-semibold text-ink">Tenders assistant</h1>
+            <p className="mt-0.5 text-sm text-ink-tertiary">Tell it what you need — read a tender, adapt last year’s proposal, write a section, get the Word. It works with everything {brandName} has submitted before.</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            <Link href="/licitaciones/clasico" className="rounded-lg px-2 py-1.5 text-xs text-ink-tertiary transition-colors hover:text-ink">Classic view</Link>
+            <button onClick={() => setSettingsOpen(true)} aria-label="Settings: Teach MIRA and Word template" title="Teach MIRA · Word template"
+              className="rounded-lg p-2 text-ink-tertiary transition-colors hover:bg-surface-hover hover:text-ink">
+              <Settings size={16} />
+            </button>
+          </div>
+        </div>
 
-      {/* Expedientes guardados */}
-      {saved.length > 0 && (
-        <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FolderOpen size={15} style={{ color: brand }} /> Your tenders
-              {savedMeta && <span className="text-[11px] font-normal text-ink-muted">{savedMeta.capped ? `latest ${saved.length} of ${savedMeta.total}` : savedMeta.total}</span>}
-            </h2>
-            {(currentId || pliego) && (
-              <button onClick={startNew} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink">
-                <Plus size={13} /> New
+        {/* ── Tira «Your work» ── */}
+        <div className="mx-auto mt-3 max-w-5xl">
+          {/* Escritorio: pestañas + fila desplazable */}
+          <div className="hidden md:block">
+            <div className="mb-2 flex items-center gap-1">
+              <span className="mr-2 text-[11px] font-semibold uppercase tracking-wider text-ink-muted">Your work</span>
+              {([['chats', 'Conversations', chats.length], ['docs', 'Documents', docs.length], ['tenders', 'Tenders', tenders.length]] as const).map(([k, label, n]) => (
+                <button key={k} onClick={() => setTab(k)}
+                  className={clsx('rounded-lg px-2.5 py-1 text-xs transition-colors', tab === k ? 'bg-surface font-medium text-ink' : 'text-ink-tertiary hover:text-ink')}>
+                  {label} <span className="text-ink-muted">{n}</span>
+                </button>
+              ))}
+              {listsLoading && <Loader2 size={12} className="ml-1 animate-spin text-ink-muted" />}
+              <span className="flex-1" />
+              <button onClick={() => newChat()} className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90" style={{ background: brand }}>
+                <Plus size={13} /> New conversation
               </button>
-            )}
-          </div>
-          <div className="space-y-1.5">
-            {saved.map((t) => {
-              const d = daysLeft(t.deadline)
-              return (
-                <div key={t.id} className={clsx('flex w-full items-center gap-2 rounded-xl border px-3 py-2.5 transition-colors',
-                    t.id === currentId ? 'border-line bg-page' : 'border-line-subtle hover:bg-page')}>
-                <button onClick={() => open(t.id)} className="flex min-w-0 flex-1 items-center gap-3 text-left">
-                  {opening === t.id
-                    ? <Loader2 size={12} className="shrink-0 animate-spin text-ink-muted" />
-                    : <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: STATUS_COLOR[t.status] || '#94A3B8' }} />}
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm text-ink">{t.title}</span>
-                    <span className="block text-[11px] text-ink-muted">
-                      {STATUS_LABEL[t.status] || t.status}
-                      {t.expediente ? ` · Exp. ${t.expediente}` : ''}
-                      {d != null ? ` · ${d > 0 ? `${d} days` : 'expired'}` : ''}
-                      {t.has_memoria ? ' · has proposal' : ''}
-                      {t.has_oferta ? ' · has offer' : ''}
-                    </span>
-                  </span>
-                </button>
-                {/* Estado desde la lista: Won/Lost sin abrir la memoria. */}
-                {rowStatusBusy === t.id
-                  ? <Loader2 size={12} className="shrink-0 animate-spin text-ink-muted" />
-                  : (
-                    <select value={t.status} onChange={(e) => setRowStatus(t.id, e.target.value)} aria-label="Status"
-                      className="shrink-0 rounded-lg border border-line-subtle bg-surface px-1.5 py-1 text-[11px] text-ink-secondary outline-none"
-                      style={{ color: STATUS_COLOR[t.status] || undefined }}>
-                      {Object.keys(STATUS_LABEL).map((st) => <option key={st} value={st}>{STATUS_LABEL[st]}</option>)}
-                    </select>
-                  )}
-                </div>
-              )
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* key={clientId}: al cambiar de marca sin recargar, el panel se REMONTA
-          y muere con él cualquier carga en vuelo de la marca anterior. Sin
-          esto, la respuesta de A llegaba con B ya activa y «Save» escribía la
-          guía o la plantilla (razón social, NIF) de A en B. */}
-      {/* key por marca para remontar al cambiar de marca — y DISTINTA en cada hermano: tres hermanos con la
-          misma key dejaban nodos zombis (dos «Teach MIRA» en pantalla, el 1-oct en prod). */}
-      {clientId && <PlaybookPanel key={`playbook-${clientId}`} clientId={clientId} brand={brand} />}
-      {clientId && <TeachPanel key={`teach-${clientId}`} clientId={clientId} brand={brand} tenderId={currentId} />}
-      {clientId && <TemplateSettings key={`template-${clientId}`} clientId={clientId} brand={brand} />}
-
-      {/* Tender radar (PLACSP, gratis) */}
-      <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
-        <div className="flex items-center justify-between gap-3">
-          <div>
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><Radar size={15} style={{ color: brand }} /> Tender radar</h2>
-            <p className="mt-0.5 text-xs text-ink-tertiary">Tenders published on PLACSP in the last few days, filtered by your activity and scored against the Brain.</p>
-          </div>
-          <button onClick={runRadar} disabled={radarLoading || !clientId}
-            className="flex shrink-0 items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-            {radarLoading ? <><Loader2 size={16} className="animate-spin" /> Searching…</> : <><Radar size={16} /> Find tenders</>}
-          </button>
-        </div>
-        {/* Criterio de búsqueda: qué se va a buscar exactamente */}
-        <div className="mt-3">
-          <button onClick={() => setShowFilters(v => !v)}
-            className="flex items-center gap-1.5 text-[11px] text-ink-tertiary transition-colors hover:text-ink">
-            <SlidersHorizontal size={12} />
-            Searching {cpv.length} CPV categories · published in the last {days} days
-            <span className="text-ink-muted">{showFilters ? '▲' : '▼'}</span>
-          </button>
-
-          {showFilters && (
-            <div className="mt-2 rounded-xl border border-line-subtle bg-page p-3">
-              <p className="mb-2 text-[11px] text-ink-muted">
-                CPV is the official EU code for what is being contracted. The radar only surfaces tenders whose code starts with one of these.
-              </p>
-              <div className="flex flex-wrap gap-1.5">
-                {cpv.map((c) => (
-                  <span key={c} className="flex items-center gap-1.5 rounded-lg border border-line px-2 py-1 text-[11px] text-ink-secondary">
-                    <span className="font-mono text-ink">{c}</span>
-                    <span className="text-ink-muted">{CPV_LABEL[c] || 'Custom code'}</span>
-                    <button onClick={() => setCpv(cpv.filter(x => x !== c))} className="text-ink-muted hover:text-ink" aria-label={`Remove ${c}`}>
-                      <X size={11} />
-                    </button>
-                  </span>
-                ))}
-              </div>
-              <div className="mt-2.5 flex flex-wrap items-center gap-2">
-                <input value={newCpv} onChange={e => setNewCpv(e.target.value.replace(/\D/g, ''))}
-                  onKeyDown={e => { if (e.key === 'Enter' && newCpv) { setCpv([...new Set([...cpv, newCpv])]); setNewCpv('') } }}
-                  placeholder="Add CPV code…"
-                  className="w-36 rounded-lg border border-line bg-surface px-2 py-1 text-[11px] text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
-                <label className="flex items-center gap-1.5 text-[11px] text-ink-tertiary">
-                  Last
-                  <input type="number" min={1} max={90} value={days} onChange={e => setDays(Math.max(1, Math.min(90, Number(e.target.value) || 21)))}
-                    className="w-14 rounded-lg border border-line bg-surface px-2 py-1 text-[11px] text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
-                  days
-                </label>
-                <button onClick={() => { setCpv(cpvFor(clientId)); setDays(21) }}
-                  className="text-[11px] text-ink-muted underline-offset-2 hover:text-ink hover:underline">
-                  Reset
-                </button>
-              </div>
             </div>
-          )}
-        </div>
-
-        {radarError && <p className="mt-3 text-xs text-red-400">{radarError}</p>}
-        {radarMeta && (
-          <p className="mt-3 text-[11px] text-ink-muted">
-            {radarMeta.total_found} found · {radarMeta.scored} scored{radarMeta.capped ? ' (capped at 24)' : ''} · {radarMeta.pagesRead} feed pages
-          </p>
-        )}
-        {radarItems && radarItems.length === 0 && !radarLoading && (
-          <p className="mt-3 text-xs text-ink-tertiary">No recent tenders match your CPV codes. Check back in a few days.</p>
-        )}
-        {radarItems && radarItems.length > 0 && (
-          <div className="mt-4 space-y-2.5">
-            {radarItems.map((it) => {
-              const v = it.score ? VERDICT_STYLE[it.score.verdict] : null
-              const d = daysLeft(it.deadline)
-              return (
-                <div key={it.id} className="rounded-xl border border-line-subtle bg-page p-3.5">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-ink">{it.title}</p>
-                      <p className="mt-0.5 flex items-center gap-1.5 text-[11px] text-ink-tertiary"><Building2 size={11} /> {it.org || 'Contracting body not stated'}</p>
-                    </div>
-                    {it.score && v && (
-                      <span className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: v.bg, color: v.fg }}>
-                        {v.label} · {it.score.fit}
+            <div className="flex gap-2 overflow-x-auto pb-1">
+              {tab === 'chats' && (chats.length === 0
+                ? <p className="py-2 text-xs text-ink-muted">{listsLoading ? 'Loading…' : 'No conversations yet. Start one below.'}</p>
+                : chats.map((c) => (
+                  <div key={c.id} className={clsx('group relative w-56 shrink-0 rounded-xl border px-3 py-2 transition-colors',
+                    c.id === chatId ? 'border-line bg-surface' : 'border-line-subtle hover:bg-surface')}>
+                    {renamingId === c.id ? (
+                      <form onSubmit={(e) => { e.preventDefault(); void renameChat(c.id, renameText) }} className="flex items-center gap-1">
+                        <input autoFocus value={renameText} onChange={(e) => setRenameText(e.target.value)} onBlur={() => setRenamingId(null)}
+                          onKeyDown={(e) => { if (e.key === 'Escape') setRenamingId(null) }}
+                          className="min-w-0 flex-1 rounded border border-line bg-page px-1.5 py-0.5 text-xs text-ink outline-none" />
+                        <button type="submit" onMouseDown={(e) => e.preventDefault()} className="text-ink-tertiary hover:text-ink"><Check size={12} /></button>
+                      </form>
+                    ) : (
+                      <button onClick={() => openChat(c.id)} className="block w-full text-left">
+                        <span className="flex items-center gap-1.5">
+                          {openingChat === c.id ? <Loader2 size={11} className="shrink-0 animate-spin text-ink-muted" /> : <MessageSquare size={11} className="shrink-0 text-ink-muted" />}
+                          <span className="truncate pr-8 text-xs font-medium text-ink">{c.title || 'Untitled'}</span>
+                        </span>
+                        <span className="mt-0.5 block text-[10px] text-ink-muted">
+                          {relTime(c.updated_at)} · {c.messages_count} msg{c.tender_id ? ' · linked' : ''}
+                        </span>
+                      </button>
+                    )}
+                    {renamingId !== c.id && (
+                      <span className="absolute top-1.5 right-1.5 hidden items-center gap-0.5 group-hover:flex">
+                        <button onClick={() => { setRenamingId(c.id); setRenameText(c.title) }} aria-label="Rename" className="rounded p-1 text-ink-muted hover:text-ink"><Pencil size={11} /></button>
+                        <button onClick={() => deleteChat(c)} aria-label="Delete" className="rounded p-1 text-ink-muted hover:text-red-400"><Trash2 size={11} /></button>
                       </span>
                     )}
                   </div>
-                  {it.score && <p className="mt-1.5 text-xs text-ink-secondary">{it.score.reason}</p>}
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-ink-muted">
-                    <span>{fmtEur(it.amount)}</span>
-                    {d != null && <span className="flex items-center gap-1"><CalendarClock size={11} /> {d > 0 ? `${d} days` : 'due today'}</span>}
-                    {it.expediente && <span>Exp. {it.expediente}</span>}
-                    {it.cpv[0] && <span>CPV {it.cpv.slice(0, 2).join(', ')}</span>}
-                    {it.link && <a href={it.link} target="_blank" rel="noreferrer" className="flex items-center gap-1 text-ink-secondary hover:text-ink"><ExternalLink size={11} /> View on PLACSP</a>}
-                    <button onClick={() => pliegoRef.current?.focus()} className="text-ink-secondary hover:text-ink underline-offset-2 hover:underline">Draft proposal ↓</button>
+                )))}
+              {tab === 'docs' && (docs.length === 0
+                ? <p className="py-2 text-xs text-ink-muted">{listsLoading ? 'Loading…' : 'No documents yet. The ones the assistant writes are saved here.'}</p>
+                : docs.map((d) => (
+                  <div key={d.id} className="group relative w-56 shrink-0 rounded-xl border border-line-subtle px-3 py-2 transition-colors hover:bg-surface">
+                    <button onClick={() => openDoc(d.id)} className="block w-full text-left">
+                      <span className="flex items-center gap-1.5">
+                        <FileText size={11} className="shrink-0" style={{ color: brand }} />
+                        <span className="truncate pr-6 text-xs font-medium text-ink">{d.title}</span>
+                      </span>
+                      <span className="mt-0.5 block text-[10px] text-ink-muted">
+                        {KIND_LABEL[d.kind] || d.kind}{Array.isArray(d.sections) ? ` · ${d.sections.length} sections` : ''} · {relTime(d.updated_at)}
+                      </span>
+                    </button>
+                    <button onClick={() => exportDoc(d.id, d.title)} aria-label="Download Word" title="Download Word"
+                      className="absolute top-1.5 right-1.5 hidden rounded p-1 text-ink-muted hover:text-ink group-hover:block">
+                      {busyDoc === d.id ? <Loader2 size={11} className="animate-spin" /> : <Download size={11} />}
+                    </button>
                   </div>
-                </div>
-              )
-            })}
-            <p className="pt-1 text-[11px] text-ink-muted">To prepare the bid, open the tender on PLACSP, download the documents and paste them below.</p>
-          </div>
-        )}
-      </div>
-
-      {/* Con qué escribe: el corpus de la empresa y las memorias ya presentadas.
-          Una memoria floja casi nunca es culpa del modelo — es falta de
-          material — y hasta ahora eso no se veía por ninguna parte. */}
-      {corpus && (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line-subtle bg-surface px-4 py-3">
-          <p className="text-[11px] text-ink-tertiary">
-            <BookOpen size={12} className="mr-1.5 inline align-[-2px]" style={{ color: brand }} />
-            This proposal will be written from <strong className="text-ink-secondary">{corpus.documentos}</strong> company document{corpus.documentos === 1 ? '' : 's'}
-            {corpus.memoriasPresentadas > 0
-              ? <> and <strong className="text-ink-secondary">{corpus.memoriasPresentadas}</strong> previously submitted proposal{corpus.memoriasPresentadas === 1 ? '' : 's'}.</>
-              : <>. No previously submitted proposal is loaded yet: loading past ones is what makes the next one sound like yours.</>}
-          </p>
-          <a href="/brain" className="shrink-0 rounded-lg bg-page px-3 py-1.5 text-[11px] text-ink-secondary transition-colors hover:text-ink">
-            Add documents
-          </a>
-        </div>
-      )}
-
-      {pendingProposal && (
-        <div className="mb-4 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4">
-          <p className="text-xs font-medium text-amber-400">“{pendingProposal.filename}” looks like a proposal, not a tender document.</p>
-          <p className="mt-1 text-[11px] text-amber-300/90">A tender (pliego) is what the public body publishes. If this is your own proposal or a draft you want to improve, it belongs in Documents.</p>
-          <div className="mt-3 flex flex-wrap gap-2">
-            <button onClick={() => { const f = pendingProposal.file; setPendingProposal(null); setBriefFile(f); void generarDesdeEncargo({ texto: brief, file: f, kind: 'memoria' }) }}
-              disabled={briefBusy}
-              className="rounded-lg px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50" style={{ background: brand }}>
-              {briefBusy ? 'Generating…' : 'It is a request: generate the document it asks for'}
-            </button>
-            <button onClick={() => { setDocFile(pendingProposal.file); setPendingProposal(null); trackAction('/licitaciones', 'memoria-a-documentos', clientId) }}
-              className="rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink">
-              It is my own draft: send it to Documents to improve it
-            </button>
-            <button onClick={() => { setPliego((prev) => (prev.trim() ? `${prev.trim()}\n\n--- ${pendingProposal.filename} ---\n${pendingProposal.text}` : pendingProposal.text)); setDirty(true); setPendingProposal(null) }}
-              className="rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink">
-              No, it is the tender: use it
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* Apartado libre: sin pliego. Un cliente pide «tarifas y una memoria de
-          vuestra empresa» y no hay pliego que subir porque no existe.
-          01-oct: admite ADJUNTAR la petición o el propio borrador (PDF/Word) y
-          elegir qué documento se quiere de vuelta; con fichero el texto es opcional. */}
-      <div className="mb-4 rounded-2xl border border-line bg-surface p-5">
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><Sparkles size={15} style={{ color: brand }} /> No tender? Describe what you need</h2>
-          <span className="text-[11px] text-ink-muted">{brief.trim().length > 0 ? `${brief.trim().length} chars` : ''}</span>
-        </div>
-        <p className="mb-3 text-[11px] text-ink-tertiary">
-          Paste or attach the request as it reached you, or your own draft to be rewritten, and MIRA reads all the company&apos;s material — documents, past proposals, the Brain — to write the document you choose. It never invents a price: rate fields are left for the commercial team.
-        </p>
-
-        <div className="mb-3 flex flex-wrap items-center gap-2">
-          <input ref={briefFileRef} type="file" accept={BRIEF_ACCEPT} className="hidden"
-            onChange={(e) => { const f = e.target.files?.[0]; if (f) { setBriefFile(f); setError(null); trackAction('/licitaciones', 'adjuntar-encargo', clientId, { bytes: f.size, tipo: f.type }) } }} />
-          {briefFile ? (
-            <span className="flex items-center gap-2 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary">
-              <FileText size={13} className="shrink-0" />
-              <span className="max-w-[260px] truncate" title={briefFile.name}>{briefFile.name}</span>
-              <span className="text-ink-muted">{(briefFile.size / 1024 / 1024).toFixed(1)} MB</span>
-              <button onClick={() => { setBriefFile(null); if (briefFileRef.current) briefFileRef.current.value = '' }} disabled={briefBusy}
-                className="ml-1 flex items-center gap-1 text-ink-muted transition-colors hover:text-ink disabled:opacity-50" title="Remove the file">
-                <X size={12} /> Remove
-              </button>
-            </span>
-          ) : (
-            <button onClick={() => briefFileRef.current?.click()} disabled={briefBusy || !clientId}
-              className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
-              <Upload size={13} /> Attach the request or your draft (PDF or Word)
-            </button>
-          )}
-          <label className="flex items-center gap-2 text-xs text-ink-secondary">
-            What should MIRA write?
-            <select value={briefKind} onChange={(e) => setBriefKind(e.target.value as BriefKind)} disabled={briefBusy}
-              className="rounded-lg border border-line bg-page px-2 py-1.5 text-xs text-ink outline-none focus:ring-1 focus:ring-ink-muted">
-              {(Object.keys(BRIEF_KIND_LABEL) as BriefKind[]).map((k) => <option key={k} value={k}>{BRIEF_KIND_LABEL[k]}</option>)}
-            </select>
-          </label>
-        </div>
-
-        <label className="mb-1 block text-xs text-ink-secondary">
-          What do you need? (who asks, what service, what they expect)
-          {briefFile && <span className="text-ink-muted"> — optional with a file attached</span>}
-        </label>
-        <textarea value={brief} onChange={(e) => setBrief(e.target.value)} rows={4}
-          placeholder={briefFile
-            ? 'Optional: anything the file does not say — who is asking, deadline, what to emphasise…'
-            : 'e.g. A Facility Services company is bidding for a large client and will subcontract transport and distribution to us. They ask for our rates and a technical proposal of our company covering local, national and international services…'}
-          className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <button onClick={() => generarDesdeEncargo({ texto: brief, file: briefFile })} disabled={briefBusy || !clientId || (!briefFile && brief.trim().length < BRIEF_MIN)}
-            className="flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-            {briefBusy ? <><Loader2 size={16} className="animate-spin" /> {briefFile ? 'Reading the file and writing (1–3 min)…' : 'Writing (1–2 min)…'}</> : <><Sparkles size={16} /> Generate the document</>}
-          </button>
-          <span className="text-[11px] text-ink-muted">
-            {!briefFile && brief.trim().length > 0 && brief.trim().length < BRIEF_MIN
-              ? `${BRIEF_MIN - brief.trim().length} more characters, or attach a file.`
-              : `The ${BRIEF_KIND_LABEL[briefKind].toLowerCase()} appears in Documents below, editable and downloadable as Word.`}
-          </span>
-        </div>
-        {briefAvisos.length > 0 && (
-          <ul className="mt-3 space-y-1">
-            {briefAvisos.map((a, i) => <li key={i} className="rounded-lg bg-amber-500/10 px-2.5 py-1.5 text-[11px] text-amber-400">{a}</li>)}
-          </ul>
-        )}
-      </div>
-
-      {/* Aquí empieza el contenido del expediente: es adonde se baja al abrir uno. */}
-      <div ref={contenidoRef} />
-
-      {/* Paso 1: pliego */}
-      <div className="rounded-2xl border border-line bg-surface p-5">
-        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <label className="flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><FileText size={13} /> 1 · Tender documents (PCAP + PPT + criteria)</label>
-          <div className="flex items-center gap-2">
-            {pliego.trim() && <span className="text-[11px] text-ink-muted tabular-nums">{pliego.trim().length.toLocaleString('es-ES')} chars</span>}
-            <button onClick={() => fileRef.current?.click()} disabled={reading || !clientId}
-              className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
-              {reading ? <><Loader2 size={13} className="animate-spin" /> Reading…</> : <><Upload size={13} /> Upload PDF or Word</>}
-            </button>
-            <input ref={fileRef} type="file" accept=".pdf,.docx,.txt,.md,application/pdf" className="hidden"
-              onChange={(e) => { const f = e.target.files?.[0]; if (f) readPliegoFile(f) }} />
-          </div>
-        </div>
-        <textarea ref={pliegoRef} value={pliego} onChange={e => { setPliego(e.target.value); setDirty(true) }} rows={7}
-          placeholder="Upload the tender PDF, or paste its text here…"
-          className="w-full resize-y rounded-xl border border-line bg-page p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
-        <p className="mt-1.5 text-[11px] text-ink-muted">Upload each document one by one (PCAP and PPT): they add up, they do not replace each other. Scanned PDFs have no text — those still need pasting.</p>
-        <p className="mt-1 text-[11px] text-ink-muted">Want to improve a proposal you already have instead? <a href="#documentos" className="text-ink-secondary underline underline-offset-2 hover:text-ink">Upload it in Documents ↓</a></p>
-        {/* Instrucciones de la persona (Usoa, 30-sep): «tengo que tener la libertad
-            de explicar a MIRA todo lo que me pasa por la cabeza antes de liarse a
-            hacer una memoria». Entran en la memoria, la oferta y las mejoras con
-            máxima prioridad y se guardan con el expediente. */}
-        <div className="mt-4 rounded-xl border border-line-subtle bg-page/60 p-3">
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <label className="flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><MessageSquare size={13} style={{ color: brand }} /> Your instructions for this proposal</label>
-            <div className="flex items-center gap-2">
-              {/* Contador: las instrucciones se guardan hasta 20.000 caracteres; que se vea cuánto lleva. */}
-              {instructions.trim() && <span className="text-[11px] text-ink-muted tabular-nums">{instructions.length.toLocaleString('es-ES')} / 20.000 chars</span>}
-              {savedAt && !dirty && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
-              {/* Sin memoria aún no había ningún botón de guardar: las instrucciones escritas antes
-                  de generar se perdían al salir. */}
-              <button onClick={() => save()} disabled={saving || !dirty || !clientId}
-                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
-                {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save instructions</>}
-              </button>
-            </div>
-          </div>
-          <p className="mb-2 mt-0.5 text-[11px] text-ink-tertiary">Tell MIRA everything before it writes: what this client cares about, what to emphasise, what to avoid, tone, structure. It reads this first and tells you which instructions it applied. It never invents company data to satisfy an instruction.</p>
-          <textarea value={instructions} onChange={(e) => { setInstructions(e.target.value); setDirty(true) }} rows={4}
-            placeholder="e.g. This body values real-time tracking above all: give it its own section. Do not mention international services. Lean on our university experience. Short sentences, institutional tone…"
-            className="w-full resize-y rounded-xl border border-line bg-surface p-3 text-sm text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
-          <div className="mt-2 flex flex-wrap items-center gap-2">
-            <label className="text-[11px] text-ink-tertiary">Start from a past proposal (optional)</label>
-            <select value={baseTenderId || ''} onChange={(e) => { setBaseTenderId(e.target.value || null); setDirty(true) }}
-              className="max-w-full rounded-lg border border-line-subtle bg-surface px-2 py-1 text-[11px] text-ink-secondary outline-none">
-              <option value="">Let MIRA pick the closest ones</option>
-              {saved.filter((t) => t.has_memoria && t.id !== currentId).map((t) => (
-                <option key={t.id} value={t.id}>{STATUS_LABEL[t.status] || t.status} · {t.title.slice(0, 70)}</option>
-              ))}
-            </select>
-            <span className="text-[11px] text-ink-muted">Its structure and tone become the starting point; the content is rewritten for this tender.</span>
-          </div>
-        </div>
-        <button onClick={extract} disabled={pliego.trim().length < 200 || step !== 'idle' || !clientId}
-          className="mt-3 flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-          {step === 'extracting' ? <><Loader2 size={16} className="animate-spin" /> Analysing…</> : <><ListChecks size={16} /> Extract criteria</>}
-        </button>
-        {error && <p className="mt-3 text-xs text-red-400">{error}</p>}
-      </div>
-
-      {/* Paso 2: criterios */}
-      {criteria && (
-        <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><ListChecks size={15} style={{ color: brand }} /> 2 · Scoring criteria {criteria.total_points ? `· ${criteria.total_points} pts` : ''}</h2>
-            <div className="flex items-center gap-2">
-              {/* Antes el botón desaparecía si el pliego no tenía criterios de
-                  juicio de valor, sin explicar por qué. Pero una memoria técnica
-                  se pide igual como documentación del servicio: se deja
-                  generar y se avisa abajo de que no puntúa. */}
-              <button onClick={generate} disabled={step !== 'idle' || criteria.criteria.length === 0}
-                title={criteria.criteria.length === 0 ? 'No award criteria were found in the uploaded text' : undefined}
-                className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-                {step === 'generating' ? <><Loader2 size={14} className="animate-spin" /> Generating…</> : <><Sparkles size={14} /> {memoria ? 'Generate again' : 'Generate proposal'}</>}
-              </button>
-              <button onClick={generateOferta} disabled={step !== 'idle'}
-                className="flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-                {step === 'generating-oferta' ? <><Loader2 size={14} className="animate-spin" /> Pricing…</> : <><Sparkles size={14} /> Generate economic offer</>}
-              </button>
-            </div>
-          </div>
-          {criteria.criteria.length === 0 && (
-            <div className="mb-3 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2.5">
-              <p className="text-xs font-medium text-amber-400">No award criteria were found in the uploaded text, so there is nothing to write the proposal against.</p>
-              {criteria.data_gaps?.[0] && <p className="mt-1 text-[11px] text-amber-300/90">{criteria.data_gaps[0]}</p>}
-              <p className="mt-1.5 text-[11px] text-amber-300/90">
-                If this is your own proposal or a draft, <a href="#documentos" className="underline underline-offset-2">upload it in Documents</a> to improve it. If it is a tender, upload the PCAP: that is where the award criteria are.
-              </p>
-            </div>
-          )}
-          {criteria.criteria.length > 0 && byGroup('juicio_valor').length === 0 && (
-            <p className="mb-3 rounded-lg bg-surface px-3 py-2 text-[11px] text-ink-tertiary">
-              This tender only scores automatic criteria and price: the technical proposal will not earn points, but it is usually still required as service documentation.
-            </p>
-          )}
-          {criteria.object && <p className="mb-3 text-xs text-ink-tertiary">{criteria.expediente ? `Exp. ${criteria.expediente} · ` : ''}{criteria.object}{criteria.deadline ? ` · due ${criteria.deadline}` : ''}</p>}
-          <div className="grid gap-3 sm:grid-cols-3">
-            {['juicio_valor', 'automatico_tecnico', 'precio'].map(g => byGroup(g).length > 0 && (
-              <div key={g} className="rounded-xl border border-line-subtle bg-page p-3">
-                <p className="mb-2 text-[10px] uppercase tracking-wider font-semibold text-ink-muted">{GROUP_LABEL[g]}</p>
-                <ul className="space-y-1.5">
-                  {byGroup(g).map((c, i) => (
-                    <li key={i} className="text-xs text-ink-secondary">
-                      <span className="text-ink">{c.name}</span>{c.points != null && <span className="text-ink-tertiary"> · {c.points} pts</span>}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Paso 3b: oferta económica — propuesta por el agente, editada por la persona */}
-      {oferta && (
-        <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">
-              <FileText size={15} style={{ color: brand }} /> Economic offer{oferta.lote ? ` · ${oferta.lote}` : ''}
-            </h2>
-            <div className="flex items-center gap-2">
-              {savedAt && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
-              <button onClick={() => save()} disabled={saving}
-                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
-                {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save</>}
-              </button>
-              <button onClick={copyOferta} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
-                {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy table</>}
-              </button>
-              {/* La oferta también se entrega: sale en Word con su tabla de
-                  precios, no solo en la pantalla. */}
-              <button onClick={exportOferta} disabled={exporting}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-                {exporting ? <><Loader2 size={13} className="animate-spin" /> Preparing…</> : <><Download size={13} /> Word</>}
-              </button>
-            </div>
-          </div>
-
-          {/* Cerrar el ciclo (presentada → ganada/perdida) es lo que convierte esta
-              oferta en ejemplo del que aprende la siguiente. */}
-          <div className="mb-4 flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[11px] text-ink-muted">Status:</span>
-            {Object.keys(STATUS_LABEL).map((st) => (
-              <button key={st} onClick={() => setStatus(st)} disabled={saving}
-                className="rounded-full border px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
-                style={{ borderColor: `${STATUS_COLOR[st]}55`, color: STATUS_COLOR[st] }}>
-                {STATUS_LABEL[st]}
-              </button>
-            ))}
-          </div>
-
-          {oferta.avisos.length > 0 && (
-            <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/5 p-3">
-              <p className="mb-1 text-[10px] uppercase tracking-wider text-red-400">Fix before submitting</p>
-              <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{oferta.avisos.map((a, i) => <li key={i}>{a}</li>)}</ul>
-            </div>
-          )}
-
-          {oferta.estrategia && <p className="mb-2 text-sm text-ink-secondary">{oferta.estrategia}</p>}
-          {oferta.formula_precio && <p className="mb-4 text-xs text-ink-tertiary">Cómo puntúa el precio: {oferta.formula_precio}{oferta.suma_ponderada != null ? ` · Suma ponderada actual: ${oferta.suma_ponderada.toFixed(2)} €` : ''}</p>}
-
-          {/* Tabla editable por sección: el precio es de la persona, la baja se recalcula sola */}
-          {Array.from(new Set(oferta.lineas.map((l) => l.seccion))).map((sec) => (
-            <div key={sec} className="mb-4">
-              <p className="mb-1.5 text-[10px] uppercase tracking-wider font-semibold text-ink-muted">{sec}</p>
-              <div className="overflow-x-auto rounded-xl border border-line-subtle">
-                <table className="w-full text-xs">
-                  <thead>
-                    <tr className="border-b border-line-subtle bg-page text-left text-[10px] uppercase tracking-wider text-ink-muted">
-                      <th className="px-3 py-2 font-medium">Servicio</th>
-                      <th className="px-2 py-2 font-medium">Tramo</th>
-                      <th className="px-2 py-2 text-right font-medium">Máx sin IVA</th>
-                      <th className="px-2 py-2 text-right font-medium">Factor</th>
-                      <th className="px-2 py-2 text-right font-medium">Ofertado</th>
-                      <th className="px-2 py-2 text-right font-medium">Baja</th>
-                      <th className="px-3 py-2 font-medium">Motivo</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {oferta.lineas.map((l, i) => l.seccion === sec && (
-                      <tr key={i} className={clsx('border-b border-line-subtle last:border-0', l.a_confirmar && 'bg-amber-500/5')}>
-                        <td className="px-3 py-1.5 text-ink">{l.servicio}{l.a_confirmar && <span className="ml-1.5 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold text-amber-500">confirmar</span>}</td>
-                        <td className="px-2 py-1.5 text-ink-tertiary whitespace-nowrap">{l.tramo || '—'}</td>
-                        <td className="px-2 py-1.5 text-right text-ink-tertiary whitespace-nowrap">{l.max_sin_iva != null ? `${l.max_sin_iva.toFixed(2)} €` : '—'}</td>
-                        <td className="px-2 py-1.5 text-right text-ink-muted">{l.factor ?? '—'}</td>
-                        <td className="px-2 py-1.5 text-right">
-                          <input value={l.precio_ofertado ?? ''} onChange={(e) => editPrecio(i, e.target.value)}
-                            className={clsx('w-20 rounded-md border bg-page px-2 py-1 text-right text-xs text-ink outline-none focus:ring-1 focus:ring-ink-muted',
-                              l.precio_ofertado != null && l.max_sin_iva != null && l.precio_ofertado > l.max_sin_iva ? 'border-red-500/60' : 'border-line')} />
-                        </td>
-                        <td className={clsx('px-2 py-1.5 text-right whitespace-nowrap', (l.baja_pct ?? 0) >= 30 ? 'text-emerald-400' : 'text-ink-secondary')}>{l.baja_pct != null ? `${l.baja_pct}%` : '—'}</td>
-                        <td className="px-3 py-1.5 text-ink-tertiary">{l.motivo}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
-
-          {oferta.criterios_automaticos.length > 0 && (
-            <div className="mb-4 rounded-xl border border-line-subtle bg-page p-3">
-              <p className="mb-2 text-[10px] uppercase tracking-wider font-semibold text-ink-muted">Criterios automáticos (fórmula)</p>
-              <ul className="space-y-1.5">
-                {oferta.criterios_automaticos.map((c, i) => (
-                  <li key={i} className="text-xs text-ink-secondary">
-                    <span className="text-ink">{c.nombre}</span> → <span className="font-medium text-ink">{c.respuesta}</span>
-                    {c.puntos != null && <span className="text-ink-tertiary"> · {c.puntos} pts</span>}
-                    {c.motivo && <span className="block text-[11px] text-ink-muted">{c.motivo}</span>}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-
-          {oferta.a_confirmar_global.length > 0 && (
-            <div className="rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 p-2.5">
-              <p className="mb-1 text-[10px] uppercase tracking-wider text-amber-500/80">Decisiones a validar antes de presentar</p>
-              <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{oferta.a_confirmar_global.map((d, i) => <li key={i}>{d}</li>)}</ul>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Paso 3: memoria */}
-      {memoria && (
-        <div className="mt-6 rounded-2xl border border-line bg-surface p-5">
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold text-ink"><FileText size={15} style={{ color: brand }} /> 3 · {memoria.titulo || 'Technical proposal'}</h2>
-            <div className="flex items-center gap-2">
-              {savedAt && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
-              <button onClick={() => save()} disabled={saving}
-                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary transition-colors hover:text-ink disabled:opacity-50">
-                {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save</>}
-              </button>
-              <button onClick={() => { if (!editing) trackAction('/licitaciones', 'editar-memoria', clientId); setEditing((v) => !v) }}
-                className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs transition-colors hover:text-ink"
-                style={editing ? { color: brand } : undefined}>
-                <Pencil size={13} /> {editing ? 'Done editing' : 'Edit'}
-              </button>
-              <button onClick={copyMemoria} className="flex items-center gap-1.5 rounded-lg bg-page px-3 py-1.5 text-xs text-ink-secondary hover:text-ink transition-colors">
-                {copied ? <><Check size={13} /> Copied</> : <><Copy size={13} /> Copy</>}
-              </button>
-              <button onClick={exportMemoria} disabled={exporting}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-                {exporting ? <><Loader2 size={13} className="animate-spin" /> Preparing…</> : <><Download size={13} /> Word</>}
-              </button>
-            </div>
-          </div>
-          {/* Estado del expediente: cerrar el ciclo (presentada → ganada/perdida) es
-              lo que convierte esto en histórico útil para futuras memorias. */}
-          <div className="mb-4 flex flex-wrap items-center gap-1.5">
-            <span className="mr-1 text-[11px] text-ink-muted">Status:</span>
-            {Object.keys(STATUS_LABEL).map((st) => (
-              <button key={st} onClick={() => setStatus(st)} disabled={saving}
-                className="rounded-full border px-2.5 py-1 text-[11px] transition-colors disabled:opacity-50"
-                style={{ borderColor: `${STATUS_COLOR[st]}55`, color: STATUS_COLOR[st] }}>
-                {STATUS_LABEL[st]}
-              </button>
-            ))}
-          </div>
-          {memoria.resumen_ejecutivo && <p className="mb-4 text-sm text-ink-secondary">{memoria.resumen_ejecutivo}</p>}
-          <div className="space-y-4">
-            {memoria.secciones?.map((s, i) => (
-              <div key={i} className="rounded-xl border border-line-subtle bg-page p-4">
-                <div className="mb-2 flex items-center justify-between gap-2">
-                  {editing ? (
-                    <input value={s.titulo} onChange={(e) => editSection(i, { titulo: e.target.value })}
-                      className="w-full rounded-lg border border-line bg-surface px-2 py-1 text-sm font-semibold text-ink outline-none" />
-                  ) : (
-                    <h3 className="text-sm font-semibold text-ink">{s.titulo}</h3>
-                  )}
-                  <div className="flex shrink-0 items-center gap-2">
-                    {s.puntos_objetivo != null && <span className="rounded-full px-2 py-0.5 text-[10px] font-bold" style={{ background: `${brand}22`, color: brand }}>{s.puntos_objetivo} pts</span>}
-                    <SectionRewriter titulo={s.titulo} brand={brand}
-                      onRewrite={pedirMejoraMemoria(i)}
-                      onAccept={(contenido) => editSection(i, { contenido })} />
-                  </div>
-                </div>
-                {/* La memoria generada es un BORRADOR: quien firma es quien la
-                    presenta, y tiene que poder corregirla aquí en vez de
-                    llevársela a un Word y perder el hilo con los criterios. */}
-                {editing ? (
-                  <textarea value={s.contenido} onChange={(e) => editSection(i, { contenido: e.target.value })} rows={Math.min(24, Math.max(6, Math.ceil((s.contenido || '').length / 90)))}
-                    className="w-full resize-y rounded-lg border border-line bg-surface p-2.5 text-sm text-ink-secondary leading-relaxed outline-none focus:ring-1 focus:ring-ink-muted" />
-                ) : (
-                  <p className="whitespace-pre-line text-sm text-ink-secondary leading-relaxed">{s.contenido}</p>
-                )}
-                {s.datos_a_confirmar && s.datos_a_confirmar.length > 0 && (
-                  <div className="mt-2 rounded-lg border border-dashed border-amber-500/30 bg-amber-500/5 p-2">
-                    <p className="text-[10px] uppercase tracking-wider text-amber-500/80 mb-1">To confirm before submitting</p>
-                    <ul className="list-disc pl-4 text-xs text-ink-tertiary">{s.datos_a_confirmar.map((d, j) => <li key={j}>{d}</li>)}</ul>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-          {(memoria.checklist_qa?.length || memoria.data_gaps?.length || memoria.instrucciones_aplicadas?.length) && (
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {/* Que la persona VEA que la han escuchado: lo que no se aplicó va en data_gaps con su motivo. */}
-              {memoria.instrucciones_aplicadas && memoria.instrucciones_aplicadas.length > 0 && (
-                <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/5 p-3 sm:col-span-2">
-                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-emerald-500/90">Your instructions, applied</p>
-                  <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{memoria.instrucciones_aplicadas.map((c, i) => <li key={i}>{c}</li>)}</ul>
-                </div>
-              )}
-              {memoria.checklist_qa && memoria.checklist_qa.length > 0 && (
-                <div className="rounded-xl border border-line-subtle p-3">
-                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">QA checklist</p>
-                  <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{memoria.checklist_qa.map((c, i) => <li key={i}>{c}</li>)}</ul>
-                </div>
-              )}
-              {memoria.data_gaps && memoria.data_gaps.length > 0 && (
-                <div className="rounded-xl border border-line-subtle p-3">
-                  <p className="mb-1.5 text-[10px] uppercase tracking-wider text-ink-muted">Gaps and notes</p>
-                  <ul className="list-disc pl-4 text-xs text-ink-tertiary space-y-0.5">{memoria.data_gaps.map((c, i) => <li key={i}>{c}</li>)}</ul>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* Documentos de la licitación: los que Usoa sube para trabajarlos y los
-          anexos que acompañan a la oferta. Van al final porque se usan DESPUÉS
-          de tener criterios y memoria. */}
-      {clientId && <DocumentsPanel clientId={clientId} tenderId={currentId} brand={brand} fileToUpload={docFile} onFileConsumed={() => setDocFile(null)} refreshKey={docsRefresh} openId={docOpenId} />}
-
-    </div>
-  )
-}
-
-/**
- * El playbook: la doctrina que el agente aplica al proponer precios y memorias
- * (dónde baja, dónde no, cómo estructura la memoria). Se destila de las
- * licitaciones presentadas, pero es TEXTO EDITABLE a propósito: si el criterio
- * cambia (un coste sube, se decide no pelear un tipo de servicio), lo corrige
- * el equipo sin tocar código ni esperar a la agencia.
- *
- * Carga perezosa: solo pide el playbook cuando alguien abre el panel.
- */
-function PlaybookPanel({ clientId, brand }: { clientId: string; brand: string }) {
-  const [open, setOpen] = useState(false)
-  const [text, setText] = useState('')
-  const [loaded, setLoaded] = useState(false)
-  const [loading, setLoading] = useState(false)
-  const [saving, setSaving] = useState(false)
-  const [savedAt, setSavedAt] = useState<string | null>(null)
-  const [err, setErr] = useState<string | null>(null)
-  // Si la carga falla, se para. Antes el efecto se relanzaba solo en bucle y
-  // dejaba el cuadro VACÍO con «Guardar» activo: un clic borraba la doctrina de
-  // precios de la marca. Ahora no se reintenta sin que nadie lo pida y no se
-  // puede guardar lo que no se ha llegado a cargar.
-  const [loadFailed, setLoadFailed] = useState(false)
-
-  // Al cambiar de marca, el playbook de la anterior no vale: se descarta.
-  useEffect(() => { setLoaded(false); setText(''); setSavedAt(null); setErr(null); setLoadFailed(false) }, [clientId])
-
-  useEffect(() => {
-    if (!open || loaded || loading || loadFailed) return
-    setLoading(true)
-    ;(async () => {
-      try {
-        const res = await fetch(`/api/tender/playbook?clientId=${clientId}`)
-        const data = await res.json()
-        if (!res.ok) { setErr(data.error || 'Could not load'); setLoadFailed(true); return }
-        setText(data.playbook || '')
-        setLoaded(true)
-      } catch { setErr('Network error'); setLoadFailed(true) } finally { setLoading(false) }
-    })()
-  }, [open, loaded, loading, clientId])
-
-  const save = async () => {
-    setSaving(true); setErr(null)
-    try {
-      // clientId SIEMPRE en el cuerpo: la ruta resuelve el cliente con él (el
-      // workspace activo del navegador no viaja solo).
-      const res = await fetch('/api/tender/playbook', {
-        method: 'PUT', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ clientId, playbook: text }),
-      })
-      const data = await res.json()
-      if (!res.ok) { setErr(data.error || 'Could not save'); return }
-      setSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
-    } catch { setErr('Network error') } finally { setSaving(false) }
-  }
-
-  return (
-    <div className="mb-6 rounded-2xl border border-line bg-surface p-5">
-      <button onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between gap-3 text-left">
-        <span>
-          <span className="flex items-center gap-2 text-sm font-semibold text-ink"><BookOpen size={15} style={{ color: brand }} /> Your playbook</span>
-          <span className="mt-0.5 block text-xs text-ink-tertiary">What the assistant applies when pricing and writing: where you bid low, where cost rules, how your proposals are structured.</span>
-        </span>
-        <span className="shrink-0 text-ink-muted">{open ? '▲' : '▼'}</span>
-      </button>
-
-      {open && (
-        <div className="mt-4">
-          {loading ? (
-            <div className="flex h-24 items-center justify-center"><Loader2 size={18} className="animate-spin text-ink-muted" /></div>
-          ) : (
-            <>
-              <textarea value={text} onChange={(e) => setText(e.target.value)} rows={14}
-                placeholder="No playbook yet. It is distilled from your submitted tenders — or write it here: where you can go low, where cost sets the floor, how your proposals are structured."
-                className="w-full resize-y rounded-xl border border-line bg-page p-3 font-mono text-[12.5px] leading-relaxed text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
-              <div className="mt-2 flex items-center justify-between gap-3">
-                <p className="text-[11px] text-ink-muted">{text.length}/12000 characters · plain text, no format needed</p>
-                <div className="flex items-center gap-2">
-                  {savedAt && <span className="text-[11px] text-ink-muted">Saved {savedAt}</span>}
-                  <button onClick={save} disabled={saving || !loaded}
-                    className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
-                    {saving ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save playbook</>}
+                )))}
+              {tab === 'tenders' && (tenders.length === 0
+                ? <p className="py-2 text-xs text-ink-muted">{listsLoading ? 'Loading…' : 'No saved tenders.'}</p>
+                : tenders.map((t) => (
+                  <button key={t.id} onClick={() => newChat(t)} title="Start a conversation about this tender"
+                    className="w-56 shrink-0 rounded-xl border border-line-subtle px-3 py-2 text-left transition-colors hover:bg-surface">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: STATUS_COLOR[t.status] || '#94A3B8' }} />
+                      <span className="truncate text-xs font-medium text-ink">{t.title}</span>
+                    </span>
+                    <span className="mt-0.5 block truncate text-[10px] text-ink-muted">
+                      {t.expediente ? `Exp. ${t.expediente} · ` : ''}{relTime(t.updated_at)}
+                    </span>
                   </button>
-                </div>
-              </div>
-            </>
-          )}
-          {err && (
-            <p className="mt-2 flex items-center gap-2 text-xs text-red-400">
-              {err}
-              {loadFailed && (
-                <button onClick={() => { setErr(null); setLoadFailed(false) }} className="rounded-lg bg-page px-2 py-0.5 text-[11px] text-ink-secondary hover:text-ink">Retry</button>
+                )))}
+            </div>
+          </div>
+
+          {/* Móvil: la tira se pliega en un selector */}
+          <div className="flex items-center gap-2 md:hidden">
+            <select value="" onChange={(e) => { if (e.target.value) onMobilePick(e.target.value) }} aria-label="Your work"
+              className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-2 py-1.5 text-xs text-ink-secondary outline-none">
+              <option value="">{listsLoading ? 'Loading your work…' : `Your work (${chats.length + docs.length + tenders.length})`}</option>
+              {chats.length > 0 && <optgroup label="Conversations">{chats.map((c) => <option key={c.id} value={`chat:${c.id}`}>{c.title || 'Untitled'}</option>)}</optgroup>}
+              {docs.length > 0 && <optgroup label="Documents">{docs.map((d) => <option key={d.id} value={`doc:${d.id}`}>{d.title}</option>)}</optgroup>}
+              {tenders.length > 0 && <optgroup label="Tenders (new conversation)">{tenders.map((t) => <option key={t.id} value={`tender:${t.id}`}>{t.title}</option>)}</optgroup>}
+            </select>
+            <button onClick={() => newChat()} aria-label="New conversation" className="flex shrink-0 items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white" style={{ background: brand }}>
+              <Plus size={13} /> New
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Conversación ── */}
+      <div ref={scrollRef} onScroll={onScroll} className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto max-w-3xl px-4 py-5 md:px-8">
+          {(chatTitle || linkedTender) && (
+            <div className="mb-4 flex flex-wrap items-center gap-2 border-b border-line-subtle pb-3">
+              {chatTitle && <h2 className="min-w-0 truncate text-sm font-semibold text-ink">{chatTitle}</h2>}
+              {/* Renombrar y borrar también aquí: en móvil la tira es un selector y no tiene botones. */}
+              {chatId && chatTitle && (
+                <span className="flex items-center gap-0.5">
+                  <button onClick={() => { const t = window.prompt('Rename conversation', chatTitle); if (t) void renameChat(chatId, t) }} aria-label="Rename" className="rounded p-1 text-ink-muted hover:text-ink"><Pencil size={12} /></button>
+                  <button onClick={() => { const c = chats.find((x) => x.id === chatId); if (c) void deleteChat(c) }} aria-label="Delete" className="rounded p-1 text-ink-muted hover:text-red-400"><Trash2 size={12} /></button>
+                </span>
               )}
-            </p>
+              {linkedTender && (
+                <span className="flex items-center gap-1 rounded-full border border-line-subtle px-2 py-0.5 text-[11px] text-ink-tertiary">
+                  <Link2 size={11} /> {linkedTender.title.slice(0, 60)}
+                </span>
+              )}
+            </div>
+          )}
+
+          {empty ? (
+            <div className="pt-6 md:pt-12">
+              <p className="text-center text-base font-medium text-ink">What are we working on?</p>
+              <p className="mt-1 text-center text-xs text-ink-tertiary">
+                {linkedTender ? <>This conversation will be linked to <span className="text-ink-secondary">{linkedTender.title}</span>. </> : null}
+                Attach the tender, last year’s proposal or a draft, and say what you need.
+              </p>
+              <div className="mt-6 grid gap-2 sm:grid-cols-2">
+                {SUGGESTIONS.map((s) => (
+                  <button key={s} onClick={() => { setInput(s); taRef.current?.focus() }}
+                    className="rounded-xl border border-line-subtle bg-surface px-3.5 py-2.5 text-left text-xs text-ink-secondary transition-colors hover:border-line hover:text-ink">
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-5">
+              {messages.map((m) => m.role === 'user' ? (
+                <div key={m.id} className="flex justify-end">
+                  <div className="max-w-[85%] rounded-2xl rounded-br-md border border-line-subtle bg-surface px-3.5 py-2.5">
+                    {m.attachments.length > 0 && (
+                      <div className="mb-1.5 flex flex-wrap gap-1">
+                        {m.attachments.map((a, i) => (
+                          <span key={i} className="flex items-center gap-1 rounded-md bg-page px-1.5 py-0.5 text-[10px] text-ink-tertiary">
+                            <Paperclip size={10} /> {a.filename}
+                          </span>
+                        ))}
+                      </div>
+                    )}
+                    <p className="whitespace-pre-wrap break-words text-sm text-ink">{m.content}</p>
+                  </div>
+                </div>
+              ) : (
+                <div key={m.id} className="min-w-0">
+                  {m.tools.length > 0 && (
+                    <div className="mb-2 flex flex-wrap gap-1.5">
+                      {m.tools.map((t) => (
+                        <span key={t.key} className={clsx('flex items-center gap-1.5 rounded-full border px-2 py-0.5 text-[11px]',
+                          t.status === 'start' ? 'border-line text-ink-secondary' : 'border-line-subtle text-ink-muted')}>
+                          {t.status === 'start' ? <Loader2 size={10} className="animate-spin" /> : <Check size={10} />}
+                          {toolLabel(t, brandName)}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  {m.content
+                    ? <div className="text-ink-secondary"><ChatMarkdown content={m.content} /></div>
+                    : m.streaming && m.tools.every((t) => t.status === 'done') && (
+                      <p className="flex items-center gap-2 text-xs text-ink-muted"><Loader2 size={12} className="animate-spin" /> Thinking…</p>
+                    )}
+                  {m.documents.length > 0 && (
+                    <div className="mt-3 space-y-2">
+                      {m.documents.map((d) => (
+                        <div key={d.id} className="flex items-center gap-3 rounded-xl border border-line bg-surface px-3 py-2.5">
+                          <FileText size={16} className="shrink-0" style={{ color: brand }} />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-sm font-medium text-ink">{d.title}</span>
+                            <span className="block text-[11px] text-ink-muted">Saved in your documents</span>
+                          </span>
+                          <button onClick={() => openDoc(d.id)} className="rounded-lg bg-page px-2.5 py-1 text-xs text-ink-secondary hover:text-ink">Open</button>
+                          <button onClick={() => exportDoc(d.id, d.title)} disabled={busyDoc === d.id}
+                            className="flex items-center gap-1 rounded-lg px-2.5 py-1 text-xs font-medium text-white disabled:opacity-50" style={{ background: brand }}>
+                            {busyDoc === d.id ? <Loader2 size={11} className="animate-spin" /> : <Download size={11} />} Word
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  {/* Descargas pedidas por el asistente para documentos que no
+                      tienen tarjeta en este mensaje: botón por si la automática
+                      la bloqueó el navegador. */}
+                  {m.downloads.filter((id) => !m.documents.some((d) => d.id === id)).map((id) => (
+                    <button key={id} onClick={() => exportDoc(id, docs.find((d) => d.id === id)?.title)} disabled={busyDoc === id}
+                      className="mt-2 flex items-center gap-1.5 rounded-lg border border-line px-2.5 py-1 text-xs text-ink-secondary hover:text-ink disabled:opacity-50">
+                      {busyDoc === id ? <Loader2 size={11} className="animate-spin" /> : <Download size={11} />}
+                      Download {docs.find((d) => d.id === id)?.title || 'the Word document'}
+                    </button>
+                  ))}
+                  {m.error && (
+                    <p className="mt-2 flex items-start gap-1.5 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-400">
+                      <AlertTriangle size={13} className="mt-0.5 shrink-0" /> {m.error}
+                    </p>
+                  )}
+                  {m.interrupted && (
+                    <p className="mt-2 flex flex-wrap items-center gap-2 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-500">
+                      <AlertTriangle size={13} className="shrink-0" />
+                      {m.interrupted === 'stopped' ? 'Stopped. What arrived is kept above.' : 'The connection dropped. What arrived is kept above.'}
+                      {m.id === lastAssistant?.id && lastSendRef.current && !streaming && (
+                        <button onClick={retry} className="flex items-center gap-1 rounded-md bg-page px-2 py-0.5 text-[11px] text-ink-secondary hover:text-ink">
+                          <RotateCcw size={11} /> Retry
+                        </button>
+                      )}
+                    </p>
+                  )}
+                </div>
+              ))}
+            </div>
           )}
         </div>
+      </div>
+
+      {/* ── Caja de entrada ── */}
+      <div className="shrink-0 border-t border-line-subtle bg-page px-4 pt-3 pb-4 md:px-8">
+        <div className="mx-auto max-w-3xl">
+          {error && (
+            <p className="mb-2 flex items-start gap-1.5 rounded-lg bg-red-500/10 px-3 py-2 text-xs text-red-400">
+              <AlertTriangle size={13} className="mt-0.5 shrink-0" /> <span className="flex-1">{error}</span>
+              <button onClick={() => setError(null)} aria-label="Dismiss" className="shrink-0 hover:text-red-300"><X size={12} /></button>
+            </p>
+          )}
+          <div className="rounded-2xl border border-line bg-surface p-2 focus-within:ring-1 focus-within:ring-ink-muted">
+            {files.length > 0 && (
+              <div className="mb-1.5 flex flex-wrap gap-1.5 px-1 pt-1">
+                {files.map((f) => (
+                  <span key={f.key} title={f.error || f.file.name}
+                    className={clsx('flex max-w-[260px] items-center gap-1 rounded-lg border px-2 py-1 text-[11px]',
+                      f.status === 'error' ? 'border-red-500/40 text-red-400' : 'border-line-subtle text-ink-secondary')}>
+                    {f.status === 'uploading' ? <Loader2 size={11} className="shrink-0 animate-spin" /> : f.status === 'error' ? <AlertTriangle size={11} className="shrink-0" /> : <Paperclip size={11} className="shrink-0" />}
+                    <span className="truncate">{f.file.name}</span>
+                    <button onClick={() => removeFile(f)} aria-label={`Remove ${f.file.name}`} className="shrink-0 text-ink-muted hover:text-ink"><X size={11} /></button>
+                  </span>
+                ))}
+              </div>
+            )}
+            <textarea ref={taRef} value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={onKeyDown} rows={1}
+              placeholder={empty ? 'Paste a section, attach the tender, or tell MIRA what you need…' : 'Reply…'}
+              className="block max-h-60 w-full resize-none bg-transparent px-2 py-1.5 text-sm text-ink outline-none placeholder:text-ink-muted" />
+            <div className="mt-1 flex items-center justify-between gap-2">
+              <button onClick={() => fileRef.current?.click()} disabled={!clientId}
+                className="flex items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-ink-tertiary transition-colors hover:bg-surface-hover hover:text-ink disabled:opacity-50">
+                <Paperclip size={14} /> Attach
+              </button>
+              <input ref={fileRef} type="file" accept={ACCEPT} multiple className="hidden" onChange={(e) => addFiles(e.target.files)} />
+              <span className="hidden flex-1 text-right text-[10px] text-ink-muted sm:block">Enter to send · Shift+Enter for a new line</span>
+              {streaming ? (
+                <button onClick={stop} className="flex items-center gap-1.5 rounded-lg border border-line px-3 py-1.5 text-xs font-medium text-ink-secondary hover:text-ink">
+                  <Square size={11} className="fill-current" /> Stop
+                </button>
+              ) : (
+                <button onClick={() => send()} disabled={!input.trim() || uploading || !clientId}
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-opacity hover:opacity-90 disabled:opacity-40" style={{ background: brand }}>
+                  {uploading ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />} Send
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ── Cajón: documento ── */}
+      {docOpenId && clientId && (
+        <Drawer onClose={() => { setDocOpenId(null); void loadDocs() }} title="Documents" icon={<FolderOpen size={15} style={{ color: brand }} />}>
+          {/* Se reutiliza el panel de documentos entero: editar secciones, pedir
+              mejoras, guardar y Word ya están resueltos ahí. openId deja abierto
+              el que se ha pulsado. */}
+          <DocumentsPanel key={`docs-${clientId}`} clientId={clientId} tenderId={null} brand={brand} openId={docOpenId} refreshKey={docsRefresh} />
+        </Drawer>
+      )}
+
+      {/* ── Cajón: ajustes ── */}
+      {settingsOpen && clientId && (
+        <Drawer onClose={() => setSettingsOpen(false)} title="Settings" icon={<Wrench size={15} style={{ color: brand }} />}>
+          {/* key por marca y DISTINTA en cada hermano: con keys iguales React dejó
+              nodos zombis en producción (dos «Teach MIRA», 1-oct). */}
+          <TeachPanel key={`teach-${clientId}`} clientId={clientId} brand={brand} tenderId={chatTenderId} />
+          <TemplateSettings key={`template-${clientId}`} clientId={clientId} brand={brand} />
+        </Drawer>
       )}
     </div>
   )
 }
 
-// La trampa real del multi-marca (vista con Noel/grupo Aldea, 10-sep): entras
-// con la marca por defecto (la primera alfabética), Licitaciones no está para
-// ella y la pantalla parece un fallo — cuando la herramienta SÍ está en otra
-// de tus marcas. Aquí se comprueba y se ofrece el cambio con un clic, en vez
-// de exigir descubrir el switcher.
-interface GrantedBrand { id: string; name: string; slug: string; logo_url: string | null; primary_color: string | null }
-
-function TenderBrandSwitch({ activeClientId, onSwitch }: { activeClientId: string; onSwitch: (c: ActiveClient) => void }) {
-  const [brands, setBrands] = useState<GrantedBrand[]>([])
-
+/** Cajón lateral a la derecha; en móvil ocupa toda la pantalla. */
+function Drawer({ title, icon, onClose, children }: { title: string; icon?: ReactNode; onClose: () => void; children: ReactNode }) {
   useEffect(() => {
-    let alive = true
-    ;(async () => {
-      try {
-        const res = await fetch('/api/me/clients')
-        if (!res.ok) return
-        const json = await res.json()
-        const others: GrantedBrand[] = (Array.isArray(json?.clients) ? json.clients : [])
-          .filter((c: GrantedBrand) => c.id !== activeClientId)
-        // La agencia ve todos los clientes y /api/tools le devuelve todo
-        // abierto: sondear aquí no informa de nada. Y con muchas marcas no
-        // disparamos una ráfaga de peticiones por una pista.
-        if (json?.super_admin || others.length === 0 || others.length > 8) return
-        const withTool = await Promise.all(others.map(async (c) => {
-          try {
-            const r = await fetch(`/api/tools?clientId=${c.id}`)
-            if (!r.ok) return null
-            const d = await r.json()
-            return d.tools?.some((t: { id: string; enabled: boolean }) => t.id === 'tenders' && t.enabled) ? c : null
-          } catch { return null }
-        }))
-        if (alive) setBrands(withTool.filter((c): c is GrantedBrand => !!c))
-      } catch { /* la pista es opcional: sin ella la pantalla base sigue siendo válida */ }
-    })()
-    return () => { alive = false }
-  }, [activeClientId])
-
-  if (brands.length === 0) return null
-
+    const h = (e: globalThis.KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', h)
+    return () => window.removeEventListener('keydown', h)
+  }, [onClose])
   return (
-    <div className="mt-6">
-      <p className="mb-2 text-xs text-ink-tertiary">
-        It <span className="font-medium text-ink-secondary">is</span> enabled for {brands.length === 1 ? 'another of your brands' : 'other brands of yours'}:
-      </p>
-      <div className="flex flex-wrap justify-center gap-2">
-        {brands.map((b) => (
-          <button
-            key={b.id}
-            onClick={() => onSwitch({ id: b.id, name: b.name, slug: b.slug, logoUrl: b.logo_url, primaryColor: b.primary_color })}
-            className="rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-medium text-ink transition-colors hover:bg-page"
-          >
-            Switch to <BrandName>{b.name}</BrandName>
-          </button>
-        ))}
+    <div className="fixed inset-0 z-50 flex justify-end">
+      <button aria-label="Close" onClick={onClose} className="absolute inset-0 bg-black/40" />
+      <div role="dialog" aria-label={title} className="relative flex h-full w-full max-w-2xl flex-col border-l border-line bg-page shadow-2xl">
+        <div className="flex shrink-0 items-center justify-between border-b border-line-subtle px-5 py-3">
+          <h2 className="flex items-center gap-2 text-sm font-semibold text-ink">{icon} {title}</h2>
+          <button onClick={onClose} aria-label="Close" className="rounded-lg p-1.5 text-ink-tertiary hover:bg-surface-hover hover:text-ink"><X size={16} /></button>
+        </div>
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-8">{children}</div>
       </div>
     </div>
   )
