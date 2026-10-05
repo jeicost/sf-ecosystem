@@ -115,7 +115,7 @@ PIEZAS = [
          ["AL MENOS NO", "GOBIERNA LA", "ULTRADERECHA"],                  "desnuda", "cond"),
     (23, "t-no-dormiria-tranquilo", ["NO DORMIRÍA", "TRANQUILO"],         "desnuda", "cartel"),
     (24, "t-espana-va-como-un-cohete", ["ESPAÑA VA", "COMO UN COHETE"],   "desnuda", "cartel"),
-    (25, "t-son-las-5-y-no-he-comido", ["SON LAS", "5", "Y NO HE COMIDO"], "cifra",  "cond"),
+    (25, "t-son-las-5-y-no-he-comido", ["SON LAS", "5", "Y NO HE COMIDO"], "cifra-fila","cond"),
     # La referencia NO tiene placas macizas: sus masas blancas son iconos.
     # FACHA pasa de caja a TAMPÓN de contorno, como su banderín TABALOT.
     (26, "t-facha",             ["FACHA"],                                "tampon",  "cartel"),
@@ -129,7 +129,7 @@ PIEZAS = [
          ["ALMA SOCIALISTA,", "MENTE DE TIBURÓN"],                        "desnuda", "cartel"),
     (45, "t-transversal-como-el-iva", ["TRANSVERSAL,", "COMO EL IVA"],    "regla",   "cartel"),
     (46, "t-horizonte-2030-legislatura-2027",
-         ["HORIZONTE", "2030", "LEGISLATURA", "2027"],                    "contador","cond"),
+         ["HORIZONTE", "2030", "LEGISLATURA", "2027"],                "contador-fila","cond"),
     (47, "t-compromiso-firme-hasta-nueva-orden",
          ["COMPROMISO", "FIRME HASTA", "NUEVA ORDEN"],                    "desnuda", "cond"),
     (48, "t-escucha-activa-decision-tomada",
@@ -685,6 +685,55 @@ def compon(lineas, trato, voz, medida=None, slug="x", n=None, avances=None, caja
         return con_dibujo_con(
             "".join(partes),
             {"x": cx - total / 2, "y": cy - alto_c / 2, "w": total, "h": alto_c},
+        )
+
+    if trato == "contador-fila":
+        # Pares PALABRA + CIFRA, cada par en su fila. Apilado («contador») son
+        # cuatro renglones: la pieza mide 15 mm impresos y a HORIZONTE le
+        # tocaban 2,6 mm con astas de 0,3 — medido, perdía el 93 % de su tinta
+        # en el escenario estricto, y además la última cifra se salía de la
+        # caja y el pictograma le caía encima. En dos filas la pieza es ancha
+        # y baja y las cuatro partes caben al doble de cuerpo.
+        pares, suelto = [], []
+        for l in lineas:
+            if l.isdigit() and suelto:
+                pares.append((" ".join(suelto), l))
+                suelto = []
+            else:
+                suelto.append(l)
+        if not pares:
+            return texto(lineas)
+        u = t * 1.30 / 7
+        alto_c = 7 * u
+        chico = t * 0.95
+        hueco = t * 0.30
+        sep = alto_c * 0.34          # aire entre filas
+        filas = []
+        for palabra, cifra in pares:
+            svg_c, ancho_c = pixeles(cifra, 0, 0, u)
+            ancho_p = len(palabra) * chico * 0.42
+            filas.append((palabra, ancho_p, svg_c, ancho_c, ancho_p + hueco + ancho_c))
+        ancho_max = max(fi[4] for fi in filas)
+        alto_total = len(filas) * alto_c + (len(filas) - 1) * sep
+        y = cy - alto_total / 2
+        partes = []
+        for palabra, ancho_p, svg_c, ancho_c, ancho_f in filas:
+            # Las filas se JUSTIFICAN al ancho de la más larga: alineadas por
+            # el centro, las dos cifras bailaban y el bloque no leía como un
+            # contador. Con los dos extremos a plomo sí.
+            x = cx - ancho_max / 2
+            hueco_f = ancho_max - ancho_p - ancho_c
+            partes.append(
+                f'<text x="{x:.1f}" y="{y + alto_c / 2 + chico * 0.36:.1f}" '
+                f'fill="{TINTA}" {fam} font-size="{chico:.1f}">{palabra}</text>')
+            partes.append(
+                f'<g transform="translate({x + ancho_p + hueco_f:.1f} {y:.1f})" '
+                f'fill="{TINTA}">{svg_c}</g>')
+            y += alto_c + sep
+        return con_dibujo_con(
+            "".join(partes),
+            {"x": cx - ancho_max / 2, "y": cy - alto_total / 2,
+             "w": ancho_max, "h": alto_total},
         )
 
     if trato in ("cifra", "contador"):

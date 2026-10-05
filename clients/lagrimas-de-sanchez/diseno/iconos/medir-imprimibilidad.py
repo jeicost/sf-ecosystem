@@ -33,68 +33,17 @@ from PIL import Image
 from scipy import ndimage
 from playwright.sync_api import sync_playwright
 
+from medir_comun import (ESTRICTO_MM, ICONOS, MALLA_FINA_MM, RES, medir,  # noqa: F401
+                         rasterizar, rota)
+
 AQUI = Path(__file__).resolve().parent
-ICONOS = AQUI.parent.parent / "web" / "public" / "iconos"
 INFORME = AQUI.parent / "INFORME-IMPRIMIBILIDAD.md"
 
 # DOS escenarios, porque el mínimo real lo decide el taller (pregunta 7 del
 # correo): el ESTRICTO es la garantía conservadora y el de MALLA FINA es lo
 # habitual en tinta vitrificable sobre vidrio con malla de 120-140 hilos.
-ESTRICTO_MM = 0.8
-MALLA_FINA_MM = 0.35
-RES = 40                 # px por mm al rasterizar (0,025 mm/px)
 
 from alturas_impresion import alto_impreso_mm as alto_de
-
-
-def medir(mask_tinta: np.ndarray, radio_px: int) -> tuple[float, float, int]:
-    """(% tinta perdida, % calado cerrado, nº de islas de tinta que desaparecen)."""
-    est = ndimage.generate_binary_structure(2, 1)
-    disco = np.zeros((radio_px * 2 + 1, radio_px * 2 + 1), bool)
-    yy, xx = np.ogrid[-radio_px:radio_px + 1, -radio_px:radio_px + 1]
-    disco[yy * yy + xx * xx <= radio_px * radio_px] = True
-
-    tinta = mask_tinta.sum()
-    if not tinta:
-        return 0.0, 0.0, 0
-    fina = mask_tinta & ~ndimage.binary_opening(mask_tinta, disco)
-    perdida = fina.sum() / tinta * 100
-
-    # islas enteras que desaparecen (un remate, una tilde, una pata)
-    et, n = ndimage.label(mask_tinta, est)
-    abierta = ndimage.binary_opening(mask_tinta, disco)
-    islas_muertas = 0
-    for i in range(1, n + 1):
-        isla = et == i
-        if not (abierta & isla).any():
-            islas_muertas += 1
-
-    # contraformas: huecos que no tocan el borde. Un hueco cuenta como
-    # CERRADO solo si la tinta dilatada lo cubre ENTERO — medir el área
-    # tocada contaba el anillo del borde y daba 90 % en ojales que seguían
-    # perfectamente abiertos.
-    fondo = ~mask_tinta
-    etf, nf = ndimage.label(fondo, est)
-    borde = set(etf[0]) | set(etf[-1]) | set(etf[:, 0]) | set(etf[:, -1])
-    ids_huecos = [i for i in range(1, nf + 1) if i not in borde]
-    if ids_huecos:
-        dilatada = ndimage.binary_dilation(mask_tinta, disco)
-        area_total, area_cerrada = 0, 0
-        for i in ids_huecos:
-            hueco = etf == i
-            a = hueco.sum()
-            area_total += a
-            if not (hueco & ~dilatada).any():
-                area_cerrada += a
-        pct_cerrado = area_cerrada / area_total * 100 if area_total else 0.0
-        # El IMPACTO distingue el ojal de un rotulito (micro, se empasta y
-        # queda como textura — la referencia está llena de eso) del calado
-        # que LLEVA el chiste (PUCHERAZO, una pantalla, una caja calada):
-        # área cerrada medida contra la tinta de la pieza.
-        impacto = area_cerrada / max(tinta, 1) * 100
-    else:
-        pct_cerrado, impacto = 0.0, 0.0
-    return perdida, pct_cerrado, impacto, islas_muertas
 
 
 def main() -> int:
@@ -107,20 +56,7 @@ def main() -> int:
         pg = b.new_page(viewport={"width": 2400, "height": 1400})
         for f in piezas:
             mm = alto_de(f.stem)
-            alto_px = max(24, round(mm * RES))
-            # data-URI y no file://: una página about:blank tiene prohibido
-            # cargar subrecursos file:// y el <img> roto medía SIEMPRE el
-            # glifo de imagen rota — 67 piezas con números idénticos.
-            import base64
-            uri = "data:image/svg+xml;base64," + base64.b64encode(f.read_bytes()).decode()
-            pg.set_content(
-                f'<body style="margin:0;background:#000">'
-                f'<img src="{uri}" style="height:{alto_px}px;display:block">'
-            )
-            pg.wait_for_timeout(60)
-            img = pg.locator("img").screenshot()
-            a = np.asarray(Image.open(__import__("io").BytesIO(img)).convert("L"))
-            mask = a > 96
+            mask = rasterizar(pg, f.read_text(), mm)
             pe, ce, xe, ie = medir(mask, r_estricto)
             pf, cf, xf, jf = medir(mask, r_fino)
             filas.append((f.stem, mm, pe, ce, xe, ie, pf, cf, xf, jf))
@@ -134,7 +70,7 @@ def main() -> int:
         # Islas solas no condenan: perder puntadas y ojales de calado es
         # textura que se va, no pieza rota — la referencia está llena de eso.
         # Rota = pierde TINTA de verdad o se le cierra el calado del chiste.
-        if pf > 14 or xf > 8 or (jf > 4 and pf > 10):
+        if rota(pf, cf, xf, jf):
             return "⛔ ROTA (falla incluso con malla fina)"
         if pe > 45 or xe > 12 or ie > 6:
             return "⚠️ SOLO MALLA FINA"

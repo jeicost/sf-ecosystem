@@ -108,6 +108,23 @@ const COLA = [
 const RITMO = [1.28, 0.84, 1.06, 0.78, 1.34, 0.9, 1.15, 0.8, 1.22, 0.93];
 
 /**
+ * El SUELO de cada pieza: la altura impresa mínima a la que deja de romperse,
+ * medida por `iconos/medir-suelo.py`.
+ *
+ * El RITMO da contraste de escala pero es CIEGO: reparte alto por posición de
+ * fila, no por lo que la pieza aguanta. El 5 de octubre arreglar dos piezas de
+ * texto recolocó el tejido y tumbó otras tres sin que nadie tocara su dibujo
+ * —`15-felpudo` perdió las cerdas, `11-la-cajera` y `55-pucherazo` cayeron de
+ * 13,5 a 9 mm—, y la medición enseñó lo de fondo: **ninguna de las 66 piezas
+ * está rota por dibujo; todas imprimen a alguna altura**. Lo que estaba roto
+ * era el reparto.
+ *
+ * Así que el reparto pregunta antes de colocar. Una pieza que no cabe en la
+ * fila que le toca espera a una más alta en vez de imprimirse muerta.
+ */
+const SUELO = JSON.parse(readFileSync(join(AQUI, "suelo-piezas.json"), "utf8"));
+
+/**
  * Qué se lleva el HOMBRO, por NOMBRE y no por posición en la cola.
  *
  * El cono se cierra al subir: ahí las piezas imprimen a 5-7 mm. Una frase de
@@ -171,8 +188,20 @@ const arteRemate = (slug) => {
   if (!vb) return null;
   return { x: +vb[1], y: +vb[2], w: +vb[3], h: +vb[4], cuerpo: t.replace(/<\/?svg[^>]*>/g, "") };
 };
-const arteDeId = (id) => (typeof id === "string" ? arteRemate(id) : arteDe(id));
+const _cacheArte = new Map();
+const arteDeId = (id) => {
+  if (!_cacheArte.has(id)) {
+    _cacheArte.set(id, typeof id === "string" ? arteRemate(id) : arteDe(id));
+  }
+  return _cacheArte.get(id);
+};
 const pesoDe = (id) => (typeof id === "string" ? 0.5 : 1);
+const slugDe = (id) => (typeof id === "string" ? id : mapa[id]);
+/** ¿Aguanta esta pieza el alto de esta fila? (los remates van a medio peso) */
+const cabeEn = (id, altoPx) => {
+  const s = SUELO[slugDe(id)];
+  return !s || (altoPx * pesoDe(id)) / MM >= s;
+};
 
 /** Empaqueta la cola en filas justificadas dentro del cilindro. */
 function empaquetar(cola, yIni, yFin, altoIdeal) {
@@ -194,9 +223,9 @@ function empaquetar(cola, yIni, yFin, altoIdeal) {
         const id = cola[i];
         const a = arteDeId(id);
         if (!a) { i++; continue; }
+        i++;
         suma += (a.w / a.h) * pesoDe(id);
         mias.push({ id, a });
-        i++;
         if ((util - 6 * (mias.length - 1)) / suma <= alto) { lleno = true; break; }
       }
       // Fila incompleta: NO se justifica (si no, la última pieza sale de cartel).
@@ -270,6 +299,59 @@ const hombro = [];
 const COLA_CUERPO = COLA.filter((id) => !HOMBRO_PIEZAS.includes(id));
 const Y_INI = H_HOMBRO + 4 * MM, Y_FIN = H - 6 * MM;
 let ideal = 13 * MM;
+/** Cuántas piezas quedan por debajo de su suelo medido. */
+const porDebajo = (ps) =>
+  ps.filter((p) => { const s = SUELO[slugDe(p.id)]; return s && p.h / MM < s - 0.05; });
+
+/**
+ * Intercambia piezas de la cola hasta que ninguna caiga por debajo de su suelo.
+ *
+ * El RITMO da el contraste de escala que hace que el tejido no parezca una
+ * tabla, pero reparte por POSICIÓN DE FILA y no sabe qué pieza aguanta qué
+ * tamaño. Poner una puerta dentro del empaquetador no vale: ahí solo se
+ * conoce el alto NOMINAL de la fila, y la justificada acaba siendo bastante
+ * mayor, así que la puerta aplazaba piezas que sí cabían y se amontonaban al
+ * final. Con las alturas YA REPARTIDAS sí se sabe quién sufre y quién tiene
+ * holgura, y entonces es un cambio de sitio entre dos.
+ *
+ * Se intercambian solo piezas de PROPORCIÓN parecida: el ancho de cada una
+ * sale de su proporción por el alto de su fila, así que cambiar una apaisada
+ * por una vertical rehace la fila entera y mueve el tejido que ya está dado
+ * por bueno.
+ */
+function repartirPorSuelo(cola, yIni, yFin, ideal) {
+  let mejor = cola.slice();
+  let puestas = empaquetar(mejor, yIni, yFin, ideal);
+  let falla = porDebajo(puestas).length;
+  for (let pase = 0; pase < 8 && falla > 0; pase++) {
+    const antes = falla;
+    for (const c of porDebajo(puestas)) {
+      const sc = SUELO[slugDe(c.id)];
+      const pc = c.a.w / c.a.h;
+      const candidatas = puestas
+        .filter((o) => {
+          if (o.id === c.id) return false;
+          const so = SUELO[slugDe(o.id)] || 0;
+          // El otro tiene que caber donde está la que sufre, y al revés.
+          return o.h / MM >= sc && c.h / MM >= so
+            && Math.abs((o.a.w / o.a.h) / pc - 1) < 0.4;
+        })
+        .sort((a, b) => Math.abs(a.a.w / a.a.h - pc) - Math.abs(b.a.w / b.a.h - pc));
+      for (const o of candidatas) {
+        const prueba = mejor.slice();
+        const ic = prueba.indexOf(c.id), io = prueba.indexOf(o.id);
+        if (ic < 0 || io < 0) continue;
+        prueba[ic] = o.id; prueba[io] = c.id;
+        const pp = empaquetar(prueba, yIni, yFin, ideal);
+        const ff = porDebajo(pp).length;
+        if (ff < falla) { mejor = prueba; puestas = pp; falla = ff; break; }
+      }
+    }
+    if (falla === antes) break;   // no hay más cambios que mejoren
+  }
+  return { cola: mejor, puestas, falla };
+}
+
 let puestas = empaquetar(COLA_CUERPO, Y_INI, Y_FIN, ideal);
 for (let k = 0; k < 4; k++) {
   const fondo = puestas.reduce((m, p) => Math.max(m, p.y + p.h), Y_INI);
@@ -277,6 +359,19 @@ for (let k = 0; k < 4; k++) {
   if (Math.abs(f - 1) < 0.02) break;
   ideal = ideal * Math.sqrt(f);
   puestas = empaquetar(COLA_CUERPO, Y_INI, Y_FIN, ideal);
+}
+{
+  const r = repartirPorSuelo(COLA_CUERPO, Y_INI, Y_FIN, ideal);
+  puestas = r.puestas;
+  const cortas = porDebajo(puestas);
+  if (cortas.length) {
+    console.log(`  ⚠️  ${cortas.length} pieza(s) por debajo de su suelo medido:`);
+    for (const p of cortas.sort((a, b) => (SUELO[slugDe(b.id)] - b.h / MM) - (SUELO[slugDe(a.id)] - a.h / MM))) {
+      console.log(`       ${slugDe(p.id).padEnd(38)} ${(p.h / MM).toFixed(1)} mm · necesita ${SUELO[slugDe(p.id)]}`);
+    }
+  } else {
+    console.log("  ✓ ninguna pieza por debajo de su suelo medido");
+  }
 }
 for (const p of puestas) {
   const k = p.h / p.a.h;
