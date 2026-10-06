@@ -299,6 +299,20 @@ export function trozosInline(texto: string): TrozoInline[] {
   return out
 }
 
+/**
+ * Título de sección limpio para numerarlo nosotros: fuera el «1.» / «2.3» / «B)»
+ * que ya traía (un Word subido vuelve con sus números y salía «1. 1. OBJETO»)
+ * y fuera el «(20 puntos)» del final, que pasa al run gris de puntos.
+ */
+export function limpiarTituloSeccion(titulo: string): { titulo: string; puntos: number | null } {
+  let t = String(titulo || '').replace(/\s+/g, ' ').trim()
+  let puntos: number | null = null
+  const m = /\(\s*(\d+(?:[.,]\d+)?)\s*puntos?\s*\)\s*$/i.exec(t)
+  if (m) { puntos = Number(m[1].replace(',', '.')); t = t.slice(0, m.index).trim() }
+  t = t.replace(/^(?:[A-Z]|\d{1,2})?(?:\d{1,2})?(?:\.\d{1,2}){0,2}[.)\-–]\s+(?=\S)/, '').replace(/^(?:\d{1,2}(?:\.\d{1,2}){0,2})\s+(?=[A-ZÁÉÍÓÚÑ])/, '').trim()
+  return { titulo: t || 'Sección', puntos }
+}
+
 /** ¿Columna numérica? Si ≥ 60 % de las celdas con contenido son cifras (con €, %, puntos y comas). */
 export function columnaNumerica(filas: string[][], col: number): boolean {
   const celdas = filas.map((f) => (f[col] || '').trim()).filter(Boolean)
@@ -572,7 +586,7 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   add(new Paragraph({ border: bandaIzq, spacing: { after: 240 }, indent: { left: 240 }, children: [new TextRun({ text: 'ÍNDICE', bold: true, size: 30, color: acento })] }))
   const entradaIndice = (t: string) => new Paragraph({ numbering: { reference: 'indice', level: 0 }, spacing: { after: 100 }, children: [new TextRun({ text: t.toUpperCase(), size: 22, color: GRIS_NEUTRO })] })
   const entradaIndiceSinNumero = (t: string, color = GRIS) => new Paragraph({ indent: { left: 567 }, spacing: { after: 100 }, children: [new TextRun({ text: t.toUpperCase(), size: 22, color })] })
-  secciones.forEach((s) => add(entradaIndice(s.titulo || 'Sección')))
+  secciones.forEach((s) => add(entradaIndice(limpiarTituloSeccion(s.titulo || 'Sección').titulo)))
   bloques.forEach((b) => add(entradaIndiceSinNumero(b.titulo || '')))
   if (tabla && !secciones.length && !bloques.length) add(entradaIndiceSinNumero('Desglose de precios'))
   if (anexos.length) {
@@ -591,7 +605,8 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
     ],
   })
   secciones.forEach((s, i) => {
-    add(encabezado(s.titulo || 'Sección', i + 1, s.puntos))
+    const limpio = limpiarTituloSeccion(s.titulo || 'Sección')
+    add(encabezado(limpio.titulo, i + 1, typeof s.puntos === 'number' ? s.puntos : limpio.puntos))
     renderTexto(s.contenido || '')
     if (s.porConfirmar?.length) add(...porConfirmar(s.porConfirmar))
   })

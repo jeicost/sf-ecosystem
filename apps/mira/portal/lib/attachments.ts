@@ -52,14 +52,78 @@ export function officeKindOf(mime: string | undefined, fileName = ''): 'docx' | 
   return null
 }
 
-/** Texto de un .docx con mammoth (mismo camino que drive-sync y email-ops). */
+/**
+ * Texto de un .docx con mammoth (mismo camino que drive-sync y email-ops), pero
+ * CONSERVANDO la estructura que el texto plano perdía: viñetas («- »), listas
+ * numeradas («1. »), tablas (filas con barras «| a | b |») y negritas dentro
+ * del párrafo («**x**»). Medido el 6-oct-2026 con una memoria subida al chat:
+ * la tabla de certificaciones volvía como una celda por línea y las viñetas
+ * como párrafos sueltos, y así salía en el Word reexportado. Con esto, el
+ * texto que vuelve a lib/tenders/word.ts (parseBloques) se maqueta igual que
+ * el original. Si el HTML falla, se cae al texto plano de siempre.
+ */
 export async function extractDocxText(buffer: Buffer): Promise<string> {
   // Import dinámico: mammoth solo carga cuando de verdad llega un Word, igual
   // que hace lib/email-ops/pipeline.ts. Este módulo lo importan rutas que en
   // el 99 % de las peticiones no ven ningún adjunto.
   const mammoth = await import('mammoth')
+  try {
+    const html = await mammoth.convertToHtml({ buffer })
+    const texto = htmlDocxATexto(html.value || '')
+    if (texto.trim().length > 0) return texto
+  } catch (e) {
+    console.warn('[attachments] docx → HTML falló, se usa texto plano:', e instanceof Error ? e.message : e)
+  }
   const result = await mammoth.extractRawText({ buffer })
   return result.value || ''
+}
+
+/**
+ * HTML sencillo de mammoth → texto con estructura. Puro, probado en
+ * evals/licitaciones/check.ts. Las cabeceras (h1-h6) salen como línea sola
+ * sin marcas, para que el detector de rótulos (lib/tenders/secciones.ts) las
+ * siga reconociendo; un párrafo entero en negrita y corto también (es un
+ * rótulo), y la negrita solo se marca cuando va DENTRO de un párrafo.
+ */
+export function htmlDocxATexto(html: string): string {
+  const inline = (h: string) => decodeXmlEntities(
+    h.replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<(?:strong|b)>([\s\S]*?)<\/(?:strong|b)>/gi, (_m, x: string) => { const t = x.replace(/<[^>]+>/g, '').trim(); return t ? `**${t}**` : '' })
+      .replace(/<[^>]+>/g, '')
+      .replace(/\u00a0/g, ' ')
+      .replace(/[ \t]+/g, ' ')
+      .trim(),
+  )
+  const out: string[] = []
+  // Tablas: una fila por línea con barras; la cabecera es la primera fila.
+  let h = html.replace(/<table[\s\S]*?<\/table>/gi, (tabla) => {
+    const filas = [...tabla.matchAll(/<tr[\s\S]*?<\/tr>/gi)].map((f) => [...f[0].matchAll(/<t[dh][^>]*>([\s\S]*?)<\/t[dh]>/gi)].map((c) => inline(c[1]).replace(/\n+/g, ' ').replace(/\|/g, '/').replace(/\*\*/g, '')))
+      .filter((f) => f.some((c) => c))
+    if (!filas.length) return ''
+    const n = Math.max(...filas.map((f) => f.length))
+    // Una tabla de UNA columna es maquetación (la portada de color del propio Word, un recuadro): sus celdas son párrafos.
+    if (n === 1) return `\n\n<p>${filas.map((f) => f[0]).filter(Boolean).join('</p><p>')}</p>\n\n`
+    const linea = (f: string[]) => `| ${Array.from({ length: n }, (_, i) => f[i] ?? '').join(' | ')} |`
+    return `\n\n<p>${[linea(filas[0]), `|${' --- |'.repeat(n)}`, ...filas.slice(1).map(linea)].join('\n')}</p>\n\n`
+  })
+  // Listas: cada <li> es una línea con su marca; las anidadas se aplanan.
+  h = h.replace(/<(ul|ol)[^>]*>([\s\S]*?)<\/\1>/gi, (_m, tipo: string, cuerpo: string) => {
+    const items = [...cuerpo.matchAll(/<li[^>]*>([\s\S]*?)<\/li>/gi)].map((i) => inline(i[1]).replace(/\n+/g, ' '))
+    const marcadas = items.filter(Boolean).map((t, k) => (tipo.toLowerCase() === 'ol' ? `${k + 1}. ${t}` : `- ${t}`))
+    return `\n\n<p>${marcadas.join('\n')}</p>\n\n`
+  })
+  // Cabeceras y párrafos: una línea cada uno.
+  for (const m of h.matchAll(/<(h[1-6]|p)[^>]*>([\s\S]*?)<\/\1>/gi)) {
+    let t = inline(m[2])
+    if (!t) continue
+    const esCabecera = /^h/i.test(m[1])
+    // Un párrafo corto todo en negrita es un rótulo: sin asteriscos, para que se reconozca.
+    if (esCabecera || (/^\*\*[^*]+\*\*$/.test(t) && t.length <= 120)) t = t.replace(/\*\*/g, '')
+    out.push(t)
+  }
+  // Si el HTML no traía párrafos (documento raro), al menos el texto.
+  if (!out.length) return inline(h.replace(/<\/(p|div|tr|li|h[1-6])>/gi, '\n'))
+  return out.join('\n\n').replace(/\n{3,}/g, '\n\n').trim()
 }
 
 /**

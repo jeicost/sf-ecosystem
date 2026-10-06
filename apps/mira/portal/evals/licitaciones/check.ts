@@ -248,5 +248,27 @@ check('confidence y evidence exigen todas las claves del parte', (sch.properties
 check('original_sender y notes admiten null y son requeridos', sch.required.includes('notes') && Array.isArray(sch.properties.notes.type))
 check('modelo de Email Ops: Sonnet 5.5 salvo env', EMAIL_OPS_MODEL === 'claude-sonnet-5-5' || !!process.env.EMAIL_OPS_MODEL)
 
+console.log('\nTítulos de sección que ya traen número o puntos (un Word subido vuelve con ellos)')
+import { limpiarTituloSeccion } from '../../lib/tenders/word'
+import { htmlDocxATexto } from '../../lib/attachments'
+check('«1. OBJETO (20 puntos)» → OBJETO + 20', JSON.stringify(limpiarTituloSeccion('1. OBJETO (20 puntos)')) === JSON.stringify({ titulo: 'OBJETO', puntos: 20 }))
+check('«2.3 Plan de contingencia» → sin número', limpiarTituloSeccion('2.3 Plan de contingencia').titulo === 'Plan de contingencia')
+check('«B) Recursos» → Recursos', limpiarTituloSeccion('B) Recursos').titulo === 'Recursos')
+check('un título sin número se queda igual', limpiarTituloSeccion('Sistema de gestión').titulo === 'Sistema de gestión' && limpiarTituloSeccion('Sistema de gestión').puntos === null)
+check('«ISO 9001 y 14001» no pierde el 9001', limpiarTituloSeccion('ISO 9001 y 14001').titulo === 'ISO 9001 y 14001')
+
+console.log('\nWord subido → texto con estructura (listas, tablas, negritas)')
+const htmlDoc = '<h1>1. Objeto</h1><p>Texto con <strong>negrita</strong> dentro.</p><p><strong>Rótulo corto</strong></p><ul><li>uno</li><li>dos &amp; tres</li></ul><ol><li>primero</li></ol><table><tr><td>Norma</td><td>Alcance</td></tr><tr><td>ISO 9001</td><td>Calidad</td></tr></table><p>Fin.</p>'
+const txtDoc = htmlDocxATexto(htmlDoc)
+check('cabecera como línea sola sin marcas', txtDoc.startsWith('1. Objeto\n\n'))
+check('negrita dentro del párrafo con **', txtDoc.includes('Texto con **negrita** dentro.'))
+check('párrafo corto todo en negrita = rótulo sin asteriscos', txtDoc.includes('\nRótulo corto\n') && !txtDoc.includes('**Rótulo'))
+check('viñetas con «- » y entidades decodificadas', txtDoc.includes('- uno\n- dos & tres'))
+check('numeradas con «1. »', txtDoc.includes('1. primero'))
+check('tabla en filas con barras y separador', txtDoc.includes('| Norma | Alcance |\n| --- | --- |\n| ISO 9001 | Calidad |'))
+check('la tabla vuelve a ser tabla al maquetar', parseBloques(txtDoc).some((b) => b.t === 'tabla' && b.filas.length === 2))
+check('las viñetas vuelven a ser viñetas', parseBloques(txtDoc).some((b) => b.t === 'ul' && b.items.length === 2))
+check('tabla de una columna → párrafos (la portada no es una tabla)', !htmlDocxATexto('<table><tr><td><strong>MARCA</strong></td></tr><tr><td>Título</td></tr></table>').includes('|') && htmlDocxATexto('<table><tr><td>MARCA</td></tr><tr><td>Título</td></tr></table>').includes('MARCA\n\nTítulo'))
+
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)
