@@ -6,6 +6,7 @@ import { errorMessage } from '@/lib/email-ops/auth'
 import { toJson, writable } from '@/lib/db-json'
 import { reescribirSeccion, type DocSection } from '@/lib/generation/tender-documento'
 import { addLesson, avisoLeccionLarga, loadTeaching, teachingBlockDetallado } from '@/lib/tenders/teaching'
+import { loadDisenadas, type Disenada } from '@/lib/tenders/disenadas'
 
 // "Mejora esta sección": el operador marca una y dice qué quiere.
 //
@@ -86,6 +87,8 @@ export async function POST(req: NextRequest) {
     const teaching = await loadTeaching(access.clientId)
     const { text: bloque, recortes: recortesEnsenanza } = teachingBlockDetallado({ instructions: instruccionesExpediente, guide: teaching.guide, lessons: teaching.lessons })
 
+    // Páginas con diseño propio: la instrucción puede pedir «incluye aquí las certificaciones».
+    const disenadas = await loadDisenadas(db, access.clientId).catch((): Disenada[] => [])
     const { contenido, avisos: avisosModelo } = await reescribirSeccion({
       clientId: access.clientId,
       seccion,
@@ -94,6 +97,7 @@ export async function POST(req: NextRequest) {
       otrasSecciones: secciones.filter((_, idx) => idx !== i).map((s) => ({ titulo: s.titulo })),
       criterioTexto,
       teaching: bloque,
+      disenadas,
     })
     // Lo que el modelo no vio de la enseñanza también se avisa aquí.
     const avisos: string[] = [...avisosModelo, ...recortesEnsenanza]

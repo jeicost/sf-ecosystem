@@ -1,4 +1,6 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { bloqueDisenadasPrompt, loadDisenadas, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import { adminClient } from '@/lib/supabase'
 import { extractJson } from '@/lib/generation/extract-json'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
@@ -31,7 +33,7 @@ import type { DocSection } from '@/lib/generation/tender-documento'
 // pone el equipo comercial. En una OFERTA esto no es aviso: TS sustituye
 // cualquier importe que se cuele por [FALTA: tarifa].
 
-const MODEL = 'claude-opus-4-8'
+const MODEL = TENDER_MODEL
 
 /** Tipos de documento que se pueden pedir. `carta` no existe en la BD (CHECK de
  *  tender_documents.kind): se guarda como `anexo` y solo vive en prompt y UI. */
@@ -185,8 +187,10 @@ export function construirPromptLibre(opts: {
   examplesText: string
   brainBlock: string
   knowledge: string
+  /** Bloque de páginas con diseño propio (bloqueDisenadasPrompt), o vacío. */
+  disenadas?: string
 }): string {
-  const { brief, kind, adjunto, pista, pideTarifas, examplesText, brainBlock, knowledge } = opts
+  const { brief, kind, adjunto, pista, pideTarifas, examplesText, brainBlock, knowledge, disenadas } = opts
   const lim = LIMITES[kind]
   return `Eres quien redacta la documentación técnica y comercial de esta empresa de transporte y mensajería.
 
@@ -210,7 +214,7 @@ CÓMO HACERLO
 - Personalízalo al destinatario: nómbralo y responde a lo que pide, no a un pliego genérico.
 - Entre ${lim.minSecciones} y ${lim.maxSecciones} secciones${lim.maxPalabras ? `, ${lim.maxPalabras} palabras como máximo en total` : ''}. Ninguna sección vacía ni de relleno: si no hay nada real que decir en una, no la escribas.
 
-REGLAS INNEGOCIABLES
+${disenadas ? `${disenadas}\n\n` : ''}REGLAS INNEGOCIABLES
 - Todo hecho (flota, plantilla, certificaciones, KPIs, plazos, sedes, sistemas) sale del CLIENT KNOWLEDGE o del BRAND CONTEXT. Lo que no consta se escribe como [FALTA: qué dato exacto] y se añade a "nota" de la sección. Un dato inventado en una oferta descalifica.
 ${pideTarifas ? '- El encargo pide TARIFAS o precios. NO escribas ninguna cifra de precio. Deja la estructura de servicios y tramos que hay que tarificar y [FALTA: tarifa] en cada uno, y di en la nota que las fija el equipo comercial.' : ''}
 - Las PAST SUBMITTED MEMORIAS son modelo de ESTRUCTURA y TONO, nunca fuente de cifras: sus números son de otros contratos y otros años. No copies ninguno. Sus órganos aparecen como [ÓRGANO ANTERIOR]; no nombres a ningún cliente anterior.
@@ -274,7 +278,7 @@ export async function generarDesdeBrief(opts: {
   // El brain va primero: su brandName es texto LEGÍTIMO para el enmascarado de
   // las memorias de ejemplo (la propia marca no es un «órgano anterior»).
   const brain = await fetchBrandBrain(clientId)
-  const [knowledge, examples, hermanas] = await Promise.all([
+  const [knowledge, examples, hermanas, disenadas] = await Promise.all([
     getKnowledgeContext(clientId, {
       query: `${brief.slice(0, 1200)} ${adjunto ? adjunto.texto.slice(0, 800) : ''} servicios medios flota equipo certificaciones calidad KPIs incidencias trazabilidad puesta en marcha`,
       charBudget: 6000,
@@ -283,16 +287,17 @@ export async function generarDesdeBrief(opts: {
     }),
     loadMemoriaExamples(clientId, null, null, { pliegoActual: textoEncargo, legitimos: [brain?.brandName] }),
     marcasHermanas(clientId),
+    loadDisenadas(adminClient(), clientId).catch((): Disenada[] => []),
   ])
   const brainBlock = brain ? `BRAND CONTEXT (the company's own facts, voice and document_system):\n${formatBrandBrainForPrompt(brain)}` : ''
   // En una oferta siempre se aplica la regla de tarifas: es su razón de ser.
   const pideTarifas = kind === 'oferta' || /tarifa|precio|presupuesto|coste|importe|€/i.test(textoEncargo)
   const pista = adjunto ? pistaOrigen(adjunto.texto, brain?.brandName) : null
 
-  const prompt = construirPromptLibre({ brief, kind, adjunto, pista, pideTarifas, examplesText: examples.text, brainBlock, knowledge: knowledge ?? '' })
+  const prompt = construirPromptLibre({ brief, kind, adjunto, pista, pideTarifas, examplesText: examples.text, brainBlock, knowledge: knowledge ?? '', disenadas: bloqueDisenadasPrompt(disenadas) })
 
   const msg = await createMessageForClient(clientId, 'tender/libre', {
-    model: MODEL, max_tokens: 16000,
+    model: MODEL, max_tokens: techoSalida(MODEL, 16000), ...ajustesModelo(MODEL),
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -308,6 +313,14 @@ export async function generarDesdeBrief(opts: {
   // modelo dejaban fuera precisamente esos.
   const avisosModelo: string[] = Array.isArray(parsed.avisos) ? parsed.avisos.map(String).slice(0, 12) : []
   const avisos: string[] = [...examples.avisos]
+  // Marcas de páginas diseñadas: el modelo marca, TS valida.
+  const marcasRaras: string[] = []
+  for (const sec of crudas) {
+    const m = normalizarMarcadores(sec.contenido, disenadas)
+    sec.contenido = m.texto
+    marcasRaras.push(...m.desconocidas)
+  }
+  if (marcasRaras.length) avisos.push(`El redactor citó páginas diseñadas que no existen (${marcasRaras.slice(0, 3).map((x) => `«${x}»`).join(', ')}): se han quitado.`)
 
   // --- Lo que TS comprueba de lo que se le pidió al modelo ---
 

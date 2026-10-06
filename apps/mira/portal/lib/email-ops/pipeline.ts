@@ -292,9 +292,11 @@ async function markFailed(db: SupabaseClient, messageId: string, err: unknown): 
   const message = err instanceof Error ? err.message : String(err)
   // Sin saldo en la API (5-oct): no es culpa del correo. Vuelve a la cola SIN gastar
   // intento; si no, tras MAX_ATTEMPTS pasadas del cron quedaría muerto aunque se recargue.
-  if (/credit balance|billing/i.test(message)) {
+  // Lo mismo con el freno de gasto diario (lib/ai/budget.ts): mañana se procesa.
+  if (/credit balance|billing|Daily AI budget/i.test(message)) {
     const { data } = await db.from('email_messages').select('attempts').eq('id', messageId).maybeSingle()
-    await db.from('email_messages').update({ status: 'received', attempts: Math.max(0, ((data?.attempts as number) ?? 1) - 1), last_error: 'Sin saldo en la API: se procesará al recargar', updated_at: new Date().toISOString() }).eq('id', messageId)
+    const motivo = /Daily AI budget/i.test(message) ? 'Presupuesto diario de IA alcanzado: se procesará mañana' : 'Sin saldo en la API: se procesará al recargar'
+    await db.from('email_messages').update({ status: 'received', attempts: Math.max(0, ((data?.attempts as number) ?? 1) - 1), last_error: motivo, updated_at: new Date().toISOString() }).eq('id', messageId)
     return
   }
   await db.from('email_messages').update({ status: 'failed', last_error: message.slice(0, 500), updated_at: new Date().toISOString() }).eq('id', messageId)

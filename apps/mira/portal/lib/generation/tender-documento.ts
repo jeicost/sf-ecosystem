@@ -1,4 +1,6 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { bloqueDisenadasPrompt, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import { extractJson } from '@/lib/generation/extract-json'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
@@ -15,7 +17,7 @@ import { limpiarMaquetacion, trocearPorPaginas, cortarPorAnclas } from '@/lib/te
 //   estructurarDocumento  un Word/PDF suelto → título + secciones editables
 //   reescribirSeccion     una sección + una instrucción → esa sección, mejor
 
-const MODEL = 'claude-opus-4-8'
+const MODEL = TENDER_MODEL
 
 export interface DocSection {
   titulo: string
@@ -73,7 +75,7 @@ ${plano.slice(0, 150_000)}`
 
   try {
     const msg = await createMessageForClient(clientId, 'tender/estructurar', {
-      model: MODEL, max_tokens: 6000,
+      model: MODEL, max_tokens: techoSalida(MODEL, 6000), ...ajustesModelo(MODEL, 'low'),
       messages: [{ role: 'user', content: prompt }],
     })
     const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -110,9 +112,13 @@ export async function reescribirSeccion(opts: {
   criterioTexto?: string | null
   /** Bloque de enseñanza ya construido (teachingBlock): instrucciones del expediente + guía + lecciones. */
   teaching?: string | null
+  /** Páginas con diseño propio de la marca: la instrucción puede pedir incluir una. */
+  disenadas?: Disenada[]
 }): Promise<{ contenido: string; avisos: string[] }> {
   const { clientId, seccion, instruccion, tituloDocumento, otrasSecciones, criterioTexto } = opts
   const teaching = (opts.teaching || '').trim()
+  const disenadas = opts.disenadas || []
+  const bloqueDisenadas = bloqueDisenadasPrompt(disenadas)
 
   const knowledge = await getKnowledgeContext(clientId, {
     // La búsqueda combina el tema de la sección, lo que se pide y el criterio:
@@ -135,6 +141,7 @@ SECCIÓN ACTUAL — "${seccion.titulo}":
 ${seccion.contenido}
 
 ${teaching ? `LO QUE LA RESPONSABLE HA ENSEÑADO PARA ESTA MARCA Y ESTE EXPEDIENTE (se aplica siempre; la instrucción puntual de abajo manda sobre todo esto):\n${teaching}\n` : ''}
+${bloqueDisenadas ? `${bloqueDisenadas}\n` : ''}
 INSTRUCCIÓN PUNTUAL DEL RESPONSABLE (manda sobre todo lo anterior):
 ${instruccion}
 
@@ -155,7 +162,7 @@ ${knowledge ? `CONOCIMIENTO REAL DE LA EMPRESA:\n${knowledge}` : ''}
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(clientId, 'tender/reescribir', {
-    model: MODEL, max_tokens: 8000,
+    model: MODEL, max_tokens: techoSalida(MODEL, 8000), ...ajustesModelo(MODEL),
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -163,5 +170,8 @@ ${GROUNDING_CONTRACT}`
   if (!parsed?.contenido || typeof parsed.contenido !== 'string') {
     throw new Error('La reescritura no ha devuelto texto utilizable')
   }
-  return { contenido: parsed.contenido, avisos: Array.isArray(parsed.avisos) ? parsed.avisos.slice(0, 8) : [] }
+  const marc = normalizarMarcadores(parsed.contenido, disenadas)
+  const avisos = Array.isArray(parsed.avisos) ? parsed.avisos.slice(0, 8) : []
+  if (marc.desconocidas.length) avisos.push(`Marcas de páginas diseñadas que no existen y se han quitado: ${marc.desconocidas.map((x) => `«${x}»`).join(', ')}.`)
+  return { contenido: marc.texto, avisos }
 }

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { requireTool } from '@/lib/tools/access'
 import { adminClient } from '@/lib/supabase'
 import { jsonObject, toJson } from '@/lib/db-json'
-import { CLAVES_PLANTILLA, rutaLogoPermitida, type ClavePlantilla } from '@/lib/tenders/word'
+import { CLAVES_PLANTILLA, fuenteValida, rutaFicheroPermitida, rutaLogoPermitida, type ClavePlantilla } from '@/lib/tenders/word'
 
 // Plantilla de Word de la marca (tender_settings.template): colores de portada
 // y acento, razón social, nombre comercial, tagline y línea legal del pie. La
@@ -59,6 +59,9 @@ export async function PUT(req: NextRequest) {
       if (s.length > MAX) return NextResponse.json({ error: `${k}: máximo ${MAX} caracteres` }, { status: 400 })
       if (COLORES.includes(k as ClavePlantilla) && s && !HEX.test(s)) return NextResponse.json({ error: `${k}: color en formato #RRGGBB` }, { status: 400 })
       if (k === 'logo_path' && s && !rutaLogoPermitida(s, access.clientId)) return NextResponse.json({ error: 'logo_path: ruta no permitida' }, { status: 400 })
+      // La hoja se sube por /api/tender/letterhead (que la lee y la valida); aquí solo se acepta una ruta de la propia marca.
+      if (k === 'letterhead_path' && s && !rutaFicheroPermitida(s, access.clientId)) return NextResponse.json({ error: 'letterhead_path: ruta no permitida' }, { status: 400 })
+      if (k === 'body_font' && s && !fuenteValida(s)) return NextResponse.json({ error: 'body_font: nombre de fuente no válido' }, { status: 400 })
       limpio[k as ClavePlantilla] = COLORES.includes(k as ClavePlantilla) ? s.toUpperCase() : s
     }
 

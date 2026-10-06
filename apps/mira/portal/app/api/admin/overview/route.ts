@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser } from '@/lib/resolve-client'
 import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
+import { estadoPresupuesto } from '@/lib/ai/budget'
 
 // Panel Super Admin: visión agregada de todos los clientes.
 export async function GET() {
@@ -72,7 +73,9 @@ export async function GET() {
       usage_cost_usd: Math.round(clients.reduce((s, c) => s + c.usage_cost_usd, 0) * 100) / 100,
     }
 
-    return NextResponse.json({ clients, totals })
+    // Freno de gasto diario (lib/ai/budget.ts): lo gastado hoy con la clave de plataforma frente al tope.
+    const budget = await estadoPresupuesto()
+    return NextResponse.json({ clients, totals, budget })
   } catch (error) {
     console.error('admin/overview error:', error)
     return NextResponse.json(

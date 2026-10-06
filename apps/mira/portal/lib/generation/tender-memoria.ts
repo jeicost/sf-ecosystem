@@ -1,4 +1,6 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { bloqueDisenadasPrompt, loadDisenadas, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import { extractJson } from '@/lib/generation/extract-json'
 import { adminClient } from '@/lib/supabase'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
@@ -30,7 +32,7 @@ export interface TenderCriteria {
   data_gaps: string[]
 }
 
-const MODEL = 'claude-opus-4-8'
+const MODEL = TENDER_MODEL
 
 /**
  * Cuánto pliego lee el modelo. Antes eran 45.000 caracteres para extraer
@@ -80,7 +82,7 @@ ${pliegoText.slice(0, PLIEGO_WINDOW)}
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(clientId, 'tender/extract', {
-    model: MODEL, max_tokens: 4000,
+    model: MODEL, max_tokens: techoSalida(MODEL, 4000), ...ajustesModelo(MODEL),
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -305,8 +307,10 @@ export function buildMemoriaPrompt(parts: {
   examplesText: string
   brainBlock: string
   knowledge: string | null
+  /** Bloque de páginas con diseño propio (bloqueDisenadasPrompt), o vacío. */
+  disenadas?: string
 }): string {
-  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge } = parts
+  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas } = parts
   return `You are the technical-proposal writer for this company (D4 "Entrega"). Write the MEMORIA TÉCNICA that responds to the tender below, section by section, MAXIMISING the score. Use the company's real document_system (skeleton, reusable blocks, tone) from the brand context, and its real certifications/facts from the client knowledge. Personalise to THIS tender (name the contracting body in each section).
 
 SCORING STRUCTURE (do NOT write the price offer):
@@ -341,6 +345,7 @@ HARD RULES: every factual claim (KPIs, certificaciones, flota, plazos, plantilla
 - The person in charge may have left INSTRUCTIONS, a WRITING GUIDE and LESSONS below. They rule over style, focus, structure and emphasis, and you MUST list in instrucciones_aplicadas each one you followed. If one cannot be met without inventing a company fact, do NOT invent: leave [FALTA: …] where the fact goes and list it in instrucciones_no_aplicadas with the reason. If there are none, return both arrays empty.
 
 ${teaching ? `${teaching}\n` : ''}
+${disenadas ? `${disenadas}\n` : ''}
 ${playbook ? `CLIENT TENDER PLAYBOOK (doctrina destilada de sus ofertas presentadas — prevalece sobre heurísticas genéricas):\n${playbook.slice(0, 6000)}\n` : ''}
 ${examplesText ? `PAST SUBMITTED MEMORIAS (STRUCTURE AND TONE ONLY — imita su esqueleto, su registro y el tipo de compromiso que asumen; NUNCA sus cifras ni sus nombres. Si hay una MEMORIA DE PARTIDA, su estructura manda sobre las demás):\n${examplesText}\n` : ''}
 ${brainBlock}
@@ -395,12 +400,14 @@ export async function generateTenderMemoria(opts: {
   baseTenderId?: string | null
   /** Guía + lecciones ya cargadas por la ruta; si no vienen, se cargan aquí. */
   teaching?: Teaching | null
+  /** Páginas con diseño propio de la marca; si no vienen, se cargan aquí. */
+  disenadas?: Disenada[]
 }): Promise<Record<string, unknown>> {
   const { clientId, pliegoText, criteria } = opts
   // El brain va primero: su brandName es texto LEGÍTIMO para el enmascarado de
   // los ejemplos (la propia marca en el título de una memoria no es un órgano).
   const brain = await fetchBrandBrain(clientId)
-  const [knowledge, playbook, examples, teaching] = await Promise.all([
+  const [knowledge, playbook, examples, teaching, disenadas] = await Promise.all([
     // El corpus indexado: esqueleto documental, certificaciones, memorias previas.
     // La consulta sale de los criterios de ESTE pliego, no de una lista fija, y
     // mira todo el corpus: con el límite por defecto (40 más recientes) el
@@ -415,6 +422,7 @@ export async function generateTenderMemoria(opts: {
     getPlaybook(clientId),
     loadMemoriaExamples(clientId, opts.tenderId, opts.baseTenderId, { pliegoActual: pliegoText, legitimos: [brain?.brandName] }),
     opts.teaching ? Promise.resolve(opts.teaching) : loadTeaching(clientId),
+    opts.disenadas ? Promise.resolve(opts.disenadas) : loadDisenadas(adminClient(), clientId).catch((): Disenada[] => []),
   ])
   const { text: examplesText, organos, base } = examples
   const brainBlock = brain ? `BRAND CONTEXT (Source of Truth — the client's own facts, voice and document_system):\n${formatBrandBrainForPrompt(brain)}` : ''
@@ -422,12 +430,12 @@ export async function generateTenderMemoria(opts: {
   const { text: teachingText, recortes: recortesEnsenanza } = teachingBlockDetallado({ instructions: instrucciones, guide: teaching.guide, lessons: teaching.lessons })
   const hayEnsenanza = teachingText.length > 0
 
-  const prompt = buildMemoriaPrompt({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge })
+  const prompt = buildMemoriaPrompt({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas) })
 
   const msg = await createMessageForClient(clientId, 'tender/generate', {
     // 16.000: una memoria completa (criterios + secciones de servicio) no cabe
     // en 12.000. Por encima de ~21.000 el SDK exige streaming (medido 01-sep).
-    model: MODEL, max_tokens: 16000,
+    model: MODEL, max_tokens: techoSalida(MODEL, 16000), ...ajustesModelo(MODEL),
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -439,6 +447,14 @@ export async function generateTenderMemoria(opts: {
     throw new Error('La memoria generada no tiene una estructura válida: vuelve a generarla')
   }
   const gaps: string[] = Array.isArray(parsed.data_gaps) ? (parsed.data_gaps as string[]) : []
+  // Marcas de páginas diseñadas: el modelo marca, TS valida. Una marca inventada no llega al Word.
+  const marcasRaras: string[] = []
+  for (const sec of secciones) {
+    const m = normalizarMarcadores(String(sec.contenido), disenadas)
+    sec.contenido = m.texto
+    marcasRaras.push(...m.desconocidas)
+  }
+  if (marcasRaras.length) gaps.push(`El redactor citó páginas diseñadas que no existen (${marcasRaras.slice(0, 3).map((x) => `«${x}»`).join(', ')}): se han quitado.`)
   const recorte = pliegoTruncationGap(pliegoText)
   if (recorte) gaps.push(recorte)
   // Lo que el modelo NO ha visto de la base y de la enseñanza, y lo que no se ha

@@ -9,6 +9,8 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { GenerationCapExceededError } from '@/lib/anthropic-client'
 import { takeTenderUpload, extractTextFromFile, UnsupportedFileError } from '@/lib/tenders/upload'
 import { isUuid, loadTeaching, loadTenderTeaching, teachingBlockDetallado } from '@/lib/tenders/teaching'
+import { loadDisenadas, type Disenada } from '@/lib/tenders/disenadas'
+import { esErrorDePresupuesto } from '@/lib/ai/budget'
 import {
   ATTACHMENTS_PER_CHAT, autoTitle, buildHistory, capAttachment, nextAttachmentId, parseAttachments, parseMessages,
   sse, stripInternal, userContentForModel, validateChatPost,
@@ -146,10 +148,11 @@ export async function POST(req: NextRequest) {
 
         // 4. Contexto del modelo: brand brain + lo que la responsable ha enseñado
         // (instrucciones del expediente, guía, lecciones), todo de ESTA marca.
-        const [brain, teaching, tenderTeaching] = await Promise.all([
+        const [brain, teaching, tenderTeaching, disenadas] = await Promise.all([
           fetchBrandBrain(access.clientId),
           loadTeaching(access.clientId),
           loadTenderTeaching(access.clientId, chat.tender_id),
+          loadDisenadas(db, access.clientId).catch((): Disenada[] => []),
         ])
         const { text: teachingText, recortes } = teachingBlockDetallado({ instructions: tenderTeaching.instructions, guide: teaching.guide, lessons: teaching.lessons })
         for (const r of recortes) emit('notice', { message: r })
@@ -165,21 +168,22 @@ export async function POST(req: NextRequest) {
         const backedUp = new Set(messages.flatMap((m) => (m.documentos || []).filter((d) => d.accion === 'editado' && d.copia_id).map((d) => d.id)))
         const ctx: ChatContext = {
           clientId: access.clientId, userId: access.userId, chatId: chatId!, chatTitle: chat.title,
-          tenderId: chat.tender_id, attachments, brandName: brain?.brandName || null,
+          tenderId: chat.tender_id, attachments, brandName: brain?.brandName || null, disenadas,
           backedUp, createdNow: new Set(), startedAt: Date.now(), emit, db, deps: defaultDeps(),
         }
-        const state = buildStatePrompt(ctx, tenderTitle, olvidados)
+        const state = buildStatePrompt(ctx, tenderTitle, olvidados, disenadas)
 
         // 5. El agente.
         const r = await runTenderChat({ ctx, history, system, state })
         const capError = r.error && /Monthly generation cap/.test(r.error)
         // Sin saldo en la API (5-oct): decirlo claro; «vuelve a intentarlo» no sirve de nada.
         const sinSaldo = r.error && /credit balance|billing/i.test(r.error)
+        const sinPresupuesto = esErrorDePresupuesto(r.error)
         const assistantMsg: ChatMessage = {
           id: randomUUID(), n: messages.length + 1, role: 'assistant', content: r.text, at: new Date().toISOString(),
           ...(r.tools.length ? { tools: r.tools } : {}),
           ...(r.documentos.length ? { documentos: r.documentos } : {}),
-          ...(r.error ? { error: capError ? r.error : sinSaldo ? 'MIRA no puede usar la IA ahora mismo: la cuenta del proveedor se ha quedado sin saldo. Avisa a Startup Factory; lo que has escrito queda guardado.' : 'La respuesta no se ha completado. Vuelve a intentarlo.' } : {}),
+          ...(r.error ? { error: capError ? r.error : sinSaldo ? 'MIRA no puede usar la IA ahora mismo: la cuenta del proveedor se ha quedado sin saldo. Avisa a Startup Factory; lo que has escrito queda guardado.' : sinPresupuesto ? 'MIRA ha alcanzado hoy su presupuesto de IA y se reanuda mañana. Lo que has escrito queda guardado; si es urgente, avisa a Startup Factory.' : 'La respuesta no se ha completado. Vuelve a intentarlo.' } : {}),
           _model: r.model,
         }
         messages = [...messages, assistantMsg]

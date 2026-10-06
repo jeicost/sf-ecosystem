@@ -4,6 +4,7 @@ import { adminClient } from '@/lib/supabase'
 import { requireTool } from '@/lib/tools/access'
 import { errorMessage } from '@/lib/email-ops/auth'
 import { construirWord, resolverPlantilla, rotuloPorKind, sanear, disposition, type EntradaWord, type SeccionWord } from '@/lib/tenders/word'
+import { anexosObligatorios, loadDisenadas, marcadoresEn, resolverDisenadas, type Disenada } from '@/lib/tenders/disenadas'
 
 // Cualquier documento de la licitación, como Word entregable.
 //
@@ -39,7 +40,7 @@ function seccionesMuestra(): SeccionWord[] {
       'Las secciones se numeran solas y aparecen en el índice y en el panel de navegación de Word. Cada párrafo del texto original se convierte en un párrafo propio.\n- Las líneas que empiezan por guion salen como viñetas reales.\n- Se pueden reformatear desde Word sin romper nada.\n- El pie repite la línea legal de la marca en todas las páginas menos la portada.',
       porConfirmar: ['Así se marca un dato que hay que comprobar antes de presentar.'] },
     { titulo: 'Compromisos y garantías', contenido:
-      'La tipografía del cuerpo es Arial 11 pt para que el documento se abra igual en cualquier equipo. Los títulos usan el color de acento de la plantilla y la portada el color de portada.\nSi algo de la plantilla no encaja, cámbialo en los ajustes y vuelve a generar esta muestra.' },
+      'El cuerpo va en la tipografía de la plantilla (la de la hoja oficial si se ha subido; si no, Arial) a 11 pt. Los títulos usan el color de acento y la portada el color de portada.\n## Un subapartado\nUna línea que empieza por «## » o va entera en MAYÚSCULAS sale como subtítulo; **lo que va entre asteriscos dobles** sale en negrita; un dato que falta se marca así: [FALTA: cifra de la flota].\n1. Las listas numeradas se numeran solas.\n2. Y siguen el orden del texto.\n| Servicio | Plazo | Importe |\n|---|---|---|\n| Mensajería urbana | 2 h | 100 |\n| Paquetería nacional | 24 h | 250 |\nSi algo de la plantilla no encaja, cámbialo en los ajustes y vuelve a generar esta muestra. Las páginas con diseño propio marcadas como «siempre» aparecen al final como anexos.' },
   ]
 }
 
@@ -156,7 +157,22 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const buffer = await construirWord({ ...entrada, plantilla: await plantillaP })
+    // Páginas con diseño propio: las que el texto marca ([[DISEÑO:id]]) y las de
+    // «siempre» como anexo. Solo se descargan las que hacen falta.
+    const lista = await loadDisenadas(db, access.clientId).catch((): Disenada[] => [])
+    let disenadas: EntradaWord['disenadas'] = []
+    let anexos: EntradaWord['anexos'] = []
+    if (lista.length) {
+      const textos = [...entrada.secciones.map((s) => s.contenido), ...(entrada.bloques || []).flatMap((b) => b.parrafos)]
+      const usadas = new Set(textos.flatMap((t) => marcadoresEn(t, lista)))
+      const obligatorias = anexosObligatorios(lista, usadas)
+      const necesarias = lista.filter((d) => usadas.has(d.id) || obligatorias.some((a) => a.id === d.id))
+      const { resueltas, avisos } = await resolverDisenadas(db, access.clientId, necesarias)
+      disenadas = resueltas.filter((d) => usadas.has(d.id))
+      anexos = resueltas.filter((d) => obligatorias.some((a) => a.id === d.id))
+      if (avisos.length) console.warn('tender/export páginas diseñadas:', avisos.join(' | '))
+    }
+    const buffer = await construirWord({ ...entrada, plantilla: await plantillaP, disenadas, anexos })
     done({ kind: tipoRegistro, bytes: buffer.length })
     return new NextResponse(new Uint8Array(buffer), {
       headers: {

@@ -12,6 +12,8 @@ import {
 } from '@/lib/generation/tender-memoria'
 import { sanearImportes, sanearPorcentajes } from '@/lib/generation/tender-libre'
 import { addLesson, loadTenderTeaching } from '@/lib/tenders/teaching'
+import { ajustesModelo } from '@/lib/ai/models'
+import { bloqueDisenadasPrompt, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import {
   CHAT_MODEL, MAX_TURNS, MAX_TOKENS_TURN, TOOL_DEFS, CHUNK_MAX, SECTION_CONTENT_MAX,
   chunkAttachment, compactForStorage, toolLabel, validateToolInput,
@@ -61,6 +63,8 @@ export interface ChatContext {
   tenderId: string | null
   attachments: ChatAttachment[]
   brandName: string | null
+  /** Páginas con diseño propio de la marca: el modelo las marca ([[DISEÑO:id]]), aquí se validan. */
+  disenadas: Disenada[]
   /** Documentos de los que ya se guardó la versión anterior en ESTA conversación. */
   backedUp: Set<string>
   /** Documentos creados en esta misma petición: nadie ha podido editarlos a mano, no necesitan copia. */
@@ -222,11 +226,18 @@ async function run(ctx: ChatContext, t: ToolInput): Promise<ToolOutcome> {
 
     case 'crear_documento': {
       let importes = 0, descuentos = 0
+      const marcasRaras: string[] = []
       const secciones = t.secciones.map((s) => {
-        if (t.tipo !== 'oferta') return s
-        const c = sanearOferta(s.contenido)
-        importes += c.importes; descuentos += c.descuentos
-        return { ...s, contenido: c.texto }
+        // Las marcas de páginas diseñadas se validan: una inventada no llega al documento.
+        const m = normalizarMarcadores(s.contenido, ctx.disenadas)
+        marcasRaras.push(...m.desconocidas)
+        let contenido = m.texto
+        if (t.tipo === 'oferta') {
+          const c = sanearOferta(contenido)
+          importes += c.importes; descuentos += c.descuentos
+          contenido = c.texto
+        }
+        return { ...s, contenido }
       })
       const { data, error } = await db.from('tender_documents').insert(writable({
         client_id: clientId, tender_id: ctx.tenderId, kind: t.tipo, title: t.titulo, status: 'borrador',
@@ -238,6 +249,7 @@ async function run(ctx: ChatContext, t: ToolInput): Promise<ToolOutcome> {
       const avisos = [
         ...(importes ? [`${importes} importe(s) sustituidos por [FALTA: tarifa]: en una oferta los precios los pone el equipo comercial.`] : []),
         ...(descuentos ? [`${descuentos} descuento(s) sustituidos por [FALTA: descuento].`] : []),
+        ...(marcasRaras.length ? [`Marcas de páginas diseñadas que no existen y se han quitado: ${marcasRaras.map((x) => `«${x}»`).join(', ')}. Usa solo las del estado.`] : []),
       ]
       return out({ document_id: data.id, titulo: data.title, secciones: secciones.length, avisos },
         `Guardado «${data.title}» (${secciones.length} secciones)`, { id: data.id, titulo: data.title, accion: 'creado' })
@@ -282,6 +294,9 @@ async function run(ctx: ChatContext, t: ToolInput): Promise<ToolOutcome> {
       }
       let contenido = t.contenido.slice(0, SECTION_CONTENT_MAX)
       const avisos: string[] = []
+      const marc = normalizarMarcadores(contenido, ctx.disenadas)
+      contenido = marc.texto
+      if (marc.desconocidas.length) avisos.push(`Marcas de páginas diseñadas que no existen y se han quitado: ${marc.desconocidas.map((x) => `«${x}»`).join(', ')}.`)
       if (data.kind === 'oferta') {
         const c = sanearOferta(contenido)
         contenido = c.texto
@@ -526,7 +541,8 @@ ${GROUNDING_CONTRACT}`
 }
 
 /** Bloque dinámico (cambia de un mensaje a otro): expediente y adjuntos. Va fuera de la caché. */
-export function buildStatePrompt(ctx: Pick<ChatContext, 'tenderId' | 'attachments'>, tenderTitle: string | null, olvidados: number): string {
+export function buildStatePrompt(ctx: Pick<ChatContext, 'tenderId' | 'attachments'>, tenderTitle: string | null, olvidados: number, disenadas: Disenada[] = []): string {
+  const bloqueDisenadas = bloqueDisenadasPrompt(disenadas)
   const adj = ctx.attachments.length
     ? ctx.attachments.map((a) => `- ${a.id}: «${a.filename}» (${a.chars.toLocaleString('es-ES')} caracteres${a.original_chars && a.original_chars > a.chars ? `, RECORTADO al subir: tenía ${a.original_chars.toLocaleString('es-ES')}` : ''})`).join('\n')
     : '- (ninguno)'
@@ -534,7 +550,7 @@ export function buildStatePrompt(ctx: Pick<ChatContext, 'tenderId' | 'attachment
 Expediente asociado: ${ctx.tenderId ? `«${tenderTitle || ''}» (${ctx.tenderId})` : 'ninguno (puedes asociar uno con asociar_expediente si la persona lo quiere)'}
 Adjuntos:
 ${adj}${olvidados ? `\nNota: los ${olvidados} primeros intercambios de esta conversación ya no caben en tu memoria; los documentos guardados siguen disponibles con leer_documento.` : ''}
-Fecha de hoy: ${new Date().toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid' })}.`
+Fecha de hoy: ${new Date().toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid' })}.${bloqueDisenadas ? `\n\n${bloqueDisenadas}` : ''}`
 }
 
 // ─── El bucle ─────────────────────────────────────────────────────────────────
@@ -602,16 +618,19 @@ export async function runTenderChat(opts: {
   const toolDefs: Anthropic.Tool[] = TOOL_DEFS.map((t, n) => (n === TOOL_DEFS.length - 1 ? { ...t, cache_control: { type: 'ephemeral' } } : t))
 
   try {
-    const { client, usedClientKey } = await getClaudeForClient(ctx.clientId)
+    // 'tender/chat' activa el freno de gasto diario (lib/ai/budget.ts).
+    const { client, usedClientKey } = await getClaudeForClient(ctx.clientId, 'tender/chat')
     for (let turn = 0; turn < MAX_TURNS; turn++) {
       if (turn > 0 && Date.now() - ctx.startedAt > TURN_DEADLINE_MS) {
         say(`${text ? '\n\n' : ''}(Me he quedado sin tiempo en este mensaje. Escríbeme «sigue» y continúo donde lo he dejado.)`)
         break
       }
       let first = true
+      // output_config (esfuerzo del pensamiento) no está en los tipos del SDK 0.39; el cuerpo lo lleva igual.
       const stream = client.messages.stream({
         model: CHAT_MODEL, max_tokens: MAX_TOKENS_TURN, system: systemBlocks, tools: toolDefs, messages: conCacheAlFinal(conversation),
-      })
+        ...ajustesModelo(CHAT_MODEL),
+      } as Anthropic.MessageStreamParams)
       stream.on('text', (t) => {
         // Entre vueltas, un salto: si no, «Voy a leer el pliego.» y «El pliego pide…» salen pegados.
         if (first && text && !/\n\s*$/.test(text)) say('\n\n')
@@ -620,6 +639,11 @@ export async function runTenderChat(opts: {
       })
       const msg = await stream.finalMessage()
       await logUsage({ clientId: ctx.clientId, route: 'tender/chat', model: CHAT_MODEL, usage: msg.usage, usedClientKey })
+      // Los 5.x pueden declinar (stop_reason 'refusal', no tipado en el SDK 0.39): se dice y se para.
+      if ((msg.stop_reason as string) === 'refusal') {
+        say(`${text ? '\n\n' : ''}(No puedo ayudar con esa petición tal como está planteada. Reformúlala o pídeme otra cosa.)`)
+        break
+      }
 
       const toolUses = msg.content.filter((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use')
       if (msg.stop_reason === 'max_tokens') {

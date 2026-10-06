@@ -4019,6 +4019,59 @@ export type Database = {
         }
         Relationships: []
       }
+      tender_brand_sections: {
+        Row: {
+          active: boolean
+          always_include: boolean
+          client_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          keywords: string
+          pages: Json
+          placement: string
+          source_filename: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          always_include?: boolean
+          client_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          keywords?: string
+          pages?: Json
+          placement?: string
+          source_filename?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          always_include?: boolean
+          client_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          keywords?: string
+          pages?: Json
+          placement?: string
+          source_filename?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tender_brand_sections_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tender_chats: {
         Row: {
           attachments: Json

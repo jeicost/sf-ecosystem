@@ -1,22 +1,25 @@
 // Extracción con Claude: un correo (+ texto de adjuntos + imágenes) → Extraction.
 //
-// Se fuerza una tool (`analyze_shipment_email`) para obtener JSON tipado, y
-// después se REVALIDA en TS (coerceFields): sin modo strict el modelo puede
-// devolver "mañana" en un campo fecha, y un valor mal formado vale menos que
-// null. Regla de la casa: dato que no está en el correo → null, nunca inventado.
+// Hasta el 6-oct-2026 se forzaba una tool (`analyze_shipment_email`) para
+// obtener JSON tipado. Sonnet 5.5 (2 $/10 $ frente a 3 $/15 $ de Sonnet 4.6)
+// rechaza el tool_choice forzado, así que el JSON se pide con salida
+// estructurada (output_config.format, mismo esquema) y después se REVALIDA en
+// TS (coerceFields): el esquema no sabe que "mañana" no es una fecha, y un
+// valor mal formado vale menos que null. Regla de la casa: dato que no está en
+// el correo → null, nunca inventado.
 //
 // El system prompt (esquema + reglas del cliente + ejemplos) es el prefijo
 // estable y lleva cache_control; el correo va en el mensaje de usuario.
 
 import type Anthropic from '@anthropic-ai/sdk'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { ajustesModelo, modeloConPensamiento } from '@/lib/ai/models'
 import { buildToolInputSchema, coerceFields, type FieldDef } from './schema'
 import { formatExamplesForPrompt, type TrainingExample } from './learning'
 import type { Extraction, TicketKind } from './types'
 
-export const EMAIL_OPS_MODEL = process.env.EMAIL_OPS_MODEL || 'claude-sonnet-4-6'
+export const EMAIL_OPS_MODEL = process.env.EMAIL_OPS_MODEL || 'claude-sonnet-5-5'
 export const EMAIL_OPS_ROUTE = 'email-ops-extract'
-const TOOL_NAME = 'analyze_shipment_email'
 const MAX_BODY_CHARS = 30000
 
 export interface AnalyzeInput {
@@ -36,13 +39,34 @@ export interface AnalyzeInput {
   imageBlocks: Anthropic.ImageBlockParam[]
 }
 
-function buildTool(schema: readonly FieldDef[]): Anthropic.Tool {
-  return {
-    name: TOOL_NAME,
-    description:
-      'Registra el análisis de un correo recibido por una empresa de mensajería/logística: si es un encargo de envío y, si lo es, los datos operativos que van al parte de trabajo. Llama a esta herramienta SIEMPRE, con todos los campos (null cuando el dato no aparece).',
-    input_schema: buildToolInputSchema(schema) as Anthropic.Tool.InputSchema,
+/**
+ * Esquema de la salida estructurada. La API exige additionalProperties:false en
+ * todos los objetos y no admite minimum/maximum: la urgencia se acota en TS
+ * (validateExtraction), como todo lo demás.
+ */
+export function buildOutputSchema(schema: readonly FieldDef[]): Record<string, unknown> {
+  const base = buildToolInputSchema(schema) as Record<string, unknown> & { properties: Record<string, Record<string, unknown>>; required: string[] }
+  const props = { ...base.properties }
+  // Un enum con null («type: ['string','null'], enum: [..., null]») lo acepta la tool pero
+  // la salida estructurada lo rechaza (medido 6-oct: «Enum value 'local' does not match
+  // declared type»): se expresa como anyOf.
+  const fields = props.fields as { properties: Record<string, Record<string, unknown>>; required: string[]; additionalProperties: boolean }
+  const fieldProps: Record<string, Record<string, unknown>> = {}
+  for (const [k, def] of Object.entries(fields.properties)) {
+    if (Array.isArray(def.enum)) {
+      const valores = (def.enum as unknown[]).filter((v) => v !== null)
+      fieldProps[k] = { description: def.description, anyOf: [{ type: 'string', enum: valores }, { type: 'null' }] }
+    } else fieldProps[k] = def
   }
+  props.fields = { ...fields, properties: fieldProps }
+  props.urgency = { type: 'integer', description: props.urgency?.description }
+  // confidence y evidence llevan todas las claves del parte: con additionalProperties:false lo que no se declara no se puede escribir.
+  const claves = schema.map((f) => f.key)
+  props.confidence = { ...props.confidence, required: claves }
+  props.evidence = { ...props.evidence, required: claves }
+  props.original_sender = { type: ['string', 'null'], description: (props.original_sender?.description as string) || '' }
+  props.notes = { type: ['string', 'null'], description: (props.notes?.description as string) || '' }
+  return { type: 'object', properties: props, required: ['kind', 'summary', 'original_sender', 'urgency', 'fields', 'confidence', 'evidence', 'notes'], additionalProperties: false }
 }
 
 function fieldGuide(schema: readonly FieldDef[]): string {
@@ -83,7 +107,7 @@ function userContent(input: AnalyzeInput): Anthropic.MessageParam['content'] {
     `Para: ${input.message.to.join(', ')}`,
     `Asunto: ${input.message.subject || '(sin asunto)'}`,
   ].join('\n')
-  const text = `<email>\n${header}\n\n${body}\n</email>${input.attachmentsText ? `\n\n<attachments>\n${input.attachmentsText}\n</attachments>` : ''}${input.imageBlocks.length ? '\n\n(Las imágenes adjuntas van a continuación; léelas como parte del correo — albaranes, etiquetas, fotos del paquete.)' : ''}\n\nAnaliza este correo y llama a ${TOOL_NAME}.`
+  const text = `<email>\n${header}\n\n${body}\n</email>${input.attachmentsText ? `\n\n<attachments>\n${input.attachmentsText}\n</attachments>` : ''}${input.imageBlocks.length ? '\n\n(Las imágenes adjuntas van a continuación; léelas como parte del correo — albaranes, etiquetas, fotos del paquete.)' : ''}\n\nAnaliza este correo y devuelve el parte en el JSON pedido.`
   const blocks: Anthropic.ContentBlockParam[] = [{ type: 'text', text }]
   for (const img of input.imageBlocks.slice(0, 4)) blocks.push(img)
   return blocks
@@ -120,19 +144,28 @@ export function validateExtraction(raw: unknown, schema: readonly FieldDef[]): E
 }
 
 export async function analyzeEmail(input: AnalyzeInput): Promise<Extraction> {
-  const response = await createMessageForClient(input.clientId, EMAIL_OPS_ROUTE, {
+  const params = {
     model: EMAIL_OPS_MODEL,
-    max_tokens: 2500,
+    // Los 5.x piensan: el techo de 2.500 que valía para el JSON a secas se queda corto.
+    max_tokens: modeloConPensamiento(EMAIL_OPS_MODEL) ? 6000 : 2500,
     system: buildSystemBlocks(input),
-    tools: [buildTool(input.schema)],
-    tool_choice: { type: 'tool', name: TOOL_NAME },
-    messages: [{ role: 'user', content: userContent(input) }],
-  })
+    messages: [{ role: 'user' as const, content: userContent(input) }],
+    output_config: { format: { type: 'json_schema', schema: buildOutputSchema(input.schema) }, ...(ajustesModelo(EMAIL_OPS_MODEL, 'low').output_config as Record<string, unknown> | undefined) },
+  }
+  // output_config no está en los tipos del SDK 0.39 (es de 2026); el SDK lo manda tal cual.
+  const response = await createMessageForClient(input.clientId, EMAIL_OPS_ROUTE, params as unknown as Anthropic.MessageCreateParamsNonStreaming)
   // 'refusal' no existe en los tipos del SDK 0.39 pero sí en modelos nuevos.
   if ((response.stop_reason as string) === 'refusal') {
     throw new Error('Model refused to analyze this email')
   }
-  const toolUse = response.content.find((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use')
-  if (!toolUse) throw new Error('Model returned no tool_use block')
-  return validateExtraction(toolUse.input, input.schema)
+  if (response.stop_reason === 'max_tokens') throw new Error('Model output was cut off (max_tokens)')
+  const text = response.content.map((b) => ('text' in b ? b.text : '')).join('').trim()
+  let raw: unknown
+  try { raw = JSON.parse(text) } catch {
+    // Compatibilidad: un modelo antiguo configurado por variable de entorno aún puede responder con la tool.
+    const toolUse = response.content.find((b): b is Anthropic.ToolUseBlock => b.type === 'tool_use')
+    if (!toolUse) throw new Error('Model returned no JSON')
+    raw = toolUse.input
+  }
+  return validateExtraction(raw, input.schema)
 }

@@ -1,4 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { CHEAP_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
 import { extractJson } from '@/lib/generation/extract-json'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import type { RadarCandidate } from './placsp'
@@ -9,7 +10,7 @@ import type { RadarCandidate } from './placsp'
 // un veredicto go / revisar / no-go con una razón de una línea. No inventa: si el
 // Cerebro no dice si tienen una capacidad, lo trata como incógnita, no como sí.
 
-const MODEL = 'claude-sonnet-4-6' // scoring en lote, barato; el motor de memoria sí usa Opus
+const MODEL = CHEAP_MODEL // scoring en lote, barato; el motor de memoria sí usa Opus
 
 export interface TenderScore {
   id: string
@@ -51,7 +52,7 @@ CONCURSOS:
 ${JSON.stringify(list, null, 1)}`
 
   const msg = await createMessageForClient(clientId, 'tender/radar-score', {
-    model: MODEL, max_tokens: 4000,
+    model: MODEL, max_tokens: techoSalida(MODEL, 4000), ...ajustesModelo(MODEL, 'low'),
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')

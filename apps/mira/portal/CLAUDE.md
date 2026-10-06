@@ -68,3 +68,29 @@ trabajando desde Claude Code **no se gastan créditos de Claude Platform**
 
 El saldo de Platform se agotó dos veces (30-ago y 01-sep) bloqueando trabajo
 real de producción. Esto lo evita.
+
+## Modelos, freno de gasto y Word de Licitaciones (6-oct-2026)
+
+- Modelos en `lib/ai/models.ts`, con variable de entorno por delante:
+  `TENDER_MODEL` (claude-opus-5-5), `TENDER_EFFORT` (medium), `CHEAP_MODEL`
+  (claude-sonnet-5-5), `EMAIL_OPS_MODEL` (claude-sonnet-5-5). Los 5.x piensan
+  siempre y rechazan `tool_choice` forzado: Email Ops usa salida estructurada
+  (`output_config.format`) y `createMessageForClient` hace streaming por dentro
+  para que el techo de salida (`techoSalida`) no dispare timeouts. Si un modelo
+  falla en prod, se cambia la variable en Vercel, sin desplegar.
+- Freno de gasto diario en `lib/ai/budget.ts` (`MIRA_DAILY_BUDGET_USD`, 30 $
+  por defecto): suma `mira_usage_log` de hoy (Madrid) con la clave de
+  plataforma; corta las rutas normales al 80 % (reserva de Email Ops) y Email
+  Ops al 100 %; al 80 % deja una huella `ai-budget` en `mira_activity`. Se
+  activa pasando `route` a `getClaudeForClient` (todo `createMessageForClient`
+  lo lleva). El panel Super Admin enseña el gasto de hoy.
+- Word de Licitaciones (`lib/tenders/word.ts`): si la marca subió su HOJA
+  oficial (.docx) en «Word template», la cabecera y el pie se trasplantan tal
+  cual (`lib/tenders/membrete.ts`), con sus márgenes y su fuente. Las PÁGINAS
+  CON DISEÑO PROPIO (`lib/tenders/disenadas.ts`, tabla
+  `tender_brand_sections`) se marcan en el texto como `[[DISEÑO:id]]`; el
+  modelo marca, TS valida, el Word inserta (página a sangre en sección propia
+  sin membrete, o figura). El texto se maqueta (`parseBloques`: subtítulos,
+  listas, tablas con barras, `[FALTA: …]` resaltado). Sin LibreOffice ni Word
+  en la máquina: comprobar con `evals/_scratch/word-hoja.ts` (XML estricto +
+  mammoth) y, para paginación, un render con LibreOffice portable.

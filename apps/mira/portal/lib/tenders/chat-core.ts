@@ -1,5 +1,6 @@
 import type Anthropic from '@anthropic-ai/sdk'
 import { isUuid } from '@/lib/tenders/teaching'
+import { TENDER_MODEL } from '@/lib/ai/models'
 
 // Licitaciones en modo conversación — la parte PURA del motor.
 //
@@ -11,12 +12,12 @@ import { isUuid } from '@/lib/tenders/teaching'
 // probarlo gratis en evals/licitaciones/chat-check.ts. El bucle con el modelo
 // y las consultas están en lib/tenders/chat.ts.
 
-/** Modelo de los motores de licitaciones (tender-memoria, tender-documento…). */
-export const CHAT_MODEL = 'claude-opus-4-8'
+/** Modelo de los motores de licitaciones (tender-memoria, tender-documento…): lib/ai/models.ts, con variable de entorno por delante. */
+export const CHAT_MODEL = TENDER_MODEL
 /** Vueltas de herramientas por mensaje: suficiente para leer, buscar y guardar; acota el coste de un bucle tonto. */
 export const MAX_TURNS = 8
-/** Salida por vuelta. Una sección larga cabe; por encima de ~21k el SDK exige streaming y aquí ya lo es, pero el coste manda. */
-export const MAX_TOKENS_TURN = 8000
+/** Salida por vuelta. Una sección larga cabe; los 5.x piensan dentro de este techo, por eso 12k y no 8k. El coste manda: el bucle corta a MAX_TURNS. */
+export const MAX_TOKENS_TURN = 12000
 /** Lo que se guarda de cada resultado de herramienta para retomar la conversación otro día. */
 export const TOOL_RESULT_SAVE_CAP = 2000
 /** Lo mismo para los textos largos que el modelo puso en la ENTRADA de una herramienta (una sección entera en crear_documento). */

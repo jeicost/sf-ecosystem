@@ -1,4 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
 import { extractJson } from '@/lib/generation/extract-json'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
@@ -51,7 +52,7 @@ export interface TenderOferta {
   suma_ponderada: number | null
 }
 
-const MODEL = 'claude-opus-4-8'
+const MODEL = TENDER_MODEL
 
 /** Ejemplos: ofertas ya presentadas por el cliente, compactadas a lo que enseña (familia → % baja). */
 async function loadExamples(clientId: string, excludeTenderId?: string | null): Promise<string> {
@@ -149,7 +150,7 @@ ${pliegoText.slice(0, 150000)}
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(clientId, 'tender/oferta', {
-    model: MODEL, max_tokens: 16000,
+    model: MODEL, max_tokens: techoSalida(MODEL, 16000), ...ajustesModelo(MODEL),
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')

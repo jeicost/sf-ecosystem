@@ -14,6 +14,7 @@ import ChatMarkdown from '@/components/chat/ChatMarkdown'
 import DocumentsPanel from '@/components/tenders/DocumentsPanel'
 import TeachPanel from '@/components/tenders/TeachPanel'
 import TemplateSettings from '@/components/tenders/TemplateSettings'
+import BrandSectionsPanel from '@/components/tenders/BrandSectionsPanel'
 import TenderBrandSwitch from '@/components/tenders/TenderBrandSwitch'
 import { uploadTenderFile, removeTenderFile } from '@/lib/tenders/upload-client'
 import { trackPage, trackAction } from '@/lib/activity-client'
@@ -1004,6 +1005,7 @@ export default function LicitacionesAssistantPage() {
               nodos zombis en producción (dos «Teach MIRA», 1-oct). */}
           <TeachPanel key={`teach-${clientId}`} clientId={clientId} brand={brand} tenderId={chatTenderId} />
           <TemplateSettings key={`template-${clientId}`} clientId={clientId} brand={brand} />
+          <BrandSectionsPanel key={`pages-${clientId}`} clientId={clientId} brand={brand} />
         </Drawer>
       )}
     </div>

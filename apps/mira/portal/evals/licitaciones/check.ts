@@ -137,5 +137,116 @@ check('una instrucción que cabe no da aviso', avisoLeccionLarga('x'.repeat(LESS
 const larga = avisoLeccionLarga('x'.repeat(LESSON_MAX + 1))
 check('una que no cabe da aviso con el tope y manda a Teach MIRA', !!larga && larga.includes('demasiado larga') && larga.includes(LESSON_MAX.toLocaleString('es-ES')) && larga.includes('Teach MIRA'))
 
+// (el resumen y la salida van al final del fichero: las comprobaciones del 6-oct siguen debajo)
+
+// ─── 6-oct-2026: maquetación del Word, hoja oficial, páginas diseñadas, freno de gasto ───
+import { parseBloques, trozosInline, esRotuloMayusculas, columnaNumerica, rutaFicheroPermitida, fuenteValida, CLAVES_PLANTILLA, type Bloque } from '../../lib/tenders/word'
+import { pieConNumeracion, MARCA_CABECERA, MARCA_PIE } from '../../lib/tenders/membrete'
+import { normalizarMarcadores, resolverReferencia, anexosObligatorios, bloqueDisenadasPrompt, marcadoresEn, parseDisenada, marcador, type Disenada } from '../../lib/tenders/disenadas'
+import { sumarGasto, limiteParaRuta, inicioDeHoyMadrid, DAILY_BUDGET_USD, EMAIL_OPS_RESERVE, esErrorDePresupuesto, DailyBudgetExceededError } from '../../lib/ai/budget'
+import { estimateCostUsdWithCache, MODEL_PRICING } from '../../lib/anthropic-client'
+import { techoSalida, ajustesModelo, modeloConPensamiento, TENDER_MODEL, CHEAP_MODEL } from '../../lib/ai/models'
+import { buildOutputSchema, EMAIL_OPS_MODEL } from '../../lib/email-ops/extract'
+import { COURIER_V1_FIELDS as DEFAULT_SCHEMA } from '../../lib/email-ops/schema'
+
+console.log('\nMaquetación del texto: lo que escribe el redactor se reconoce, lo que no, es párrafo')
+const bl = parseBloques([
+  'Párrafo normal con **negrita** dentro.',
+  '## Subapartado',
+  'PLAN DE CONTINGENCIA',
+  '- uno', '- dos',
+  '1. primero', '2) segundo',
+  '| Servicio | Plazo | Importe |', '|---|---|---|', '| Urbano | 2 h | 100 |', '| Nacional | 24 h | 250 |',
+  '[[DISEÑO:abc]]',
+  'Texto [[diseño: Flota]] seguido.',
+  'ISO 9001.',
+  '',
+].join('\n'))
+const txt = (b: Bloque | undefined) => (b && 'texto' in b ? b.texto : '')
+const items = (b: Bloque | undefined) => (b && 'items' in b ? b.items : [])
+const filas = (b: Bloque | undefined) => (b && 'filas' in b ? b.filas : [])
+const ref = (b: Bloque | undefined) => (b && 'ref' in b ? b.ref : '')
+check('párrafo', bl[0]?.t === 'p' && txt(bl[0]).startsWith('Párrafo'))
+check('## → subtítulo', bl[1]?.t === 'h' && txt(bl[1]) === 'Subapartado')
+check('MAYÚSCULAS → subtítulo', bl[2]?.t === 'h' && txt(bl[2]) === 'PLAN DE CONTINGENCIA')
+check('viñetas agrupadas', bl[3]?.t === 'ul' && items(bl[3]).length === 2)
+check('numeradas agrupadas (1. y 2))', bl[4]?.t === 'ol' && items(bl[4]).join('|') === 'primero|segundo')
+check('tabla con cabecera y 2 filas, sin separador', bl[5]?.t === 'tabla' && filas(bl[5]).length === 3 && filas(bl[5])[0][2] === 'Importe')
+check('marcador solo → diseno', bl[6]?.t === 'diseno' && ref(bl[6]) === 'abc')
+check('marcador pegado a texto se separa', bl[7]?.t === 'p' && bl[8]?.t === 'diseno' && ref(bl[8]) === 'Flota' && bl[9]?.t === 'p' && txt(bl[9]) === 'seguido.')
+check('«ISO 9001.» no es subtítulo (punto final, pocas letras)', bl[10]?.t === 'p')
+check('no se pierde texto (11 bloques)', bl.length === 11, bl.length)
+check('rótulo: frase normal no', !esRotuloMayusculas('El coordinador se responsabilizará de todo'))
+check('rótulo: sigla sola no', !esRotuloMayusculas('GTD'))
+check('rótulo: «RECURSOS HUMANOS Y MATERIALES» sí', esRotuloMayusculas('RECURSOS HUMANOS Y MATERIALES'))
+const tr = trozosInline('Texto **fuerte** y [FALTA: cifra] y [ÓRGANO ANTERIOR] fin')
+check('negrita separada', tr.some((t) => t.negrita && t.texto === 'fuerte'))
+check('[FALTA] y [ÓRGANO ANTERIOR] son avisos', tr.filter((t) => t.aviso).length === 2)
+check('el texto se conserva entero', tr.map((t) => t.texto).join('') === 'Texto fuerte y [FALTA: cifra] y [ÓRGANO ANTERIOR] fin')
+check('columna numérica (€ y %)', columnaNumerica([['a', '100 €'], ['b', '2,50 %'], ['c', '—']], 1))
+check('columna de texto no', !columnaNumerica([['a', 'Madrid'], ['b', '24 h']], 1))
+
+console.log('\nHoja oficial: numeración en el pie y rutas')
+const pieVacio = '<w:ftr><w:p><w:r><w:t>NIF</w:t></w:r></w:p><w:p><w:pPr><w:pStyle w:val="Pie"/></w:pPr></w:p></w:ftr>'
+const conNum = pieConNumeracion(pieVacio)
+check('usa el último párrafo vacío para «Página X de Y»', conNum.includes('NUMPAGES') && (conNum.match(/<w:p\b/g) || []).length === 2)
+check('si ya numera, no toca', pieConNumeracion('<w:ftr><w:p><w:fldSimple w:instr=" PAGE "/></w:p></w:ftr>').split('PAGE').length === 2)
+check('sin párrafo vacío, añade uno', (pieConNumeracion('<w:ftr><w:p><w:r><w:t>x</w:t></w:r></w:p></w:ftr>').match(/<w:p\b/g) || []).length === 2)
+check('las marcas de cabecera y pie son distintas y raras', String(MARCA_CABECERA) !== String(MARCA_PIE) && MARCA_CABECERA.includes('MEMBRETE'))
+check('ruta de hoja de la propia marca sí', rutaFicheroPermitida('tenders/c1/x.docx', 'c1'))
+check('ruta de hoja de otra marca no', !rutaFicheroPermitida('tenders/c2/x.docx', 'c1') && !rutaFicheroPermitida('tenders/c1/../c2/x.docx', 'c1'))
+check('fuente válida / inválida', fuenteValida(' Aptos ') === 'Aptos' && fuenteValida('<script>') === null)
+check('la plantilla admite letterhead_path, letterhead_name y body_font', ['letterhead_path', 'letterhead_name', 'body_font'].every((k) => (CLAVES_PLANTILLA as readonly string[]).includes(k)))
+
+console.log('\nPáginas diseñadas: el modelo marca, TS valida')
+const D1: Disenada = { id: '11111111-1111-4111-8111-111111111111', title: 'Certificaciones ISO', keywords: 'calidad, ISO', placement: 'page', always_include: true, pages: [{ path: 'tenders/c1/a.jpg', w: 10, h: 10, type: 'jpg' }], source_filename: null, active: true }
+const D2: Disenada = { ...D1, id: '22222222-2222-4222-8222-222222222222', title: 'Flota', always_include: false, placement: 'figure' }
+check('referencia por id', resolverReferencia(D1.id, [D1, D2])?.title === 'Certificaciones ISO')
+check('referencia por título (sin acentos, mayúsculas)', resolverReferencia('certificaciones iso', [D1, D2])?.id === D1.id)
+check('referencia desconocida → null', resolverReferencia('Organigrama', [D1, D2]) === null)
+const nm = normalizarMarcadores(`Intro.\n[[diseño: flota]] y luego [[DISEÑO:${D1.id}]] y [[DISEÑO:inventada]].`, [D1, D2])
+check('marcas normalizadas a [[DISEÑO:id]] en línea propia', nm.texto.includes(`\n${marcador(D2.id)}\n`) && nm.texto.includes(marcador(D1.id)))
+check('la inventada se quita y se avisa', !nm.texto.includes('inventada') && nm.desconocidas.join() === 'inventada')
+check('usadas en orden', nm.usadas.join(',') === `${D2.id},${D1.id}`)
+check('marcadoresEn devuelve ids', marcadoresEn(`x ${marcador(D1.id)}`, [D1, D2]).join() === D1.id)
+check('anexos obligatorios: la de «siempre» no usada', anexosObligatorios([D1, D2], []).map((d) => d.id).join() === D1.id)
+check('anexos obligatorios: usada → no se repite', anexosObligatorios([D1, D2], [D1.id]).length === 0)
+check('bloque de prompt lista las dos y pide una línea sola', bloqueDisenadasPrompt([D1, D2]).includes(marcador(D1.id)) && bloqueDisenadasPrompt([D1, D2]).includes('UNA LÍNEA SOLA'))
+check('sin páginas → bloque vacío', bloqueDisenadasPrompt([{ ...D1, pages: [] }]) === '')
+check('parseDisenada descarta páginas sin forma', parseDisenada({ id: 'x', title: 't', pages: [{ path: 'p', w: 1, h: 1, type: 'gif' }, { path: 'q', w: 1, h: 1, type: 'png' }] })?.pages.length === 1)
+
+console.log('\nFreno de gasto diario y precios')
+check('precio Opus 5.5 con caché: 1M entrada normal = 4 $, 1M lectura caché = 0,20 $', Math.abs(estimateCostUsdWithCache('claude-opus-5-5', 1_000_000, 0) - 4) < 1e-9 && Math.abs(estimateCostUsdWithCache('claude-opus-5-5', 0, 0, 0, 1_000_000) - 0.2) < 1e-9)
+check('precio Opus 4.8: lectura caché 0,50 $', Math.abs(estimateCostUsdWithCache('claude-opus-4-8', 0, 0, 0, 1_000_000) - 0.5) < 1e-9)
+check('modelo desconocido se tasa como Sonnet 4.6', Math.abs(estimateCostUsdWithCache('claude-x', 1_000_000, 1_000_000) - 18) < 1e-9)
+check('tabla de precios tiene los modelos en uso', [TENDER_MODEL, CHEAP_MODEL, EMAIL_OPS_MODEL].every((m) => !!MODEL_PRICING[m]))
+const g = sumarGasto([
+  { route: 'tender/chat', model: 'claude-opus-5-5', input_tokens: 1_000_000, output_tokens: 0, cache_creation_tokens: 0, cache_read_tokens: 0 },
+  { route: 'email-ops-extract', model: 'claude-sonnet-5-5', input_tokens: 0, output_tokens: 1_000_000, cache_creation_tokens: 0, cache_read_tokens: 0 },
+], '2026-10-06T00:00:00Z')
+check('suma por ruta: 4 $ chat + 10 $ email = 14 $', Math.abs(g.total - 14) < 1e-9 && Math.abs(g.porRuta['tender/chat'] - 4) < 1e-9 && g.llamadas === 2)
+check('límite: rutas normales dejan la reserva de Email Ops', limiteParaRuta('tender/chat', 100) === 100 * (1 - EMAIL_OPS_RESERVE) && limiteParaRuta('email-ops-extract', 100) === 100)
+check('presupuesto por defecto 30 $ (env MIRA_DAILY_BUDGET_USD)', DAILY_BUDGET_USD === 30 || !!process.env.MIRA_DAILY_BUDGET_USD)
+const medianoche = inicioDeHoyMadrid(new Date('2026-10-06T12:00:00Z'))
+check('medianoche de Madrid en verano = 22:00 UTC del día anterior', medianoche.toISOString() === '2026-10-05T22:00:00.000Z', medianoche.toISOString())
+const inv = inicioDeHoyMadrid(new Date('2026-01-15T12:00:00Z'))
+check('en invierno = 23:00 UTC', inv.toISOString() === '2026-01-14T23:00:00.000Z', inv.toISOString())
+const e = new DailyBudgetExceededError(31, 30, 'tender/chat')
+check('el error del freno se reconoce por su mensaje', esErrorDePresupuesto(e.message) && !esErrorDePresupuesto('credit balance too low'))
+
+console.log('\nModelos: pensamiento y techos')
+check('Opus 5.5 piensa; Opus 4.8 no', modeloConPensamiento('claude-opus-5-5') && !modeloConPensamiento('claude-opus-4-8'))
+check('techo se duplica en los que piensan (16k → 32k) y se respeta en los demás', techoSalida('claude-opus-5-5', 16000) === 32000 && techoSalida('claude-opus-4-8', 16000) === 16000)
+check('techo nunca pasa de 64k', techoSalida('claude-opus-5-5', 40000) === 64000)
+check('ajustes: effort para 5.x y 4.7/4.8; nada para Haiku 4.5', 'output_config' in ajustesModelo('claude-opus-5-5') && 'output_config' in ajustesModelo('claude-opus-4-8') && !('output_config' in ajustesModelo('claude-haiku-4-5')))
+
+console.log('\nEmail Ops: esquema de salida estructurada')
+const sch = buildOutputSchema(DEFAULT_SCHEMA) as { properties: Record<string, Record<string, unknown>>; required: string[]; additionalProperties: boolean }
+check('additionalProperties:false en la raíz y en los objetos', sch.additionalProperties === false && sch.properties.fields.additionalProperties === false && sch.properties.confidence.additionalProperties === false)
+check('urgency sin minimum/maximum (no admitidos): se acota en TS', !('minimum' in sch.properties.urgency))
+check('confidence y evidence exigen todas las claves del parte', (sch.properties.confidence.required as string[]).length === DEFAULT_SCHEMA.length)
+check('original_sender y notes admiten null y son requeridos', sch.required.includes('notes') && Array.isArray(sch.properties.notes.type))
+check('modelo de Email Ops: Sonnet 5.5 salvo env', EMAIL_OPS_MODEL === 'claude-sonnet-5-5' || !!process.env.EMAIL_OPS_MODEL)
+
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)

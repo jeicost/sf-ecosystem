@@ -1,6 +1,6 @@
 'use client'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Loader2, Upload, Download, FileText, Trash2, ChevronDown, ChevronRight, Save, AlertTriangle } from 'lucide-react'
+import { Loader2, Upload, Download, FileText, Trash2, ChevronDown, ChevronRight, Save, AlertTriangle, LayoutTemplate } from 'lucide-react'
 import SectionRewriter from './SectionRewriter'
 import { uploadTenderFile, removeTenderFile } from '@/lib/tenders/upload-client'
 import { trackAction } from '@/lib/activity-client'
@@ -25,6 +25,19 @@ const KIND_LABEL: Record<string, string> = {
   subido: 'Uploaded', anexo: 'Annex', memoria: 'Proposal', oferta: 'Bid',
 }
 
+/** Páginas con diseño propio de la marca (ajustes → Designed pages): se marcan en el texto y el Word las inserta. */
+interface Disenada { id: string; title: string; placement: 'page' | 'figure'; active: boolean }
+const MARCADOR_RE = /\[\[\s*DISE[ÑN]O\s*:\s*([^\]]+?)\s*\]\]/gi
+function disenadasEn(texto: string, lista: Disenada[]): Disenada[] {
+  const out: Disenada[] = []
+  for (const m of (texto || '').matchAll(MARCADOR_RE)) {
+    const ref = m[1].trim().toLowerCase()
+    const d = lista.find((x) => x.id.toLowerCase() === ref || x.title.toLowerCase() === ref)
+    if (d && !out.includes(d)) out.push(d)
+  }
+  return out
+}
+
 export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload, onFileConsumed, refreshKey, openId }: {
   clientId: string; tenderId: string | null; brand: string
   /** Un fichero que llega de fuera (p. ej. una memoria subida por error como pliego). */
@@ -42,6 +55,12 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
   const [error, setError] = useState<string | null>(null)
   const [sucio, setSucio] = useState<Record<string, boolean>>({})
   const fileRef = useRef<HTMLInputElement>(null)
+  const [disenadas, setDisenadas] = useState<Disenada[]>([])
+  useEffect(() => {
+    let vivo = true
+    fetch(`/api/tender/brand-sections?clientId=${clientId}`).then((r) => (r.ok ? r.json() : null)).then((d) => { if (vivo && d?.sections) setDisenadas((d.sections as Disenada[]).filter((s) => s.active)) }).catch(() => undefined)
+    return () => { vivo = false }
+  }, [clientId])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -228,13 +247,32 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
                       <div key={i}>
                         <div className="mb-1 flex flex-wrap items-center justify-between gap-2">
                           <h4 className="text-xs font-semibold text-ink">{s.titulo}</h4>
-                          <SectionRewriter titulo={s.titulo} brand={brand}
-                            onRewrite={pedirMejora(doc.id, i)}
-                            onAccept={(contenido) => editar(doc.id, i, contenido)} />
+                          <div className="flex items-center gap-2">
+                            {disenadas.length > 0 && (
+                              // Insertar una página diseñada al final de la sección: la marca la convierte el Word.
+                              <select value="" onChange={(e) => { const id = e.target.value; if (id) editar(doc.id, i, `${(s.contenido || '').replace(/\s+$/, '')}\n\n[[DISEÑO:${id}]]\n`) }}
+                                className="rounded-md border border-line bg-page px-1.5 py-1 text-[11px] text-ink-secondary" title="Insert a designed page at the end of this section">
+                                <option value="">+ Designed page…</option>
+                                {disenadas.map((d) => <option key={d.id} value={d.id}>{d.title}</option>)}
+                              </select>
+                            )}
+                            <SectionRewriter titulo={s.titulo} brand={brand}
+                              onRewrite={pedirMejora(doc.id, i)}
+                              onAccept={(contenido) => editar(doc.id, i, contenido)} />
+                          </div>
                         </div>
                         <textarea value={s.contenido} onChange={(e) => editar(doc.id, i, e.target.value)}
                           rows={Math.min(20, Math.max(4, Math.ceil((s.contenido || '').length / 95)))}
                           className="w-full resize-y rounded-lg border border-line bg-surface p-2.5 text-xs leading-relaxed text-ink-secondary outline-none focus:ring-1 focus:ring-ink-muted" />
+                        {disenadasEn(s.contenido, disenadas).length > 0 && (
+                          <p className="mt-1 flex flex-wrap items-center gap-1.5 text-[11px] text-ink-muted">
+                            <LayoutTemplate size={11} />
+                            {disenadasEn(s.contenido, disenadas).map((d) => (
+                              <span key={d.id} className="rounded-full bg-page px-2 py-0.5 text-ink-secondary">{d.title} · {d.placement === 'page' ? 'full page' : 'figure'}</span>
+                            ))}
+                            <span>in the Word file</span>
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

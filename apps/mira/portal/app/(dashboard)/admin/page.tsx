@@ -28,6 +28,7 @@ interface ClientOverview {
 interface Overview {
   clients: ClientOverview[]
   totals: { clients: number; reports: number; documents: number; usage_cost_usd: number }
+  budget?: { gastado: number; limite: number; pct: number; estado: 'ok' | 'aviso' | 'bloqueado'; porRuta: Record<string, number>; llamadas: number } | null
 }
 
 function StatCard({ value, label, accent }: { value: string; label: string; accent?: boolean }) {
@@ -114,11 +115,21 @@ export default function SuperAdminPage() {
       </div>
 
       {/* StatCards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
         <StatCard value={String(data.totals.clients)} label="Active clients" accent />
         <StatCard value={String(data.totals.reports)} label="Reports generated" />
         <StatCard value={String(data.totals.documents)} label="Documents" />
         <StatCard value={`$${data.totals.usage_cost_usd.toFixed(2)}`} label="AI spend this month" />
+        {/* Freno de gasto diario (lib/ai/budget.ts): al 80 % avisa, al 100 % para todo menos Email Ops. */}
+        {data.budget ? (
+          <div className={`rounded-xl border p-5 ${data.budget.estado === 'bloqueado' ? 'border-red-400/60 bg-red-500/5' : data.budget.estado === 'aviso' ? 'border-amber-400/60 bg-amber-500/5' : 'border-line bg-card'}`}
+            title={Object.entries(data.budget.porRuta).sort((a, b) => b[1] - a[1]).map(([r, v]) => `${r}: $${v.toFixed(2)}`).join('\n')}>
+            <p className="text-3xl font-extrabold tracking-tight" style={{ color: data.budget.estado === 'bloqueado' ? '#f87171' : data.budget.estado === 'aviso' ? '#fbbf24' : 'var(--text-primary)' }}>
+              ${data.budget.gastado.toFixed(2)}
+            </p>
+            <p className="mt-1 text-xs text-ink-tertiary">AI spend today · cap ${data.budget.limite} · {data.budget.llamadas} calls{data.budget.estado === 'bloqueado' ? ' · PAUSED until tomorrow' : data.budget.estado === 'aviso' ? ' · 80 % reached' : ''}</p>
+          </div>
+        ) : null}
       </div>
 
       {/* Client grid */}

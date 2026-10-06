@@ -1,8 +1,9 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Loader2, Save, FileDown, Palette } from 'lucide-react'
+import { Loader2, Save, FileDown, Palette, Upload, Trash2 } from 'lucide-react'
 import { trackAction } from '@/lib/activity-client'
+import { uploadTenderFile, removeTenderFile } from '@/lib/tenders/upload-client'
 
 /**
  * Plantilla de Word de la marca: lo que viste el .docx que exporta Licitaciones
@@ -15,12 +16,16 @@ import { trackAction } from '@/lib/activity-client'
  * guardado. Al cambiar de marca se descarta todo lo anterior.
  *
  * El logo no se edita aquí: viene de los ajustes de marca (clients.logo_url).
+ *
+ * Desde el 6-oct también la HOJA oficial (.docx con membrete): si está, el Word
+ * usa su cabecera, su pie, sus márgenes y su tipografía tal cual.
  */
 
-type Campo = 'company_name' | 'brand_name' | 'tagline' | 'footer_line' | 'cover_color' | 'accent_color'
+type Campo = 'company_name' | 'brand_name' | 'tagline' | 'footer_line' | 'cover_color' | 'accent_color' | 'body_font'
 type Formulario = Record<Campo, string>
 
-const VACIO: Formulario = { company_name: '', brand_name: '', tagline: '', footer_line: '', cover_color: '', accent_color: '' }
+const VACIO: Formulario = { company_name: '', brand_name: '', tagline: '', footer_line: '', cover_color: '', accent_color: '', body_font: '' }
+interface Hoja { path: string; name: string }
 const HEX = /^#[0-9A-Fa-f]{6}$/
 
 interface Defaults { logo_url: string | null; primary_color: string | null; name: string | null }
@@ -37,6 +42,11 @@ export default function TemplateSettings({ clientId, brand }: { clientId: string
   const [previewing, setPreviewing] = useState(false)
   const [savedAt, setSavedAt] = useState<string | null>(null)
   const [err, setErr] = useState<string | null>(null)
+  // La hoja oficial (.docx): ruta y nombre guardados en la plantilla; se sube aparte.
+  const [hoja, setHoja] = useState<Hoja | null>(null)
+  const [hojaBusy, setHojaBusy] = useState<string | null>(null)
+  const [hojaResumen, setHojaResumen] = useState<string | null>(null)
+  const hojaRef = useRef<HTMLInputElement>(null)
 
   // Marca vigente en cada render: la carga en vuelo la compara con la suya.
   const clientIdRef = useRef(clientId)
@@ -44,7 +54,7 @@ export default function TemplateSettings({ clientId, brand }: { clientId: string
 
   // Al cambiar de marca, la plantilla de la anterior no vale: se descarta.
   // También `loading`: con una carga en vuelo, sin esto no se relanzaría para la nueva.
-  useEffect(() => { setLoaded(false); setLoading(false); setForm(VACIO); setGuardado(VACIO); setDefaults(null); setSavedAt(null); setErr(null); setLoadFailed(false) }, [clientId])
+  useEffect(() => { setLoaded(false); setLoading(false); setForm(VACIO); setGuardado(VACIO); setDefaults(null); setSavedAt(null); setErr(null); setLoadFailed(false); setHoja(null); setHojaResumen(null) }, [clientId])
 
   useEffect(() => {
     if (!open || loaded || loading || loadFailed) return
@@ -64,10 +74,11 @@ export default function TemplateSettings({ clientId, brand }: { clientId: string
         const data = await res.json()
         if (cancelado()) return
         if (!res.ok) { setErr(data.error || 'Could not load'); setLoadFailed(true); return }
-        const t = (data.template || {}) as Partial<Record<Campo, unknown>>
+        const t = (data.template || {}) as Partial<Record<Campo | 'letterhead_path' | 'letterhead_name', unknown>>
         const f: Formulario = { ...VACIO }
         for (const k of Object.keys(VACIO) as Campo[]) f[k] = typeof t[k] === 'string' ? (t[k] as string) : ''
         setForm(f); setGuardado(f); setDefaults(data.defaults || null)
+        setHoja(typeof t.letterhead_path === 'string' && t.letterhead_path ? { path: t.letterhead_path, name: typeof t.letterhead_name === 'string' ? t.letterhead_name : 'letterhead.docx' } : null)
         setLoaded(true)
       } catch { if (!cancelado()) { setErr('Network error'); setLoadFailed(true) } } finally { if (!cancelado()) setLoading(false) }
     })()
@@ -115,6 +126,44 @@ export default function TemplateSettings({ clientId, brand }: { clientId: string
     } catch { setErr('Network error') } finally { setPreviewing(false) }
   }
 
+  const subirHoja = async (file: File) => {
+    setHojaBusy('up'); setErr(null); setHojaResumen(null)
+    let path: string | null = null
+    try {
+      if (!/\.docx$/i.test(file.name)) { setErr('The letterhead must be a Word file (.docx).'); return }
+      const up = await uploadTenderFile(clientId, file)
+      if ('error' in up) { setErr(up.error); return }
+      path = up.path
+      const res = await fetch('/api/tender/letterhead', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, path, filename: file.name }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setErr(data.error || 'Could not read the letterhead'); return }
+      path = null // la ruta ya la gestiona el servidor
+      setHoja({ path: data.template.letterhead_path, name: data.template.letterhead_name || file.name })
+      const r = data.resumen as { header: boolean; footer: boolean; imagenes: number; bodyFont: string | null }
+      setHojaResumen(`Header ${r.header ? 'yes' : 'no'} · footer ${r.footer ? 'yes' : 'no'} · ${r.imagenes} image${r.imagenes === 1 ? '' : 's'}${r.bodyFont ? ` · body font ${r.bodyFont}` : ''}`)
+      if (data.template.body_font && !form.body_font) { setForm((f) => ({ ...f, body_font: data.template.body_font })); setGuardado((g) => ({ ...g, body_font: data.template.body_font })) }
+      trackAction('/licitaciones', 'hoja-subir', clientId, { header: r.header, footer: r.footer, imagenes: r.imagenes })
+    } catch { setErr('Network error') } finally {
+      if (path) await removeTenderFile(clientId, path)
+      setHojaBusy(null)
+      if (hojaRef.current) hojaRef.current.value = ''
+    }
+  }
+  const quitarHoja = async () => {
+    if (!hoja || !confirm('Remove the official letterhead? The Word files will go back to the generated header (logo + footer line).')) return
+    setHojaBusy('rm'); setErr(null)
+    try {
+      const res = await fetch('/api/tender/letterhead', { method: 'DELETE', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId }) })
+      const data = await res.json().catch(() => ({}))
+      if (!res.ok) { setErr(data.error || 'Could not remove'); return }
+      setHoja(null); setHojaResumen(null)
+      trackAction('/licitaciones', 'hoja-quitar', clientId)
+    } catch { setErr('Network error') } finally { setHojaBusy(null) }
+  }
+
   const input = 'w-full rounded-xl border border-line bg-page px-3 py-2 text-[12.5px] text-ink outline-none focus:ring-1 focus:ring-ink-muted'
   const label = 'mb-1 block text-[11px] font-medium text-ink-secondary'
 
@@ -144,7 +193,7 @@ export default function TemplateSettings({ clientId, brand }: { clientId: string
       <button onClick={() => setOpen((v) => !v)} className="flex w-full items-center justify-between gap-3 text-left">
         <span>
           <span className="flex items-center gap-2 text-sm font-semibold text-ink"><Palette size={15} style={{ color: brand }} /> Word template</span>
-          <span className="mt-0.5 block text-xs text-ink-tertiary">Cover colour, accent, legal name and footer line of the Word files this tool exports (memoria, offer, documents).</span>
+          <span className="mt-0.5 block text-xs text-ink-tertiary">Official letterhead, cover colour, accent, legal name, body font and footer line of the Word files this tool exports (memoria, offer, documents).</span>
         </span>
         <span className="shrink-0 text-ink-muted">{open ? '▲' : '▼'}</span>
       </button>
@@ -155,11 +204,36 @@ export default function TemplateSettings({ clientId, brand }: { clientId: string
             <div className="flex h-24 items-center justify-center"><Loader2 size={18} className="animate-spin text-ink-muted" /></div>
           ) : loaded ? (
             <>
+              {/* Hoja oficial: manda sobre cabecera, pie, márgenes y tipografía. */}
+              <div className="mb-4 rounded-xl border border-line bg-page p-3">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="text-xs font-medium text-ink-secondary">Official letterhead (.docx)</p>
+                    <p className="mt-0.5 text-[11px] text-ink-muted">
+                      {hoja ? <>In use: <span className="text-ink">{hoja.name}</span>. Its header (logo, seals), footer, margins and body font are copied as they are into every Word file.{hojaResumen ? ` ${hojaResumen}.` : ''}</> : 'Upload the company’s letter paper as a Word file with the header and footer in place. Without it, MIRA builds a header from the brand logo and the footer line below.'}
+                    </p>
+                  </div>
+                  <div className="flex shrink-0 items-center gap-2">
+                    <input ref={hojaRef} type="file" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) subirHoja(f) }} />
+                    <button onClick={() => hojaRef.current?.click()} disabled={hojaBusy !== null}
+                      className="flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-1.5 text-xs font-semibold text-ink-secondary transition-all hover:text-ink disabled:opacity-50">
+                      {hojaBusy === 'up' ? <><Loader2 size={13} className="animate-spin" /> Reading</> : <><Upload size={13} /> {hoja ? 'Replace' : 'Upload letterhead'}</>}
+                    </button>
+                    {hoja && (
+                      <button onClick={quitarHoja} disabled={hojaBusy !== null} title="Remove letterhead" className="rounded-lg p-1.5 text-ink-muted transition-colors hover:text-red-400 disabled:opacity-50">
+                        {hojaBusy === 'rm' ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+
               <div className="grid gap-3 sm:grid-cols-2">
                 {texto('company_name', 'Company legal name', defaults?.name || 'Legal name, S.L.')}
                 {texto('brand_name', 'Brand name', defaults?.name || 'Trade name')}
                 <div className="sm:col-span-2">{texto('tagline', 'Tagline', 'One line under the company name on the cover')}</div>
-                <div className="sm:col-span-2">{texto('footer_line', 'Footer line (NIF, address, phone, email)', 'NIF … - C/ … - 28037 Madrid - Tel: … - email')}</div>
+                <div className="sm:col-span-2">{texto('footer_line', 'Footer line (NIF, address, phone, email)', hoja ? 'Not used while a letterhead is in use (its footer wins)' : 'NIF … - C/ … - 28037 Madrid - Tel: … - email')}</div>
+                {texto('body_font', 'Body font', 'Arial (or the letterhead’s font, e.g. Aptos)')}
                 {color('cover_color', 'Cover colour', 'Full-colour block on the cover page.')}
                 {color('accent_color', 'Accent colour', 'Section titles, index band, header rule and table headers.')}
               </div>

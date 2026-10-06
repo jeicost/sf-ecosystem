@@ -12,6 +12,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 import { createServiceClient } from '@/lib/supabase-admin'
+import { comprobarPresupuesto } from '@/lib/ai/budget'
 
 export interface ClientClaude {
   client: Anthropic
@@ -86,14 +87,22 @@ async function checkGenerationCap(clientId: string, usedClientKey: boolean): Pro
 // por debajo del maxDuration=800s de las rutas que generan.
 const SDK_TIMEOUT_MS = 13 * 60 * 1000
 
-export async function getClaudeForClient(clientId: string | null | undefined): Promise<ClientClaude> {
+/**
+ * `route` activa el freno de gasto diario (lib/ai/budget.ts): con la clave de
+ * plataforma, si hoy ya se ha gastado el presupuesto, lanza
+ * DailyBudgetExceededError ANTES de crear el cliente. Sin ruta no se frena
+ * (llamadas internas que ya pasaron por él).
+ */
+export async function getClaudeForClient(clientId: string | null | undefined, route?: string): Promise<ClientClaude> {
   const platformKey = process.env.ANTHROPIC_API_KEY || ''
   if (!clientId) {
+    if (route) await comprobarPresupuesto(route, false)
     return { client: new Anthropic({ apiKey: platformKey, timeout: SDK_TIMEOUT_MS }), usedClientKey: false }
   }
   const key = await getClientApiKey(clientId, 'anthropic', platformKey)
   const usedClientKey = !!key && key !== platformKey
   await checkGenerationCap(clientId, usedClientKey)
+  if (route) await comprobarPresupuesto(route, usedClientKey)
   return { client: new Anthropic({ apiKey: key || platformKey, timeout: SDK_TIMEOUT_MS }), usedClientKey }
 }
 
@@ -144,26 +153,46 @@ export async function createMessageForClient(
   route: string,
   params: Anthropic.MessageCreateParamsNonStreaming
 ): Promise<Anthropic.Message> {
-  const { client, usedClientKey } = await getClaudeForClient(clientId)
-  const message = await client.messages.create(params)
+  const { client, usedClientKey } = await getClaudeForClient(clientId, route)
+  // Streaming por dentro, misma respuesta: así un max_tokens alto (los 5.x
+  // piensan y necesitan techo) no dispara el «Streaming is strongly
+  // recommended» del SDK ni el timeout HTTP. Lo que se devuelve es el Message
+  // final, idéntico al de messages.create.
+  const { stream: _ignorado, ...resto } = params as Anthropic.MessageCreateParamsNonStreaming & { stream?: boolean }
+  void _ignorado
+  const message = await client.messages.stream(resto as Anthropic.MessageStreamParams).finalMessage()
   await logUsage({ clientId, route, model: params.model, usage: message.usage, usedClientKey })
   return message
 }
 
-/** Precios aproximados por millón de tokens (para el panel de consumo). */
-export const MODEL_PRICING: Record<string, { in: number; out: number }> = {
-  'claude-opus-4-8': { in: 5, out: 25 },
-  'claude-sonnet-4-6': { in: 3, out: 15 },
-  'claude-haiku-4-5-20251001': { in: 0.8, out: 4 },
-  'gpt-image-1': { in: 5, out: 40 },
+/**
+ * Precios por millón de tokens (lista de Anthropic, 6-oct-2026): entrada,
+ * salida, lectura de caché y escritura de caché. Los 5.x leen caché a 0,20 $;
+ * los 4.x a 0,1× la entrada. Un modelo que no esté aquí se tasa como Sonnet 4.6
+ * (3/15), que es el caso más caro de los baratos: mejor sobrestimar.
+ */
+export interface PrecioModelo { in: number; out: number; cacheRead: number; cacheWrite: number }
+export const MODEL_PRICING: Record<string, PrecioModelo> = {
+  'claude-opus-5-5': { in: 4, out: 20, cacheRead: 0.2, cacheWrite: 5 },
+  'claude-opus-5': { in: 5, out: 25, cacheRead: 0.5, cacheWrite: 6.25 },
+  'claude-opus-4-8': { in: 5, out: 25, cacheRead: 0.5, cacheWrite: 6.25 },
+  'claude-opus-4-7': { in: 5, out: 25, cacheRead: 0.5, cacheWrite: 6.25 },
+  'claude-opus-4-6': { in: 5, out: 25, cacheRead: 0.5, cacheWrite: 6.25 },
+  'claude-sonnet-5-5': { in: 2, out: 10, cacheRead: 0.2, cacheWrite: 2.5 },
+  'claude-sonnet-5': { in: 2, out: 10, cacheRead: 0.2, cacheWrite: 2.5 },
+  'claude-sonnet-4-6': { in: 3, out: 15, cacheRead: 0.3, cacheWrite: 3.75 },
+  'claude-haiku-4-5': { in: 1, out: 5, cacheRead: 0.1, cacheWrite: 1.25 },
+  'claude-haiku-4-5-20251001': { in: 1, out: 5, cacheRead: 0.1, cacheWrite: 1.25 },
+  'gpt-image-1': { in: 5, out: 40, cacheRead: 5, cacheWrite: 5 },
 }
+const PRECIO_DEFECTO: PrecioModelo = { in: 3, out: 15, cacheRead: 0.3, cacheWrite: 3.75 }
 
 /**
- * Coste con caché: una escritura de caché cuesta 1,25× la entrada normal y
- * una lectura 0,1×. Las columnas cache_* de mira_usage_log se escribían desde
+ * Coste con caché. Las columnas cache_* de mira_usage_log se escribían desde
  * agosto pero NADIE las leía: los cuatro paneles de coste calculaban con
  * input/output a secas, así que el ahorro real del chat era invisible y el
  * coste mostrado estaba mal en ambas direcciones (auditoría 16-sep-2026).
+ * Desde el 6-oct también alimenta el freno de gasto diario (lib/ai/budget.ts).
  */
 export function estimateCostUsdWithCache(
   model: string,
@@ -172,16 +201,16 @@ export function estimateCostUsdWithCache(
   cacheWriteTokens = 0,
   cacheReadTokens = 0
 ): number {
-  const p = MODEL_PRICING[model] || { in: 3, out: 15 }
+  const p = MODEL_PRICING[model] || PRECIO_DEFECTO
   return (
     (inputTokens / 1_000_000) * p.in +
-    (cacheWriteTokens / 1_000_000) * p.in * 1.25 +
-    (cacheReadTokens / 1_000_000) * p.in * 0.1 +
+    (cacheWriteTokens / 1_000_000) * p.cacheWrite +
+    (cacheReadTokens / 1_000_000) * p.cacheRead +
     (outputTokens / 1_000_000) * p.out
   )
 }
 
 export function estimateCostUsd(model: string, inputTokens: number, outputTokens: number): number {
-  const p = MODEL_PRICING[model] || { in: 3, out: 15 }
+  const p = MODEL_PRICING[model] || PRECIO_DEFECTO
   return (inputTokens * p.in + outputTokens * p.out) / 1_000_000
 }
