@@ -224,6 +224,7 @@ ${pideTarifas ? '- El encargo pide TARIFAS o precios. NO escribas ninguna cifra 
 - Escribe SOLO en nombre de esta empresa (BRAND CONTEXT). Si el corpus menciona otras empresas del mismo grupo, no las presentes como la nuestra ni mezcles sus medios con los nuestros.
 - Si dos fuentes dan cifras distintas, usa la más reciente y márcalo en la nota.
 - Registro institucional, en español, sin humor.
+- Dentro de cada sección, cada servicio específico y cada subapartado con entidad propia lleva su subtítulo en una línea que empieza por «## » (van al índice); listas con «- », tablas con barras.
 - ${REGLA_MEDIOS_MATERIALES}
 
 Devuelve SOLO este JSON:

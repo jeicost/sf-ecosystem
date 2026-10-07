@@ -426,7 +426,10 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
     new Paragraph({ numbering: { reference: 'vinetas', level: 0 }, spacing: { after: 60 }, children: runs(t, { color }) })
   const numerado = (t: string, instance: number) =>
     new Paragraph({ numbering: { reference: 'numeros', level: 0, instance }, spacing: { after: 60 }, children: runs(t) })
-  const subtitulo = (t: string) => new Paragraph({ heading: 'Heading2', children: runs(t.replace(/\*\*/g, ''), { color: acento }) })
+  const subtitulo = (t: string, numero?: string) => new Paragraph({ heading: 'Heading2', children: [
+    ...(numero ? [new TextRun({ text: `${numero} `, color: GRIS })] : []),
+    ...runs(t.replace(/\*\*/g, ''), { color: acento }),
+  ] })
   const salto = () => new Paragraph({ children: [new PageBreak()] })
 
   const tablaDocx = (t: TablaWord): Tabla => {
@@ -520,10 +523,11 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   }
 
   /** El texto de una sección, maquetado. */
-  const renderTexto = (texto: string, color?: string) => {
+  const renderTexto = (texto: string, color?: string, numeroSeccion?: number) => {
+    let j = 0
     for (const b of parseBloques(texto)) {
       if (b.t === 'p') add(parrafo(b.texto, { color }))
-      else if (b.t === 'h') add(subtitulo(b.texto))
+      else if (b.t === 'h') add(subtitulo(b.texto, typeof numeroSeccion === 'number' ? `${numeroSeccion}.${++j}` : undefined))
       else if (b.t === 'ul') add(...b.items.map((x) => vineta(x, color)))
       else if (b.t === 'ol') { instanciaLista++; add(...b.items.map((x) => numerado(x, instanciaLista))) }
       else if (b.t === 'tabla') add(...tablaDeTexto(b.filas))
@@ -584,9 +588,27 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   // con los de las secciones porque estas se numeran en el mismo orden.
   const bandaIzq = { left: { style: BorderStyle.SINGLE, size: 24, color: p.accent_color, space: 12 } }
   add(new Paragraph({ border: bandaIzq, spacing: { after: 240 }, indent: { left: 240 }, children: [new TextRun({ text: 'ÍNDICE', bold: true, size: 30, color: acento })] }))
-  const entradaIndice = (t: string) => new Paragraph({ numbering: { reference: 'indice', level: 0 }, spacing: { after: 100 }, children: [new TextRun({ text: t.toUpperCase(), size: 22, color: GRIS_NEUTRO })] })
   const entradaIndiceSinNumero = (t: string, color = GRIS) => new Paragraph({ indent: { left: 567 }, spacing: { after: 100 }, children: [new TextRun({ text: t.toUpperCase(), size: 22, color })] })
-  secciones.forEach((s) => add(entradaIndice(limpiarTituloSeccion(s.titulo || 'Sección').titulo)))
+  // Dos niveles (Carlos, 7-oct): «en el índice debe aparecer el desglose de los servicios
+  // específicos para que el licitador encuentre todo de forma muy fácil». Los subapartados
+  // salen de los «## » del texto, numerados igual que en el cuerpo (1.1, 1.2…).
+  secciones.forEach((s, i) => {
+    const limpio = limpiarTituloSeccion(s.titulo || 'Sección')
+    const puntos = typeof s.puntos === 'number' ? s.puntos : limpio.puntos
+    add(new Paragraph({
+      numbering: { reference: 'indice', level: 0 }, spacing: { after: 60 }, keepNext: true,
+      children: [
+        new TextRun({ text: limpio.titulo.toUpperCase(), size: 22, color: GRIS_NEUTRO }),
+        ...(typeof puntos === 'number' && Number.isFinite(puntos) ? [new TextRun({ text: `  (${puntos} puntos)`, size: 18, color: GRIS_CLARO })] : []),
+      ],
+    }))
+    const subs = parseBloques(s.contenido || '').filter((b): b is Extract<Bloque, { t: 'h' }> => b.t === 'h')
+    subs.forEach((b, j) => add(new Paragraph({
+      indent: { left: 1134 }, spacing: { after: 40 },
+      children: [new TextRun({ text: `${i + 1}.${j + 1}  `, size: 19, color: GRIS_CLARO }), new TextRun({ text: b.texto.replace(/\*\*/g, ''), size: 19, color: GRIS })],
+    })))
+    if (subs.length) add(new Paragraph({ spacing: { after: 60 }, children: [] }))
+  })
   bloques.forEach((b) => add(entradaIndiceSinNumero(b.titulo || '')))
   if (tabla && !secciones.length && !bloques.length) add(entradaIndiceSinNumero('Desglose de precios'))
   if (anexos.length) {
@@ -607,7 +629,7 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   secciones.forEach((s, i) => {
     const limpio = limpiarTituloSeccion(s.titulo || 'Sección')
     add(encabezado(limpio.titulo, i + 1, typeof s.puntos === 'number' ? s.puntos : limpio.puntos))
-    renderTexto(s.contenido || '')
+    renderTexto(s.contenido || '', undefined, i + 1)
     if (s.porConfirmar?.length) add(...porConfirmar(s.porConfirmar))
   })
 
