@@ -1,5 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { TENDER_MODEL } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, loadDisenadas, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import { adminClient } from '@/lib/supabase'
 import { extractJson } from '@/lib/generation/extract-json'
@@ -297,7 +297,7 @@ export async function generarDesdeBrief(opts: {
   const prompt = construirPromptLibre({ brief, kind, adjunto, pista, pideTarifas, examplesText: examples.text, brainBlock, knowledge: knowledge ?? '', disenadas: bloqueDisenadasPrompt(disenadas) })
 
   const msg = await createMessageForClient(clientId, 'tender/libre', {
-    model: MODEL, max_tokens: techoSalida(MODEL, 16000), ...ajustesModelo(MODEL),
+    model: MODEL, max_tokens: 16000,
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')

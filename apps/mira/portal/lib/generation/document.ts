@@ -26,6 +26,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { generateAndStoreImage } from '@/lib/generation/openai-image'
 import { searchWeb, formatSourcesForPrompt } from '@/lib/grounding/web-research'
 import { toJson } from '@/lib/db-json'
+import { DEFAULT_MODEL, primerTexto } from '@/lib/ai/models'
 
 /** Error de generación que conserva la fila de cola, para que quien llame pueda
  *  devolverla al cliente (la ruta la incluye en su respuesta de error). */
@@ -181,14 +182,14 @@ export async function generateDocument({
     if (!prompt) throw new Error('Unknown doc type')
 
     const message = await createMessageForClient(clientId, 'documents/generate', {
-      model: 'claude-opus-4-8',
+      model: DEFAULT_MODEL,
       max_tokens: 16000,
       messages: [{ role: 'user', content: prompt }],
     })
 
     if (message.stop_reason === 'max_tokens') throw new Error('Response truncated')
 
-    const block = message.content[0]
+    const block = primerTexto(message.content)
     const text = block && 'text' in block ? block.text : ''
     const result = extractJson(text)
     if (Object.keys(result).length === 0) throw new Error('Empty result after JSON parse')

@@ -13,8 +13,9 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { AGENT_CHAT_GROUNDING_NOTE } from '@/lib/grounding/grounding-contract'
 import { BRAND_DATA_SLOTS } from '@/lib/brand-data'
 import type { BrainChange } from './index'
+import { CHEAP_MODEL } from '@/lib/ai/models'
 
-const SYNTHESIS_MODEL = 'claude-sonnet-4-6'
+const SYNTHESIS_MODEL = CHEAP_MODEL
 
 export interface DriveSynthesisDocument {
   documentId: string
@@ -159,7 +160,7 @@ ${AGENT_CHAT_GROUNDING_NOTE}`
   const intro = input.relearn
     ? 'Full re-read of everything already synced from this folder. Do not look for "what changed" -- look at what these documents can put into the slots listed as STILL EMPTY.'
     : 'Documents new or updated since the last sync:'
-  const prompt = `Drive folder: "${input.folderName}"\n\n${intro}\n\n${docsBlock}`
+  const prompt = `Drive folder: "${input.folderName}"\n\n${intro}\n\n${docsBlock}\n\nRespond ONLY by calling the synthesize_brain_update tool exactly once (has_substance=false if there is nothing to add).`
 
   try {
     const response = await createMessageForClient(input.clientId, 'drive-sync-synthesis', {
@@ -170,7 +171,8 @@ ${AGENT_CHAT_GROUNDING_NOTE}`
       max_tokens: 8000,
       system,
       tools: [SYNTHESIZE_TOOL],
-      tool_choice: { type: 'tool', name: 'synthesize_brain_update' },
+      // Los 5.x rechazan el tool_choice forzado: auto + instrucción explícita; si no llama, null (como antes).
+      tool_choice: { type: 'auto' },
       messages: [{ role: 'user', content: prompt }],
     })
 

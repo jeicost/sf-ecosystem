@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser } from '@/lib/resolve-client'
 import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
-import { estadoPresupuesto } from '@/lib/ai/budget'
+import { estadoPresupuesto, CLIENT_MONTHLY_BUDGET_USD, inicioDeMesMadrid } from '@/lib/ai/budget'
 
 // Panel Super Admin: visión agregada de todos los clientes.
 export async function GET() {
@@ -18,7 +18,7 @@ export async function GET() {
     monthStart.setHours(0, 0, 0, 0)
 
     const [clientsRes, queueRes, driveRes, usageRes] = await Promise.all([
-      admin.from('clients').select('id, name, slug, logo_url, primary_color, status').order('name'),
+      admin.from('clients').select('id, name, slug, logo_url, primary_color, status, ai_budget_usd').order('name'),
       admin
         .from('generation_queue')
         .select('client_id, tool_slug, status, created_at')
@@ -27,7 +27,8 @@ export async function GET() {
       admin
         .from('mira_usage_log')
         .select('client_id, model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
-        .gte('created_at', monthStart.toISOString()),
+        // Mes de Madrid, el mismo que aplica el freno (lib/ai/budget.ts): así la cifra del panel es la que corta.
+        .gte('created_at', inicioDeMesMadrid().toISOString()),
     ])
 
     const queue = queueRes.data || []
@@ -63,6 +64,11 @@ export async function GET() {
         usage_tokens: clientUsage.reduce((s, u) => s + u.input_tokens + u.output_tokens, 0),
         usage_cost_usd: Math.round(costUsd * 100) / 100,
         own_key: clientUsage.some((u) => u.used_client_key),
+        // Tope mensual: el propio de la marca o el general; el gasto que cuenta es el de la clave de plataforma.
+        ai_budget_usd: typeof c.ai_budget_usd === 'number' ? c.ai_budget_usd : null,
+        ai_budget_effective: typeof c.ai_budget_usd === 'number' ? c.ai_budget_usd : CLIENT_MONTHLY_BUDGET_USD,
+        platform_cost_usd: Math.round(clientUsage.filter((u) => !u.used_client_key).reduce(
+          (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0), 0) * 100) / 100,
       }
     })
 

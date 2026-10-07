@@ -1,5 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { CHEAP_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { CHEAP_MODEL, ajustesModelo } from '@/lib/ai/models'
 import { extractJson } from '@/lib/generation/extract-json'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import type { RadarCandidate } from './placsp'
@@ -52,7 +52,7 @@ CONCURSOS:
 ${JSON.stringify(list, null, 1)}`
 
   const msg = await createMessageForClient(clientId, 'tender/radar-score', {
-    model: MODEL, max_tokens: techoSalida(MODEL, 4000), ...ajustesModelo(MODEL, 'low'),
+    model: MODEL, max_tokens: 4000, ...ajustesModelo(MODEL, 'low'),
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')

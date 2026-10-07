@@ -26,6 +26,7 @@ import {
 } from '@/lib/generation/monthly-prompts'
 import { getMonthlyOperatingContext } from '@/lib/business-reports/monthly-context'
 import { computeCalendarEntries } from '@/lib/business-reports/monthly-calendar'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 const MONTH_NAMES = [
   'enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio',
@@ -60,7 +61,7 @@ async function callAndParse(
     : prompt
 
   const run = (mt: number, content: any) => generateWithWebSearch({
-    clientId, route: 'toolkit/generate', model: 'claude-opus-4-8',
+    clientId, route: 'toolkit/generate', model: DEFAULT_MODEL,
     maxTokens: mt, userContent: content, maxToolLoops: toolLoops,
   })
 
@@ -198,7 +199,7 @@ export async function generateMonthlySystem(params: {
       clientId,
       toolSlug: 'monthly-content-system',
       prompt: productionPrompt,
-      model: 'claude-opus-4-8',
+      model: DEFAULT_MODEL,
       maxTokens: 14000,
       draft: draftProduction,
     }),

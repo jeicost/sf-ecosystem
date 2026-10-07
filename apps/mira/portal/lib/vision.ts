@@ -1,4 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { FAST_MODEL, primerTexto } from '@/lib/ai/models'
 
 /**
  * ─── DESCRIPCIÓN DE IMÁGENES POR VISIÓN ──────────────────────────────────
@@ -28,7 +29,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
  * cada vez.
  */
 
-const VISION_MODEL = 'claude-haiku-4-5-20251001'
+const VISION_MODEL = FAST_MODEL
 
 const ANTHROPIC_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'] as const
 type AnthropicImageType = (typeof ANTHROPIC_IMAGE_TYPES)[number]
@@ -121,7 +122,7 @@ Rules: describe only what is visible. Do not guess the brand's intention, do not
       ],
     })
 
-    const block = message.content[0]
+    const block = primerTexto(message.content)
     const text = block && 'text' in block ? block.text.trim() : ''
     return text || null
   } catch (error) {

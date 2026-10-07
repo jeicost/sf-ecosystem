@@ -3,6 +3,7 @@ import { fetchBrandBrain } from '@/lib/brand-brain'
 import { createServiceClient } from '@/lib/supabase-admin'
 import { generateAndStoreImage, type ImageSize } from '@/lib/generation/openai-image'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { CHEAP_MODEL } from '@/lib/ai/models'
 
 /**
  * Bloque de REFERENCIAS VISUALES: las fotos reales de la marca (sincronizadas
@@ -155,7 +156,7 @@ export async function describeUploadedReferences(
     })
     if (!blocks.length) return { block: '', count: 0 }
     const msg = await createMessageForClient(clientId, 'studio:describe-refs', {
-      model: 'claude-sonnet-4-6',
+      model: CHEAP_MODEL,
       max_tokens: 900,
       messages: [{
         role: 'user',

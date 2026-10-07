@@ -21,6 +21,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser, resolveRequestClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
+import { CHEAP_MODEL } from '@/lib/ai/models'
 
 const STEP_SCHEMAS: Record<string, string> = {
   basics: `{"company_name": "", "sector": "", "website_url": "", "slug_sugerido": "kebab-case"}`,
@@ -67,7 +68,7 @@ export async function handleExtractRequest(req: NextRequest): Promise<NextRespon
     // createMessageForClient y no un Anthropic crudo: así la extracción del
     // cliente se registra en su propio consumo, igual que el resto de rutas.
     const message = await createMessageForClient(clientId, 'onboarding/extract', {
-      model: 'claude-sonnet-4-6',
+      model: CHEAP_MODEL,
       max_tokens: 1200,
       messages: [
         {

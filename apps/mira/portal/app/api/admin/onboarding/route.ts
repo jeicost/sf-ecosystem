@@ -9,6 +9,7 @@ import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 import { toJson } from '@/lib/db-json'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 export const maxDuration = 300
 
@@ -113,7 +114,7 @@ export async function POST(request: NextRequest) {
 
     while (true) {
       const response = await createMessageForClient(currentClientId, 'admin/onboarding', {
-        model: 'claude-opus-4-8',
+        model: DEFAULT_MODEL,
         max_tokens: 2048,
         system: SYSTEM_PROMPT,
         messages: conversation,

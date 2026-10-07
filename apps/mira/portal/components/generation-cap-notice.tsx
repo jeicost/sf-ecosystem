@@ -4,7 +4,7 @@ import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { Gauge } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
-import { shouldWarnGenerationCap, type GenerationCapStatus } from '@/lib/generation-cap'
+import { shouldWarnGenerationCap, shouldWarnBudget, type GenerationCapStatus } from '@/lib/generation-cap'
 
 // Aviso discreto del techo de generaciones/mes. Vive en el sidebar (visible
 // desde cualquier página que genere contenido) y solo aparece cuando hay techo
@@ -32,7 +32,32 @@ export default function GenerationCapNotice() {
     return () => { cancelled = true }
   }, [clientId, path])
 
-  if (!status || !shouldWarnGenerationCap(status)) return null
+  if (!status) return null
+
+  // Presupuesto mensual en dólares (30 $/mes por marca): avisa al 80 % y lo dice claro al 100 %.
+  if (shouldWarnBudget(status) && status.budget) {
+    const b = status.budget
+    const agotado = b.estado === 'bloqueado'
+    const accent = agotado ? '#f87171' : '#fbbf24'
+    return (
+      <div className="px-3 pb-1">
+        <div className="rounded-lg px-3 py-2" style={{ background: `${accent}14`, border: `1px solid ${accent}40` }}>
+          <div className="flex items-center gap-2">
+            <Gauge size={12} style={{ color: accent }} className="shrink-0" />
+            <p className="text-[10px] font-medium leading-tight" style={{ color: accent }}>
+              {agotado ? `Monthly AI budget used up ($${b.limite})` : `$${b.gastado.toFixed(2)} of $${b.limite} AI budget used this month`}
+            </p>
+          </div>
+          <p className="mt-1 text-[9px] leading-snug text-ink-tertiary">
+            {agotado ? 'AI features are paused until the 1st.' : 'It resets on the 1st.'}{' '}
+            <Link href="/integrations" className="underline hover:text-ink">Connect your own key</Link> for unlimited use, or ask us to raise it.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  if (!shouldWarnGenerationCap(status)) return null
 
   const remaining = status.remaining ?? 0
   const exhausted = remaining <= 0

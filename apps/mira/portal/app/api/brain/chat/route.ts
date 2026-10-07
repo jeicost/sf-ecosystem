@@ -9,6 +9,7 @@ import { getKnowledgeContext } from '@/lib/knowledge'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 import { toJson } from '@/lib/db-json'
+import { CHEAP_MODEL } from '@/lib/ai/models'
 
 export const maxDuration = 120
 
@@ -103,7 +104,7 @@ Always reply in English, warm and brief.`,
 
     for (let loop = 0; loop < 4; loop++) {
       const response = await createMessageForClient(clientId, 'brain/chat', {
-        model: 'claude-sonnet-4-6',
+        model: CHEAP_MODEL,
         max_tokens: 1500,
         system: systemBlocks,
         tools: [PROPOSE_TOOL],

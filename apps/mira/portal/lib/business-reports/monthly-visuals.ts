@@ -28,6 +28,7 @@ import { createServiceClient } from '@/lib/supabase-admin'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { getClientDriveAccessToken } from '@/lib/drive-sync'
 import { extractJson } from '@/lib/generation/extract-json'
+import { FAST_MODEL } from '@/lib/ai/models'
 
 const BUCKET = 'generated-assets'
 const MAX_REFS_PER_PILLAR = 4
@@ -123,7 +124,7 @@ async function classifyReferences(
       .join('\n')
     try {
       const msg = await createMessageForClient(clientId, 'toolkit/monthly-visuals/classify', {
-        model: 'claude-haiku-4-5-20251001',
+        model: FAST_MODEL,
         max_tokens: 2000,
         messages: [
           {

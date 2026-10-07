@@ -13,6 +13,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 import { createServiceClient } from '@/lib/supabase-admin'
 import { comprobarPresupuesto } from '@/lib/ai/budget'
+import { prepararParams } from '@/lib/ai/models'
 
 export interface ClientClaude {
   client: Anthropic
@@ -88,21 +89,22 @@ async function checkGenerationCap(clientId: string, usedClientKey: boolean): Pro
 const SDK_TIMEOUT_MS = 13 * 60 * 1000
 
 /**
- * `route` activa el freno de gasto diario (lib/ai/budget.ts): con la clave de
- * plataforma, si hoy ya se ha gastado el presupuesto, lanza
- * DailyBudgetExceededError ANTES de crear el cliente. Sin ruta no se frena
- * (llamadas internas que ya pasaron por él).
+* `route` activa los frenos de gasto (lib/ai/budget.ts): con la clave de
+ * plataforma, si la marca ya gastó su mes o la plataforma su día, lanza
+ * Monthly/DailyBudgetExceededError ANTES de crear el cliente. Sin ruta no se
+ * frena (llamadas internas que ya pasaron por él).
  */
 export async function getClaudeForClient(clientId: string | null | undefined, route?: string): Promise<ClientClaude> {
   const platformKey = process.env.ANTHROPIC_API_KEY || ''
   if (!clientId) {
-    if (route) await comprobarPresupuesto(route, false)
+    if (route) await comprobarPresupuesto(route, false, null)
     return { client: new Anthropic({ apiKey: platformKey, timeout: SDK_TIMEOUT_MS }), usedClientKey: false }
   }
   const key = await getClientApiKey(clientId, 'anthropic', platformKey)
   const usedClientKey = !!key && key !== platformKey
   await checkGenerationCap(clientId, usedClientKey)
-  if (route) await comprobarPresupuesto(route, usedClientKey)
+  // Freno mensual de la marca (30 $/mes por defecto) y freno diario global.
+  if (route) await comprobarPresupuesto(route, usedClientKey, clientId)
   return { client: new Anthropic({ apiKey: key || platformKey, timeout: SDK_TIMEOUT_MS }), usedClientKey }
 }
 
@@ -160,7 +162,8 @@ export async function createMessageForClient(
   // final, idéntico al de messages.create.
   const { stream: _ignorado, ...resto } = params as Anthropic.MessageCreateParamsNonStreaming & { stream?: boolean }
   void _ignorado
-  const message = await client.messages.stream(resto as Anthropic.MessageStreamParams).finalMessage()
+  // Techo de salida y esfuerzo según el modelo (lib/ai/models.ts): los 5.x piensan dentro de max_tokens.
+  const message = await client.messages.stream(prepararParams(resto) as Anthropic.MessageStreamParams).finalMessage()
   await logUsage({ clientId, route, model: params.model, usage: message.usage, usedClientKey })
   return message
 }

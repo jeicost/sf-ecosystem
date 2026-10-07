@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { getGenerationCapStatus } from '@/lib/generation-cap-server'
+import { estadoPresupuestoCliente } from '@/lib/ai/budget'
 
 // Estado del techo de generaciones/mes del cliente activo, para que la UI avise
 // ANTES de que checkGenerationCap corte. Hermano de /api/usage/summary (que
@@ -20,7 +21,9 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
-    return NextResponse.json(await getGenerationCapStatus(clientId))
+    // Techo de generaciones (recuento) + presupuesto mensual en dólares (lib/ai/budget.ts), en una sola llamada.
+    const [cap, budget] = await Promise.all([getGenerationCapStatus(clientId), estadoPresupuestoCliente(clientId)])
+    return NextResponse.json({ ...cap, budget: budget ? { gastado: budget.gastado, limite: budget.limite, pct: budget.pct, estado: budget.estado } : null })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Generation cap status failed' },

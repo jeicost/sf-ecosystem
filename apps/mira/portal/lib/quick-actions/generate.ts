@@ -6,6 +6,7 @@ import { buildAttachmentBlocks, type Attachment } from '@/lib/attachments'
 import { getQuickAction } from '@/lib/quick-actions/registry'
 import { QUICK_ACTIONS } from '@/lib/quick-actions/registry'
 import { toJson } from '@/lib/db-json'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 // Una acción produce imagen si lo declara el registry (editar_imagen_visual)
 // o si el usuario activó el toggle with_image (crear_post / crear_carousel).
@@ -225,7 +226,7 @@ export async function generateQuickAction(
     const { message, text } = await generateWithWebSearch({
       clientId,
       route: 'quick-actions',
-      model: 'claude-opus-4-8',
+      model: DEFAULT_MODEL,
       maxTokens: QUICK_ACTIONS.find((a) => a.id === actionType)?.maxTokens ?? 4000,
       userContent: imageBlocks.length
         ? [{ type: 'text' as const, text: prompt }, ...imageBlocks]

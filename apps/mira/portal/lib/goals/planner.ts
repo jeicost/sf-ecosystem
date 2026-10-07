@@ -19,6 +19,7 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { extractJson } from '@/lib/generation/extract-json'
 import { GOAL_KINDS, type GoalKind, type GoalPlan, type GoalSpec, type GoalSpecItem, type PlannedTask } from './types'
+import { CHEAP_MODEL, primerTexto } from '@/lib/ai/models'
 
 export class GoalPlanningError extends Error {
   constructor(message: string, public readonly code: 'no_brain' | 'no_pillars' | 'bad_spec' | 'over_cap' | 'model') {
@@ -184,11 +185,11 @@ export async function planGoal(opts: {
   let raw: unknown
   try {
     const msg = await createMessageForClient(opts.clientId, 'goals/plan', {
-      model: 'claude-sonnet-4-6',
+      model: CHEAP_MODEL,
       max_tokens: 2000,
       messages: [{ role: 'user', content: prompt }],
     })
-    const block = msg.content[0]
+    const block = primerTexto(msg.content)
     raw = extractJson(block && 'text' in block ? block.text : '')
   } catch (e) {
     throw new GoalPlanningError(`The planner could not read the request: ${e instanceof Error ? e.message : String(e)}`, 'model')

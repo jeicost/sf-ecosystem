@@ -4,6 +4,7 @@ import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { DEFAULT_MODEL, primerTexto } from '@/lib/ai/models'
 
 export async function POST(req: NextRequest) {
   try {
@@ -90,7 +91,7 @@ Return ONLY valid JSON (no markdown, no text before/after) with suggested update
 ${GROUNDING_CONTRACT}`
 
     const message = await createMessageForClient(clientId, 'brand-brain/analyze-document', {
-      model: 'claude-opus-4-8',
+      model: DEFAULT_MODEL,
       max_tokens: 2000,
       messages: [
         {
@@ -103,7 +104,7 @@ ${GROUNDING_CONTRACT}`
     // Extract and validate JSON from response
     let suggestedUpdates = {}
     let jsonParseSuccess = false
-    const textContent = message.content[0]
+    const textContent = primerTexto(message.content)
 
     if (textContent && 'text' in textContent) {
       const text = textContent.text

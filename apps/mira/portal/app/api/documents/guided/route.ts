@@ -7,6 +7,7 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { DOC_TYPES } from '@/lib/generation/document-prompts'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { CHEAP_MODEL } from '@/lib/ai/models'
 
 /**
  * ─── ENTREVISTA PREVIA A GENERAR UN DOCUMENTO ────────────────────────────
@@ -34,7 +35,7 @@ import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 export const maxDuration = 60
 
 const MAX_TOOL_LOOPS = 4
-const INTERVIEWER_MODEL = 'claude-sonnet-4-6'
+const INTERVIEWER_MODEL = CHEAP_MODEL
 
 const DOC_TYPE_LABEL: Record<string, string> = {
   'doc-playbook': 'operating playbook',

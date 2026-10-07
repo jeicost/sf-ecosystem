@@ -5,6 +5,7 @@ import { getKnowledgeContext } from '@/lib/knowledge'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { adminClient } from '@/lib/supabase'
 import type { BrainChange } from '@/lib/brain-tools'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 /**
  * Generador de PILARES DE CONTENIDO a partir del Cerebro.
@@ -70,7 +71,7 @@ export class NoBrandBrainError extends Error {
 
 // Los pilares fijan la dirección de TODO el contenido posterior; es una sola
 // llamada por cliente y de las de mayor apalancamiento del producto.
-const MODEL = 'claude-opus-4-8'
+const MODEL = DEFAULT_MODEL
 
 export const MIN_PILLARS = 4
 export const MAX_PILLARS = 8

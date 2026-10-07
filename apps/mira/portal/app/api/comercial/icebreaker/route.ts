@@ -5,6 +5,7 @@ import { requireLeadAccess } from '@/lib/comercial/lead-access'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { CHEAP_MODEL, primerTexto } from '@/lib/ai/models'
 
 // NOTA (corregida 2026-07-23, ver docs/DEBT.md): esta ruta NO es la que usa la UI real —
 // app/(dashboard)/comercial/icebreaker/page.tsx llama a /api/agent (role: 'icebreaker-writer')
@@ -65,13 +66,13 @@ INSTRUCCIONES:
 Devuelve SOLO el mensaje de icebreaker, sin explicaciones.`
 
   const message = await createMessageForClient(lead.client_id, 'comercial/icebreaker', {
-    model: 'claude-sonnet-4-6',
+    model: CHEAP_MODEL,
     max_tokens: 256,
     system: systemPrompt,
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const icebreaker = message.content[0].type === 'text' ? message.content[0].text.trim() : ''
+  const icebreaker = primerTexto(message.content)?.text.trim() || ''
 
   if (icebreaker) {
     await supabaseAdmin

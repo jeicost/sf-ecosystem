@@ -1,5 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { TENDER_MODEL, ajustesModelo } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import { extractJson } from '@/lib/generation/extract-json'
 import { getKnowledgeContext } from '@/lib/knowledge'
@@ -75,7 +75,7 @@ ${plano.slice(0, 150_000)}`
 
   try {
     const msg = await createMessageForClient(clientId, 'tender/estructurar', {
-      model: MODEL, max_tokens: techoSalida(MODEL, 6000), ...ajustesModelo(MODEL, 'low'),
+      model: MODEL, max_tokens: 6000, ...ajustesModelo(MODEL, 'low'),
       messages: [{ role: 'user', content: prompt }],
     })
     const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -162,7 +162,7 @@ ${knowledge ? `CONOCIMIENTO REAL DE LA EMPRESA:\n${knowledge}` : ''}
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(clientId, 'tender/reescribir', {
-    model: MODEL, max_tokens: techoSalida(MODEL, 8000), ...ajustesModelo(MODEL),
+    model: MODEL, max_tokens: 8000,
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')

@@ -23,6 +23,9 @@ interface ClientOverview {
   usage_tokens: number
   usage_cost_usd: number
   own_key: boolean
+  ai_budget_usd: number | null
+  ai_budget_effective: number
+  platform_cost_usd: number
 }
 
 interface Overview {
@@ -60,6 +63,15 @@ export default function SuperAdminPage() {
       })
       .catch((e) => setError(e instanceof Error ? e.message : 'Error'))
   }, [])
+
+  async function editBudget(c: ClientOverview) {
+    const v = window.prompt(`Monthly AI budget for ${c.name} in USD.\nEmpty = default (${c.ai_budget_usd === null ? c.ai_budget_effective : 'general'}), 0 = no cap.`, c.ai_budget_usd === null ? '' : String(c.ai_budget_usd))
+    if (v === null) return
+    const res = await fetch('/api/admin/client-budget', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId: c.id, budget: v.trim() === '' ? null : Number(v) }) })
+    const d = await res.json().catch(() => ({}))
+    if (!res.ok) { alert(d.error || 'Could not save'); return }
+    setData((prev) => prev ? { ...prev, clients: prev.clients.map((x) => (x.id === c.id ? { ...x, ai_budget_usd: d.budget, ai_budget_effective: d.effective } : x)) } : prev)
+  }
 
   function openClient(c: ClientOverview) {
     setActiveClient({
@@ -194,6 +206,19 @@ export default function SuperAdminPage() {
                     {c.usage_cost_usd > 0 ? `$${c.usage_cost_usd.toFixed(2)} AI/month` : '—'}
                   </span>
                 </div>
+                {/* Tope mensual de IA (lib/ai/budget.ts). Clic para cambiarlo: vacío = general, 0 = sin tope. */}
+                {c.ai_budget_effective > 0 && (
+                  <div className="mt-2" onClick={(e) => { e.stopPropagation(); void editBudget(c) }} role="button" tabIndex={0}
+                    onKeyDown={(e) => { if (e.key === 'Enter') { e.stopPropagation(); void editBudget(c) } }}
+                    title="Monthly AI budget (platform key). Click to change: empty = default, 0 = no cap.">
+                    <div className="h-1 w-full overflow-hidden rounded-full bg-surface">
+                      <div className="h-full rounded-full" style={{ width: `${Math.min(100, (c.platform_cost_usd / c.ai_budget_effective) * 100)}%`, background: c.platform_cost_usd >= c.ai_budget_effective ? '#f87171' : c.platform_cost_usd >= c.ai_budget_effective * 0.8 ? '#fbbf24' : color }} />
+                    </div>
+                    <p className="mt-1 text-[10px] text-ink-tertiary">
+                      ${c.platform_cost_usd.toFixed(2)} of ${c.ai_budget_effective} budget{c.ai_budget_usd === null ? ' (default)' : ''} · {Math.round((c.platform_cost_usd / c.ai_budget_effective) * 100)}%
+                    </p>
+                  </div>
+                )}
               </button>
             )
           })}

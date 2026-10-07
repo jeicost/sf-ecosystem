@@ -21,6 +21,7 @@ import {
   departmentSlugToAgentDomain,
 } from '@/lib/department-prompt'
 import type Anthropic from '@anthropic-ai/sdk'
+import { CHEAP_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
 
 // Sin esto, esta ruta (la más usada de toda la app — chat de los 23 agentes,
 // a diario por cada cliente) caía al timeout por defecto de la plataforma.
@@ -417,13 +418,15 @@ export async function POST(req: NextRequest) {
           // if it stops for a tool call, we run the search, feed the results back,
           // and start another turn — capped so a confused model can't loop forever.
           while (true) {
+            // Sonnet 5.5 piensa dentro de max_tokens: techo doblado y esfuerzo bajo (es un chat).
             const anthropicStream = anthropic.messages.stream({
-              model: 'claude-sonnet-4-6',
-              max_tokens: safeLookup(MAX_TOKENS, role) ?? 2048,
+              model: CHEAP_MODEL,
+              max_tokens: techoSalida(CHEAP_MODEL, safeLookup(MAX_TOKENS, role) ?? 2048),
               system: systemBlocks,
               messages: conversation,
               tools: isCreativeRole ? [WEB_SEARCH_TOOL, GENERATE_IMAGE_TOOL] : [WEB_SEARCH_TOOL],
-            })
+              ...ajustesModelo(CHEAP_MODEL, 'low'),
+            } as Anthropic.MessageStreamParams)
 
             for await (const chunk of anthropicStream) {
               if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
@@ -441,7 +444,7 @@ export async function POST(req: NextRequest) {
                 // se usan de verdad — antes todo era 'agent' y C2 no se podía
                 // responder. Formato agent:<role>.
                 route: `agent:${role}`,
-                model: 'claude-sonnet-4-6',
+                model: CHEAP_MODEL,
                 usage: finalMessage.usage,
                 usedClientKey,
               })

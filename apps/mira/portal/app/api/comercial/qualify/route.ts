@@ -6,6 +6,7 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { safeLookup } from '@/lib/safe-lookup'
+import { FAST_MODEL } from '@/lib/ai/models'
 
 const STAGE_MAP: Record<string, string> = {
   interested: 'qualified',
@@ -72,7 +73,7 @@ Classification: interested = shows real interest, not_now = no interest right no
   const stream = new ReadableStream({
     async start(controller) {
       const anthropicStream = anthropic.messages.stream({
-        model: 'claude-haiku-4-5-20251001',
+        model: FAST_MODEL,
         max_tokens: 512,
         system: systemPrompt,
         messages: [{ role: 'user', content: prompt }],
@@ -91,7 +92,7 @@ Classification: interested = shows real interest, not_now = no interest right no
         await logUsage({
           clientId: lead.client_id,
           route: 'comercial/qualify',
-          model: 'claude-haiku-4-5-20251001',
+          model: FAST_MODEL,
           usage: finalMessage.usage,
           usedClientKey,
         })

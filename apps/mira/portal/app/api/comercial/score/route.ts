@@ -3,6 +3,7 @@ import { adminClient } from '@/lib/supabase'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { requireLeadAccess } from '@/lib/comercial/lead-access'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { FAST_MODEL, primerTexto } from '@/lib/ai/models'
 
 export async function POST(req: NextRequest) {
   const { leadId } = await req.json()
@@ -51,12 +52,12 @@ hot>=75, warm=50-74, cold=20-49, disqualify<20
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(lead.client_id, 'comercial/score', {
-    model: 'claude-haiku-4-5-20251001',
+    model: FAST_MODEL,
     max_tokens: 256,
     messages: [{ role: 'user', content: prompt }],
   })
 
-  const text = msg.content[0].type === 'text' ? msg.content[0].text.trim() : '{}'
+  const text = primerTexto(msg.content)?.text.trim() || '{}'
   let result: { score: number; classification: string; reason: string; confidence: number }
   try {
     const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()

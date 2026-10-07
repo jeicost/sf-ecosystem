@@ -78,12 +78,17 @@ real de producción. Esto lo evita.
   (`output_config.format`) y `createMessageForClient` hace streaming por dentro
   para que el techo de salida (`techoSalida`) no dispare timeouts. Si un modelo
   falla en prod, se cambia la variable en Vercel, sin desplegar.
-- Freno de gasto diario en `lib/ai/budget.ts` (`MIRA_DAILY_BUDGET_USD`, 30 $
-  por defecto): suma `mira_usage_log` de hoy (Madrid) con la clave de
-  plataforma; corta las rutas normales al 80 % (reserva de Email Ops) y Email
-  Ops al 100 %; al 80 % deja una huella `ai-budget` en `mira_activity`. Se
-  activa pasando `route` a `getClaudeForClient` (todo `createMessageForClient`
-  lo lleva). El panel Super Admin enseña el gasto de hoy.
+- Frenos de gasto en `lib/ai/budget.ts`, sumando `mira_usage_log` con la clave
+  de plataforma: MENSUAL POR MARCA (`MIRA_CLIENT_MONTHLY_BUDGET_USD` 30 $,
+  `clients.ai_budget_usd` lo sustituye; GLS 60) que avisa al 80 % y corta todo
+  al 100 % (Email Ops encola hasta el día 1), y DIARIO GLOBAL de seguridad
+  (`MIRA_DAILY_BUDGET_USD` 100 $). Se activan pasando `route` a
+  `getClaudeForClient` (todo `createMessageForClient` lo lleva). El dashboard
+  del cliente enseña «consumo / tope» con barra; el Super Admin ve y edita el
+  tope por marca. `createMessageForClient` aplica `prepararParams` (techo ×2 y
+  esfuerzo en los 5.x) y los modelos salen de `lib/ai/models.ts`
+  (`DEFAULT_MODEL`, `CHEAP_MODEL`, `FAST_MODEL`): nunca literales. Con
+  pensamiento, `content[0]` no es el texto: `primerTexto`/`textoDe`.
 - Word de Licitaciones (`lib/tenders/word.ts`): si la marca subió su HOJA
   oficial (.docx) en «Word template», la cabecera y el pie se trasplantan tal
   cual (`lib/tenders/membrete.ts`), con sus márgenes y su fuente. Las PÁGINAS

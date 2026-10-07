@@ -293,9 +293,9 @@ async function markFailed(db: SupabaseClient, messageId: string, err: unknown): 
   // Sin saldo en la API (5-oct): no es culpa del correo. Vuelve a la cola SIN gastar
   // intento; si no, tras MAX_ATTEMPTS pasadas del cron quedaría muerto aunque se recargue.
   // Lo mismo con el freno de gasto diario (lib/ai/budget.ts): mañana se procesa.
-  if (/credit balance|billing|Daily AI budget/i.test(message)) {
+  if (/credit balance|billing|AI budget reached/i.test(message)) {
     const { data } = await db.from('email_messages').select('attempts').eq('id', messageId).maybeSingle()
-    const motivo = /Daily AI budget/i.test(message) ? 'Presupuesto diario de IA alcanzado: se procesará mañana' : 'Sin saldo en la API: se procesará al recargar'
+    const motivo = /Monthly AI budget/i.test(message) ? 'Presupuesto mensual de IA de la marca agotado: se procesará el día 1' : /Daily AI budget/i.test(message) ? 'Presupuesto diario de IA alcanzado: se procesará mañana' : 'Sin saldo en la API: se procesará al recargar'
     await db.from('email_messages').update({ status: 'received', attempts: Math.max(0, ((data?.attempts as number) ?? 1) - 1), last_error: motivo, updated_at: new Date().toISOString() }).eq('id', messageId)
     return
   }

@@ -13,7 +13,7 @@
 
 import type Anthropic from '@anthropic-ai/sdk'
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { ajustesModelo, modeloConPensamiento } from '@/lib/ai/models'
+import { ajustesModelo } from '@/lib/ai/models'
 import { buildToolInputSchema, coerceFields, type FieldDef } from './schema'
 import { formatExamplesForPrompt, type TrainingExample } from './learning'
 import type { Extraction, TicketKind } from './types'
@@ -147,7 +147,7 @@ export async function analyzeEmail(input: AnalyzeInput): Promise<Extraction> {
   const params = {
     model: EMAIL_OPS_MODEL,
     // Los 5.x piensan: el techo de 2.500 que valía para el JSON a secas se queda corto.
-    max_tokens: modeloConPensamiento(EMAIL_OPS_MODEL) ? 6000 : 2500,
+    max_tokens: 2500,
     system: buildSystemBlocks(input),
     messages: [{ role: 'user' as const, content: userContent(input) }],
     output_config: { format: { type: 'json_schema', schema: buildOutputSchema(input.schema) }, ...(ajustesModelo(EMAIL_OPS_MODEL, 'low').output_config as Record<string, unknown> | undefined) },

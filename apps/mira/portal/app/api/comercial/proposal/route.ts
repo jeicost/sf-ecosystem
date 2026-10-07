@@ -5,6 +5,7 @@ import { getClaudeForClient, logUsage } from '@/lib/anthropic-client'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getClientMemoryContext } from '@/lib/client-memory'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
+import { CHEAP_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
 
 // Propuesta CANÓNICA del ecosistema (decisión 2026-07-19, docs/crm-architecture.md):
 // esta ruta (streaming + brand_profiles) es la que usa MIRA. La del motor Python
@@ -89,8 +90,9 @@ Genera la propuesta completa.`
   const stream = new ReadableStream({
     async start(controller) {
       const anthropicStream = anthropic.messages.stream({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 4096,
+        model: CHEAP_MODEL,
+        max_tokens: techoSalida(CHEAP_MODEL, 4096),
+        ...ajustesModelo(CHEAP_MODEL),
         system: systemPrompt,
         messages: [{ role: 'user', content: userMessage }],
       })
@@ -108,7 +110,7 @@ Genera la propuesta completa.`
         await logUsage({
           clientId,
           route: 'comercial/proposal',
-          model: 'claude-sonnet-4-6',
+          model: CHEAP_MODEL,
           usage: finalMessage.usage,
           usedClientKey,
         })

@@ -48,6 +48,7 @@ interface Overview {
     pending_approvals: number
     usage_cost_usd: number
   }
+  ai_budget?: { gastado: number; limite: number; pct: number; estado: 'ok' | 'aviso' | 'bloqueado'; mes: string } | null
   latest_reports: Card[]
   latest_documents: Card[]
   projects: { id: string; name: string; slug: string; description: string | null; status: string; created_at: string }[]
@@ -206,17 +207,25 @@ function PlanBlockedBanner({ locale }: { locale: 'es' | 'en' }) {
   )
 }
 
-function StatCard({ value, label, hint, href, brand, alert }: {
-  value: string; label: string; hint?: string; href?: string; brand: string; alert?: boolean
+function StatCard({ value, label, hint, href, brand, alert, danger, progress }: {
+  value: string; label: string; hint?: string; href?: string; brand: string; alert?: boolean; danger?: boolean
+  /** 0-1: barra bajo el valor (consumo sobre el tope). Ámbar desde 0,8; rojo al llegar a 1. */
+  progress?: number
 }) {
+  const color = danger ? '#f87171' : alert ? '#fbbf24' : brand
   const body = (
     <div className="rounded-2xl border bg-surface p-5 transition-all duration-200"
       style={{
-        borderColor: alert ? 'rgba(245,158,11,0.35)' : 'var(--border)',
+        borderColor: danger ? 'rgba(248,113,113,0.45)' : alert ? 'rgba(245,158,11,0.35)' : 'var(--border)',
       }}>
-      <p className="text-3xl font-extrabold tracking-tight" style={{ color: alert ? '#fbbf24' : 'var(--text-primary)' }}>{value}</p>
+      <p className="text-3xl font-extrabold tracking-tight" style={{ color: danger ? '#f87171' : alert ? '#fbbf24' : 'var(--text-primary)' }}>{value}</p>
       <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-tertiary">{label}</p>
-      {hint && <p className="mt-1 text-[10px]" style={{ color: alert ? 'rgba(251,191,36,0.7)' : brand }}>{hint}</p>}
+      {typeof progress === 'number' && (
+        <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-page" aria-hidden>
+          <div className="h-full rounded-full transition-all" style={{ width: `${Math.min(100, Math.max(0, progress * 100))}%`, background: color }} />
+        </div>
+      )}
+      {hint && <p className="mt-1 text-[10px]" style={{ color: danger ? 'rgba(248,113,113,0.8)' : alert ? 'rgba(251,191,36,0.7)' : brand }}>{hint}</p>}
     </div>
   )
   return href ? <Link href={href} className="block hover:opacity-90">{body}</Link> : body
@@ -350,7 +359,17 @@ export default function HomePage() {
         <StatCard value={String(data.stats.pending_approvals)} label={t('home.stat-pending', locale)}
           hint={data.stats.pending_approvals > 0 ? t('home.stat-needs-review', locale) : t('home.stat-all-clear', locale)}
           href="/approvals" brand={brand} alert={data.stats.pending_approvals > 0} />
-        <StatCard value={`$${data.stats.usage_cost_usd.toFixed(2)}`} label={t('home.stat-usage', locale)} href="/integrations" brand={brand} />
+        {/* Consumo de IA del mes frente al tope de la marca (30 $/mes por defecto): barra, aviso al 80 %, bloqueo al 100 %. */}
+        {data.ai_budget && data.ai_budget.limite > 0 ? (
+          <StatCard value={`$${data.ai_budget.gastado.toFixed(2)}`} label={t('home.stat-usage', locale)} href="/integrations" brand={brand}
+            progress={data.ai_budget.pct}
+            alert={data.ai_budget.estado === 'aviso'} danger={data.ai_budget.estado === 'bloqueado'}
+            hint={data.ai_budget.estado === 'bloqueado'
+              ? t('home.stat-usage-paused', locale).replace('{limit}', String(data.ai_budget.limite))
+              : t('home.stat-usage-of', locale).replace('{pct}', String(Math.round(data.ai_budget.pct * 100))).replace('{limit}', String(data.ai_budget.limite))} />
+        ) : (
+          <StatCard value={`$${data.stats.usage_cost_usd.toFixed(2)}`} label={t('home.stat-usage', locale)} href="/integrations" brand={brand} />
+        )}
       </div>
 
       {/* Carruseles */}

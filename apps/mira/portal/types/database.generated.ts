@@ -1364,6 +1364,7 @@ export type Database = {
       }
       clients: {
         Row: {
+          ai_budget_usd: number | null
           billing_group_id: string | null
           created_at: string | null
           description: string | null
@@ -1384,6 +1385,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          ai_budget_usd?: number | null
           billing_group_id?: string | null
           created_at?: string | null
           description?: string | null
@@ -1404,6 +1406,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          ai_budget_usd?: number | null
           billing_group_id?: string | null
           created_at?: string | null
           description?: string | null

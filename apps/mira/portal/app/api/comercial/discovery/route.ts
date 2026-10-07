@@ -4,6 +4,7 @@ import { resolveRequestClient } from '@/lib/resolve-client'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { writable } from '@/lib/db-json'
+import { FAST_MODEL, primerTexto } from '@/lib/ai/models'
 
 interface TavilyResult { title: string; url: string; content: string }
 
@@ -40,7 +41,7 @@ async function extractCompanies(results: TavilyResult[], icp: Record<string, unk
   const content = results.map(r => `TITLE: ${r.title}\nURL: ${r.url}\nCONTENT: ${r.content}`).join('\n\n---\n\n')
 
   const msg = await createMessageForClient(clientId, 'comercial/discovery', {
-    model: 'claude-haiku-4-5-20251001',
+    model: FAST_MODEL,
     max_tokens: 2048,
     messages: [{
       role: 'user',
@@ -60,7 +61,7 @@ Never invent companies, URLs or people — only extract what the sources actuall
     }],
   })
 
-  const text = msg.content[0].type === 'text' ? msg.content[0].text.trim() : '[]'
+  const text = primerTexto(msg.content)?.text.trim() || '[]'
   try {
     const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
     return JSON.parse(cleaned) as ExtractedCompany[]
@@ -69,7 +70,7 @@ Never invent companies, URLs or people — only extract what the sources actuall
 
 async function scoreCompany(company: ExtractedCompany, icp: Record<string, unknown>, clientId: string): Promise<{ score: number; classification: string; reason: string }> {
   const msg = await createMessageForClient(clientId, 'comercial/discovery', {
-    model: 'claude-haiku-4-5-20251001',
+    model: FAST_MODEL,
     max_tokens: 256,
     messages: [{
       role: 'user',
@@ -94,7 +95,7 @@ ${GROUNDING_CONTRACT}`
     }],
   })
 
-  const text = msg.content[0].type === 'text' ? msg.content[0].text.trim() : '{}'
+  const text = primerTexto(msg.content)?.text.trim() || '{}'
   try {
     const cleaned = text.replace(/^```json\s*/i, '').replace(/```\s*$/, '').trim()
     return JSON.parse(cleaned)

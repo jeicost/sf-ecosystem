@@ -15,6 +15,7 @@ import {
 } from '@/lib/quick-actions/guided-tools'
 import { t, type Locale } from '@/lib/i18n'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { CHEAP_MODEL } from '@/lib/ai/models'
 
 // Modo "Cuéntamelo": un entrevistador conversacional rellena el formulario de
 // la quick action (con adjuntos y autofill) y dispara la MISMA generación que
@@ -159,7 +160,7 @@ ${brandBlock}${memoryBlock ? `\n\n${memoryBlock}` : ''}${leadsBlock}${capturedBl
         // Entrevistador: extracción de campos por tool-use, no generación
         // creativa -- mismo criterio que admin/onboarding/extract. La
         // generación real (lib/quick-actions/generate.ts) se queda en Opus.
-        model: 'claude-sonnet-4-6',
+        model: CHEAP_MODEL,
         max_tokens: 1024,
         // System cacheado: el bucle de tool-use reenvía este mismo system en
         // cada vuelta (hasta 8 llamadas por mensaje del usuario) con el Brand

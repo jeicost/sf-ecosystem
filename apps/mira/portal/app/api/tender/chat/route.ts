@@ -10,7 +10,7 @@ import { GenerationCapExceededError } from '@/lib/anthropic-client'
 import { takeTenderUpload, extractTextFromFile, UnsupportedFileError } from '@/lib/tenders/upload'
 import { isUuid, loadTeaching, loadTenderTeaching, teachingBlockDetallado } from '@/lib/tenders/teaching'
 import { loadDisenadas, type Disenada } from '@/lib/tenders/disenadas'
-import { esErrorDePresupuesto } from '@/lib/ai/budget'
+import { esErrorDePresupuesto, esErrorDePresupuestoMensual } from '@/lib/ai/budget'
 import {
   ATTACHMENTS_PER_CHAT, autoTitle, buildHistory, capAttachment, nextAttachmentId, parseAttachments, parseMessages,
   sse, stripInternal, userContentForModel, validateChatPost,
@@ -183,7 +183,7 @@ export async function POST(req: NextRequest) {
           id: randomUUID(), n: messages.length + 1, role: 'assistant', content: r.text, at: new Date().toISOString(),
           ...(r.tools.length ? { tools: r.tools } : {}),
           ...(r.documentos.length ? { documentos: r.documentos } : {}),
-          ...(r.error ? { error: capError ? r.error : sinSaldo ? 'MIRA no puede usar la IA ahora mismo: la cuenta del proveedor se ha quedado sin saldo. Avisa a Startup Factory; lo que has escrito queda guardado.' : sinPresupuesto ? 'MIRA ha alcanzado hoy su presupuesto de IA y se reanuda mañana. Lo que has escrito queda guardado; si es urgente, avisa a Startup Factory.' : 'La respuesta no se ha completado. Vuelve a intentarlo.' } : {}),
+          ...(r.error ? { error: capError ? r.error : sinSaldo ? 'MIRA no puede usar la IA ahora mismo: la cuenta del proveedor se ha quedado sin saldo. Avisa a Startup Factory; lo que has escrito queda guardado.' : sinPresupuesto ? (esErrorDePresupuestoMensual(r.error) ? 'Este espacio ha agotado su presupuesto mensual de IA; se reanuda el día 1. Lo que has escrito queda guardado; para ampliarlo, habla con Startup Factory.' : 'MIRA ha alcanzado hoy su presupuesto de IA y se reanuda mañana. Lo que has escrito queda guardado; si es urgente, avisa a Startup Factory.') : 'La respuesta no se ha completado. Vuelve a intentarlo.' } : {}),
           _model: r.model,
         }
         messages = [...messages, assistantMsg]

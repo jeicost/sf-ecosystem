@@ -26,6 +26,7 @@ import {
   QUESTIONNAIRES_UNAVAILABLE,
   type QuestionnaireRow,
 } from '@/lib/questionnaires'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 /** Error que ya sabe con qué status HTTP debe responder la ruta que lo reciba. */
 export class GapQuestionnaireError extends Error {
@@ -141,7 +142,7 @@ Reply ONLY with a valid JSON object, with no text outside the JSON:
     source === 'brain_gaps' ? 'questionnaires/generate' : 'onboarding/self-serve/questionnaire'
 
   const message = await createMessageForClient(clientId, usageRoute, {
-    model: 'claude-opus-4-8',
+    model: DEFAULT_MODEL,
     max_tokens: 4000,
     messages: [{ role: 'user', content: prompt }],
   })

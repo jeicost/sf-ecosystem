@@ -1,5 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { TENDER_MODEL } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, loadDisenadas, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import { extractJson } from '@/lib/generation/extract-json'
 import { adminClient } from '@/lib/supabase'
@@ -82,7 +82,7 @@ ${pliegoText.slice(0, PLIEGO_WINDOW)}
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(clientId, 'tender/extract', {
-    model: MODEL, max_tokens: techoSalida(MODEL, 4000), ...ajustesModelo(MODEL),
+    model: MODEL, max_tokens: 4000,
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -435,7 +435,7 @@ export async function generateTenderMemoria(opts: {
   const msg = await createMessageForClient(clientId, 'tender/generate', {
     // 16.000: una memoria completa (criterios + secciones de servicio) no cabe
     // en 12.000. Por encima de ~21.000 el SDK exige streaming (medido 01-sep).
-    model: MODEL, max_tokens: techoSalida(MODEL, 16000), ...ajustesModelo(MODEL),
+    model: MODEL, max_tokens: 16000,
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')

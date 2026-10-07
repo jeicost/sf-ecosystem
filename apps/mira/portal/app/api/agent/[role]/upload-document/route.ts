@@ -10,6 +10,7 @@ import { hasOwnKey } from '@/lib/safe-lookup'
 import { extractPdfText } from '@/lib/pdf-extract'
 import { describeImage, isVisionReadableImage } from '@/lib/vision'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 // Imágenes añadidas el 2026-08-06. Antes esta lista era solo PDF/DOCX/TXT y
 // devolvía `400 File type not allowed. Got: image/png` — era la causa exacta
@@ -201,7 +202,7 @@ export async function POST(
       (async () => {
         try {
           const analysis = await createMessageForClient(clientId, 'agent/upload-document', {
-            model: 'claude-opus-4-8',
+            model: DEFAULT_MODEL,
             max_tokens: 1000,
             messages: [
               {

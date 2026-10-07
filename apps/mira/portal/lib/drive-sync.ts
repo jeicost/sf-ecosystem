@@ -22,6 +22,7 @@ import { extractDocxText, extractPptxText, DOCX_MIME, PPTX_MIME } from '@/lib/at
 import { describeImage, isVisionReadableImage } from '@/lib/vision'
 import type { Database } from '@/types/database.generated'
 import { toJson } from '@/lib/db-json'
+import { FAST_MODEL, primerTexto } from '@/lib/ai/models'
 
 /**
  * Apagado por defecto (mismo patrón que el kill-switch KNOWLEDGE_UNIFIED de
@@ -73,7 +74,7 @@ const MAX_DEPTH = 3
 // MAX_DOCS_PER_SYNC (descarga + extracción + resumen con IA), que sigue en 20.
 const MAX_FILES_TOTAL = 500
 const MAX_DOCS_PER_SYNC = 20
-const HAIKU_MODEL = 'claude-haiku-4-5-20251001'
+const HAIKU_MODEL = FAST_MODEL
 
 // Scope required to write to the client's own Drive (exports). Connections
 // authorized before this scope was added to app/api/brand-brain/drive/authorize
@@ -736,7 +737,7 @@ async function summarizeDocument(clientId: string, fileName: string, text: strin
         },
       ],
     })
-    const block = message.content[0]
+    const block = primerTexto(message.content)
     const summary = block && 'text' in block ? block.text.trim() : ''
     return summary || text.substring(0, 500)
   } catch {
@@ -769,7 +770,7 @@ async function generateFolderMap(
         },
       ],
     })
-    const block = message.content[0]
+    const block = primerTexto(message.content)
     const map = block && 'text' in block ? block.text.trim() : ''
     return map || fallback
   } catch {

@@ -226,7 +226,7 @@ const g = sumarGasto([
 ], '2026-10-06T00:00:00Z')
 check('suma por ruta: 4 $ chat + 10 $ email = 14 $', Math.abs(g.total - 14) < 1e-9 && Math.abs(g.porRuta['tender/chat'] - 4) < 1e-9 && g.llamadas === 2)
 check('límite: rutas normales dejan la reserva de Email Ops', limiteParaRuta('tender/chat', 100) === 100 * (1 - EMAIL_OPS_RESERVE) && limiteParaRuta('email-ops-extract', 100) === 100)
-check('presupuesto por defecto 30 $ (env MIRA_DAILY_BUDGET_USD)', DAILY_BUDGET_USD === 30 || !!process.env.MIRA_DAILY_BUDGET_USD)
+check('freno diario global por defecto 100 $ (env MIRA_DAILY_BUDGET_USD)', DAILY_BUDGET_USD === 100 || !!process.env.MIRA_DAILY_BUDGET_USD)
 const medianoche = inicioDeHoyMadrid(new Date('2026-10-06T12:00:00Z'))
 check('medianoche de Madrid en verano = 22:00 UTC del día anterior', medianoche.toISOString() === '2026-10-05T22:00:00.000Z', medianoche.toISOString())
 const inv = inicioDeHoyMadrid(new Date('2026-01-15T12:00:00Z'))
@@ -269,6 +269,26 @@ check('tabla en filas con barras y separador', txtDoc.includes('| Norma | Alcanc
 check('la tabla vuelve a ser tabla al maquetar', parseBloques(txtDoc).some((b) => b.t === 'tabla' && b.filas.length === 2))
 check('las viñetas vuelven a ser viñetas', parseBloques(txtDoc).some((b) => b.t === 'ul' && b.items.length === 2))
 check('tabla de una columna → párrafos (la portada no es una tabla)', !htmlDocxATexto('<table><tr><td><strong>MARCA</strong></td></tr><tr><td>Título</td></tr></table>').includes('|') && htmlDocxATexto('<table><tr><td>MARCA</td></tr><tr><td>Título</td></tr></table>').includes('MARCA\n\nTítulo'))
+
+console.log('\nTope mensual por marca y parámetros centrales del modelo')
+import { inicioDeMesMadrid, mesDe, MonthlyBudgetExceededError, esErrorDePresupuestoMensual, CLIENT_MONTHLY_BUDGET_USD } from '../../lib/ai/budget'
+import { prepararParams, primerTexto, textoDe, DEFAULT_MODEL, FAST_MODEL } from '../../lib/ai/models'
+check('día 1 del mes en Madrid (octubre, verano) = 30-sep 22:00 UTC', inicioDeMesMadrid(new Date('2026-10-15T12:00:00Z')).toISOString() === '2026-09-30T22:00:00.000Z', inicioDeMesMadrid(new Date('2026-10-15T12:00:00Z')).toISOString())
+check('día 1 en invierno = 23:00 UTC del día anterior', inicioDeMesMadrid(new Date('2026-02-10T12:00:00Z')).toISOString() === '2026-01-31T23:00:00.000Z')
+check('mesDe en Madrid', mesDe(new Date('2026-10-31T23:30:00Z')) === '2026-11')
+check('tope mensual por defecto 30 $ (env MIRA_CLIENT_MONTHLY_BUDGET_USD)', CLIENT_MONTHLY_BUDGET_USD === 30 || !!process.env.MIRA_CLIENT_MONTHLY_BUDGET_USD)
+const em = new MonthlyBudgetExceededError(31, 30, 'c1')
+check('el error mensual se reconoce como presupuesto y como mensual', esErrorDePresupuesto(em.message) && esErrorDePresupuestoMensual(em.message) && !esErrorDePresupuestoMensual(e.message))
+const pp = prepararParams({ model: 'claude-opus-5-5', max_tokens: 2000 })
+check('prepararParams: techo mínimo 4000 y esfuerzo medium en los 5.x', pp.max_tokens === 4000 && JSON.stringify((pp as { output_config?: unknown }).output_config) === JSON.stringify({ effort: 'medium' }))
+const pp2 = prepararParams({ model: 'claude-sonnet-5-5', max_tokens: 2500, output_config: { format: { type: 'json_schema' } } } as { model: string; max_tokens: number })
+check('prepararParams respeta un output_config existente y añade el esfuerzo', JSON.stringify((pp2 as { output_config?: Record<string, unknown> }).output_config) === JSON.stringify({ effort: 'medium', format: { type: 'json_schema' } }) && pp2.max_tokens === 5000)
+const pp3 = prepararParams({ model: FAST_MODEL, max_tokens: 512 })
+check('Haiku: ni techo doblado ni output_config', pp3.max_tokens === 512 && !('output_config' in pp3))
+check('el modelo por defecto es Opus 5.5 salvo env', DEFAULT_MODEL === 'claude-opus-5-5' || !!process.env.MIRA_MODEL)
+const contenido = [{ type: 'thinking', thinking: '', signature: 'x' }, { type: 'text', text: '{"a":1}', citations: null }, { type: 'text', text: ' fin', citations: null }] as unknown as Parameters<typeof primerTexto>[0]
+check('primerTexto salta el bloque de pensamiento', primerTexto(contenido)?.text === '{"a":1}')
+check('textoDe une solo los bloques de texto', textoDe(contenido) === '{"a":1} fin')
 
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)

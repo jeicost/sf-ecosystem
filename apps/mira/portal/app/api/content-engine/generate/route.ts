@@ -8,6 +8,7 @@ import { materializePosts, asStringArray, type GeneratedPost } from '@/lib/conte
 import { formatHardRules } from '@/lib/content-engine/qa-validator'
 import { VALID_PLATFORMS, buildPillarPrompt, parsePosts, type Platform, type PillarRow } from '@/lib/content-engine/pillar-prompt'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 export const maxDuration = 800
 
@@ -95,7 +96,7 @@ export async function POST(req: NextRequest) {
 
       try {
         const response = await createMessageForClient(clientId, 'content-engine', {
-          model: 'claude-opus-4-8',
+          model: DEFAULT_MODEL,
           max_tokens: 16000,
           system,
           messages: [{

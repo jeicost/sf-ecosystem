@@ -11,6 +11,7 @@ import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { EDITORIAL_CONTRACT } from '@/lib/grounding/editorial-contract'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
 import { jsonObject, toJson } from '@/lib/db-json'
+import { DEFAULT_MODEL, primerTexto } from '@/lib/ai/models'
 
 export const maxDuration = 300
 
@@ -176,7 +177,7 @@ ${GROUNDING_CONTRACT}
 ${EDITORIAL_CONTRACT}`
 
     const message = await createMessageForClient(row.client_id, 'documents/refine', {
-      model: 'claude-opus-4-8',
+      model: DEFAULT_MODEL,
       max_tokens: slideMode ? 4000 : 16000,
       // Las imágenes adjuntas van como bloques de visión junto al prompt
       // (mismo montaje que lib/quick-actions/generate.ts).
@@ -194,7 +195,7 @@ ${EDITORIAL_CONTRACT}`
       return NextResponse.json({ error: 'Revision truncated, try a smaller change' }, { status: 500 })
     }
 
-    const block = message.content[0]
+    const block = primerTexto(message.content)
     const text = block && 'text' in block ? block.text : ''
     const revised = extractJson(text)
     if (Object.keys(revised).length === 0) {

@@ -1,3 +1,4 @@
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 // Real API key validators for integration tools
 
 export interface ApiValidationResult {
@@ -73,7 +74,7 @@ export async function validateAnthropicApiKey(apiKey: string): Promise<ApiValida
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-opus-4-8',
+        model: DEFAULT_MODEL,
         max_tokens: 10,
         messages: [{ role: 'user', content: 'ping' }],
       }),

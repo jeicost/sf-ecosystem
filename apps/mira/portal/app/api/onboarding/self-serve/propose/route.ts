@@ -11,6 +11,7 @@ import {
   type SelfServeAnswers,
 } from '@/lib/onboarding/self-serve'
 import { generationCapErrorResponse } from '@/lib/generation-cap-server'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 // Opus tarda: mismo maxDuration que las rutas de toolkit y de cuestionarios.
 export const maxDuration = 300
@@ -65,7 +66,7 @@ export async function POST(req: NextRequest) {
     }
 
     const message = await createMessageForClient(access.clientId, 'onboarding/self-serve/propose', {
-      model: 'claude-opus-4-8',
+      model: DEFAULT_MODEL,
       max_tokens: 6000,
       messages: [{ role: 'user', content: buildProposalPrompt({ answers, siteFacts }) }],
     })

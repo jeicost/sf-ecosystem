@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
+import { estadoPresupuestoCliente } from '@/lib/ai/budget'
 
 // Home del cliente: analíticas clave + últimos entregables + últimos documentos + proyectos.
 export async function GET(req: NextRequest) {
@@ -116,6 +117,9 @@ export async function GET(req: NextRequest) {
         pending_approvals: approvalsRes.count ?? 0,
         usage_cost_usd: Math.round(usageCost * 100) / 100,
       },
+      // Tope mensual de IA de la marca (lib/ai/budget.ts): lo gastado este mes
+      // (Madrid) frente al tope; el dashboard lo pinta con barra y aviso al 80 %.
+      ai_budget: await estadoPresupuestoCliente(clientId),
       latest_reports: reports.slice(0, 8).map(toCard),
       latest_documents: documents.slice(0, 8).map(toCard),
       projects: projectsRes.data || [],

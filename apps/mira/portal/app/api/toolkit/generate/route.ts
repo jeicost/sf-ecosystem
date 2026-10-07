@@ -19,6 +19,7 @@ import { enrichPaletteCmyk } from '@/lib/export/color-utils'
 import { generateMonthlySystem } from '@/lib/generation/monthly-generate'
 import { toJson, jsonObject } from '@/lib/db-json'
 import type { Json } from '@/types/database.generated'
+import { CHEAP_MODEL, DEFAULT_MODEL } from '@/lib/ai/models'
 
 // Single-tool generation with opus can take minutes; el monthly son 3 fases
 // secuenciales + crítica/revisión de la fase 2 (la crítica corre en paralelo
@@ -407,7 +408,7 @@ export async function POST(req: NextRequest) {
         clientId,
         toolSlug: tool_slug,
         prompt,
-        model: isQuickCompetitive ? 'claude-sonnet-4-6' : 'claude-opus-4-8',
+        model: isQuickCompetitive ? CHEAP_MODEL : DEFAULT_MODEL,
         maxTokens: isQuickCompetitive ? 8000 : isBrandBookAudit ? 8000 : 16000,
         userContent: attachmentImageBlocks.length
           ? [...attachmentImageBlocks, { type: 'text' as const, text: prompt }]

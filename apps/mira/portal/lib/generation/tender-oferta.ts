@@ -1,5 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { TENDER_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { TENDER_MODEL } from '@/lib/ai/models'
 import { extractJson } from '@/lib/generation/extract-json'
 import { adminClient } from '@/lib/supabase'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
@@ -150,7 +150,7 @@ ${pliegoText.slice(0, 150000)}
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(clientId, 'tender/oferta', {
-    model: MODEL, max_tokens: techoSalida(MODEL, 16000), ...ajustesModelo(MODEL),
+    model: MODEL, max_tokens: 16000,
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')

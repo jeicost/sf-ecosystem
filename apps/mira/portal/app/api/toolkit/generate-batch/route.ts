@@ -9,6 +9,7 @@ import { critiqueAndRevise } from '@/lib/generation/report-pipeline'
 import { canUseFeature } from '@/lib/plans'
 import { toJson, jsonObject } from '@/lib/db-json'
 import type { Json } from '@/types/database.generated'
+import { DEFAULT_MODEL } from '@/lib/ai/models'
 
 // Long-running generation: allow up to 800s on Vercel (fluid compute)
 export const maxDuration = 800
@@ -18,7 +19,7 @@ const TOOLKIT_TOOLS: string[] = TOOLKIT_TOOL_DEFS.filter((t) => !t.hasDedicatedR
   (t) => t.slug
 )
 
-const MODEL = 'claude-opus-4-8'
+const MODEL = DEFAULT_MODEL
 const MAX_OUTPUT_TOKENS = 16000
 const MAX_ATTEMPTS = 3
 

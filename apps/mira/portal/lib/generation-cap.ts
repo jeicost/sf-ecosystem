@@ -29,6 +29,13 @@ export interface GenerationCapStatus {
   remaining: number | null
   /** 'YYYY-MM' en UTC. */
   month: string
+  /** Tope mensual en DÓLARES de la marca (lib/ai/budget.ts), si la ruta lo trae. */
+  budget?: { gastado: number; limite: number; pct: number; estado: 'ok' | 'aviso' | 'bloqueado' } | null
+}
+
+/** ¿Toca avisar del presupuesto en dólares? Desde el 80 % (y cuando ya no queda). */
+export function shouldWarnBudget(status: GenerationCapStatus): boolean {
+  return !!status.budget && status.budget.limite > 0 && status.budget.pct >= 0.8
 }
 
 /** ¿Toca enseñar el aviso "te quedan pocas"? (también true si ya no quedan) */
