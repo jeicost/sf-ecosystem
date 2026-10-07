@@ -231,6 +231,17 @@ function StatCard({ value, label, hint, href, brand, alert, danger, progress }: 
   return href ? <Link href={href} className="block hover:opacity-90">{body}</Link> : body
 }
 
+/** Consumo de IA del mes frente al tope de la marca (lib/ai/budget.ts): barra, aviso al 80 %, bloqueo al 100 %. */
+function BudgetCard({ b, brand, locale }: { b: NonNullable<Overview['ai_budget']>; brand: string; locale: Parameters<typeof t>[1] }) {
+  return (
+    <StatCard value={`$${b.gastado.toFixed(2)}`} label={t('home.stat-usage', locale)} href="/integrations" brand={brand}
+      progress={b.pct} alert={b.estado === 'aviso'} danger={b.estado === 'bloqueado'}
+      hint={b.estado === 'bloqueado'
+        ? t('home.stat-usage-paused', locale).replace('{limit}', String(b.limite))
+        : t('home.stat-usage-of', locale).replace('{pct}', String(Math.round(b.pct * 100))).replace('{limit}', String(b.limite))} />
+  )
+}
+
 export default function HomePage() {
   const router = useRouter()
   const { activeClient, loading: clientLoading } = useActiveClient()
@@ -330,6 +341,7 @@ export default function HomePage() {
           el Brand Briefing (0 campos obligatorios, lee la web y el Brain).
           Todo lo demás aparece en cuanto exista el primer entregable. */}
       {data.stats.reports_total === 0 && data.stats.documents_total === 0 ? (
+      <>
         <div className="rounded-2xl border border-line bg-surface p-10 text-center"
           style={{ background: `linear-gradient(135deg, ${brand}0d, transparent 60%)` }}>
           <p className="text-2xl">✨</p>
@@ -344,6 +356,11 @@ export default function HomePage() {
           </Link>
           <p className="mt-4 text-xs text-ink-muted">{t('home.first-use.hint', locale)}</p>
         </div>
+        {/* El consumo de IA se enseña SIEMPRE, también antes del primer entregable (Carlos, 7-oct): es lo que paga. */}
+        {data.ai_budget && data.ai_budget.limite > 0 && (
+          <div className="mt-4 max-w-sm"><BudgetCard b={data.ai_budget} brand={brand} locale={locale} /></div>
+        )}
+      </>
       ) : (
       <>
       {/* Parte Semanal — Fase 2. En el espacio "Hoy" del sistema ideal; se
@@ -361,12 +378,7 @@ export default function HomePage() {
           href="/approvals" brand={brand} alert={data.stats.pending_approvals > 0} />
         {/* Consumo de IA del mes frente al tope de la marca (30 $/mes por defecto): barra, aviso al 80 %, bloqueo al 100 %. */}
         {data.ai_budget && data.ai_budget.limite > 0 ? (
-          <StatCard value={`$${data.ai_budget.gastado.toFixed(2)}`} label={t('home.stat-usage', locale)} href="/integrations" brand={brand}
-            progress={data.ai_budget.pct}
-            alert={data.ai_budget.estado === 'aviso'} danger={data.ai_budget.estado === 'bloqueado'}
-            hint={data.ai_budget.estado === 'bloqueado'
-              ? t('home.stat-usage-paused', locale).replace('{limit}', String(data.ai_budget.limite))
-              : t('home.stat-usage-of', locale).replace('{pct}', String(Math.round(data.ai_budget.pct * 100))).replace('{limit}', String(data.ai_budget.limite))} />
+          <BudgetCard b={data.ai_budget} brand={brand} locale={locale} />
         ) : (
           <StatCard value={`$${data.stats.usage_cost_usd.toFixed(2)}`} label={t('home.stat-usage', locale)} href="/integrations" brand={brand} />
         )}
