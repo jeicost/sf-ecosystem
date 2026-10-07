@@ -176,7 +176,7 @@ const DATE_RE = /^(\d{4})-(\d{2})-(\d{2})$/
 /** Normaliza un valor al tipo del campo. Inválido → null (nunca un valor "aproximado"). */
 export function coerceFieldValue(def: FieldDef, raw: unknown): FieldValue {
   if (raw === null || raw === undefined) return null
-  if (typeof raw === 'string' && raw.trim() === '') return null
+  if (typeof raw === 'string' && (raw.trim() === '' || /^(null|none|n\/a|-)$/i.test(raw.trim()))) return null
   switch (def.type) {
     case 'text': return typeof raw === 'string' ? raw.trim().slice(0, 500) : String(raw).slice(0, 500)
     case 'enum': {

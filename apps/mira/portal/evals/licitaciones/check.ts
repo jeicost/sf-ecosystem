@@ -245,7 +245,15 @@ const sch = buildOutputSchema(DEFAULT_SCHEMA) as { properties: Record<string, Re
 check('additionalProperties:false en la raíz y en los objetos', sch.additionalProperties === false && sch.properties.fields.additionalProperties === false && sch.properties.confidence.additionalProperties === false)
 check('urgency sin minimum/maximum (no admitidos): se acota en TS', !('minimum' in sch.properties.urgency))
 check('confidence y evidence exigen todas las claves del parte', (sch.properties.confidence.required as string[]).length === DEFAULT_SCHEMA.length)
-check('original_sender y notes admiten null y son requeridos', sch.required.includes('notes') && Array.isArray(sch.properties.notes.type))
+check('original_sender y notes son texto («» = no consta) y requeridos', sch.required.includes('notes') && sch.properties.notes.type === 'string' && sch.properties.original_sender.type === 'string')
+// La API limita los parámetros con tipos unión (400 real en prod el 7-oct con los 19 campos de GLS): ninguno puede ser anulable.
+const sinUniones = (o: unknown): boolean => {
+  if (!o || typeof o !== 'object') return true
+  if (Array.isArray((o as { type?: unknown }).type) || 'anyOf' in (o as object) || 'oneOf' in (o as object)) return false
+  return Object.values(o as Record<string, unknown>).every((v) => (v && typeof v === 'object' ? sinUniones(v) : true))
+}
+check('ningún tipo unión en el esquema de salida (ni anyOf)', sinUniones(buildOutputSchema(DEFAULT_SCHEMA)))
+check('los enums admiten «» (sin dato) en vez de null', (sch.properties.fields.properties as Record<string, { enum?: unknown[] }>).tipo_entrega.enum!.includes('') && !(sch.properties.fields.properties as Record<string, { enum?: unknown[] }>).tipo_entrega.enum!.includes(null))
 check('modelo de Email Ops: Sonnet 5.5 salvo env', EMAIL_OPS_MODEL === 'claude-sonnet-5-5' || !!process.env.EMAIL_OPS_MODEL)
 
 console.log('\nTítulos de sección que ya traen número o puntos (un Word subido vuelve con ellos)')
