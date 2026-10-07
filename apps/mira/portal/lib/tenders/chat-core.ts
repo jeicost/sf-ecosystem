@@ -503,7 +503,7 @@ export function toolLabel(name: string): string {
     listar_memorias_pasadas: 'Revisando memorias presentadas', listar_expedientes: 'Revisando expedientes',
     leer_memoria_pasada: 'Leyendo una memoria presentada', extraer_criterios: 'Extrayendo criterios del pliego',
     crear_documento: 'Guardando documento', leer_documento: 'Leyendo documento', editar_seccion: 'Editando sección',
-    generar_memoria_completa: 'Generando la memoria completa (2-4 min)', exportar_word: 'Preparando Word',
+    generar_memoria_completa: 'Generando la memoria completa (5-8 min)', exportar_word: 'Preparando Word',
     recordar_leccion: 'Guardando lección', asociar_expediente: 'Asociando expediente',
     guardar_version_final: 'Guardando la versión final para aprender de ella',
   }

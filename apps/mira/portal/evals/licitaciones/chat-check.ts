@@ -260,7 +260,7 @@ async function frontera() {
   const docMem = store.tender_documents[store.tender_documents.length - 1]
   check('memoria completa: documento creado con la nota de datos a confirmar', !gm.isError && docMem.kind === 'memoria' && JSON.stringify(docMem.sections).includes('Por confirmar: flota'))
   check('memoria completa: se guarda en el expediente sin memoria', !!creado.memoria)
-  const tarde = await executeTool({ ...ctx, startedAt: Date.now() - 120_000 }, 'generar_memoria_completa', { adjunto_ids: ['a1'] })
+  const tarde = await executeTool({ ...ctx, startedAt: Date.now() - 300_000 }, 'generar_memoria_completa', { adjunto_ids: ['a1'] })
   check('memoria completa con poco tiempo restante → se rechaza antes de empezar', tarde.isError)
 
   const lec = await executeTool(ctx, 'recordar_leccion', { texto: 'Nunca prometas reuniones mensuales.' })
