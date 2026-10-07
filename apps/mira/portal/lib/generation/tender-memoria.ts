@@ -474,7 +474,8 @@ export async function generateTenderMemoria(opts: {
   // podido enmascarar: la persona tiene que saberlo, no solo el modelo.
   if (examples.baseRecortada) gaps.push(avisoBaseRecortada(examples.baseRecortada))
   gaps.push(...examples.avisos, ...recortesEnsenanza)
-  const colados = organosColados(parsed, organos, pliegoText)
+  // Solo las secciones: las listas de instrucciones aplicadas citan lecciones y guía, que pueden nombrar órganos pasados.
+  const colados = organosColados({ secciones: parsed.secciones }, organos, pliegoText)
   // El marcador de enmascarado nunca debe acabar en el TEXTO de la memoria.
   if (secciones.some((sec) => /ÓRGANO ANTERIOR/.test(`${sec.titulo} ${sec.contenido}`))) {
     gaps.push('Alguna sección contiene el marcador «[ÓRGANO ANTERIOR]», que viene de una memoria de ejemplo: sustitúyelo por el órgano de esta licitación.')

@@ -28,7 +28,7 @@ export const GUIDE_STORE_CAP = 20000
  */
 export const INSTRUCTIONS_CAP = INSTRUCTIONS_STORE_CAP
 export const GUIDE_CAP = 8000
-export const LESSONS_CAP = 6000
+export const LESSONS_CAP = 9000 // 6.000 dejaba fuera 2 de las 43 lecciones de GTD (7-oct)
 export const LESSONS_MAX = 200
 /** Longitud de una lección, como el check de la tabla. */
 export const LESSON_MIN = 3
