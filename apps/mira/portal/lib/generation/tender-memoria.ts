@@ -9,6 +9,23 @@ import { getPlaybook } from '@/lib/generation/tender-oferta'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
 import { loadBaseMemoria, loadTeaching, teachingBlockDetallado, bloqueSeccionesFijas, comprobarSeccionesFijas, insertarSeccionesFijas, REGLA_MEDIOS_MATERIALES, seccionesRequeridas, requeridasQueFaltan, bloqueSeccionesRequeridas, type BaseMemoria, type Teaching } from '@/lib/tenders/teaching'
 import { CHEAP_MODEL } from '@/lib/ai/models'
+import type Anthropic from '@anthropic-ai/sdk'
+
+/**
+ * El pliego como bloque de `system` CACHEADO una hora, byte a byte igual en la
+ * extracción de criterios y en la generación: así la segunda llamada (y cada
+ * regeneración mientras la responsable ajusta instrucciones) lee los ~40.000
+ * tokens del pliego de la caché a un 10 % del precio. Medido 7-oct: dos
+ * generaciones seguidas mandaron 102.000 tokens idénticos sin caché.
+ * El SDK 0.39 no tipa `ttl`; la API sí lo admite en estos modelos.
+ */
+export function bloquePliego(pliegoText: string): Anthropic.TextBlockParam {
+  return {
+    type: 'text',
+    text: `TENDER DOCUMENTS (PCAP / PPT / criterios), for reference — respond to its criteria, do not copy it verbatim:\n<pliego>\n${pliegoText.slice(0, PLIEGO_WINDOW)}\n</pliego>`,
+    cache_control: { type: 'ephemeral', ttl: '1h' } as unknown as Anthropic.CacheControlEphemeral,
+  }
+}
 
 // Herramienta de licitaciones (D4 Entrega — el vertical que gana dinero).
 // Dos pasos: (1) del PLIEGO extrae los criterios de puntuación reales; (2) con
@@ -55,7 +72,7 @@ export function pliegoTruncationGap(pliegoText: string): string | null {
 
 /** Paso 1 — extrae la estructura de puntuación del pliego. */
 export async function extractTenderCriteria(clientId: string, pliegoText: string): Promise<TenderCriteria> {
-  const prompt = `You are a Spanish public-procurement analyst. From the tender documents below (pliego: PCAP / PPT / criterios), extract the SCORING STRUCTURE exactly as written — do not invent points or criteria.
+  const prompt = `You are a Spanish public-procurement analyst. From the tender documents in the system context (pliego: PCAP / PPT / criterios), extract the SCORING STRUCTURE exactly as written — do not invent points or criteria.
 
 Return ONLY a JSON object with this shape:
 {
@@ -75,15 +92,11 @@ Return ONLY a JSON object with this shape:
 
 Rules: points come ONLY from the text. If a criterion's points aren't stated, use null. Keep 'requires' concrete and actionable.
 
-TENDER DOCUMENTS:
-"""
-${pliegoText.slice(0, PLIEGO_WINDOW)}
-"""
-
 ${GROUNDING_CONTRACT}`
 
   const msg = await createMessageForClient(clientId, 'tender/extract', {
     model: MODEL, max_tokens: 4000,
+    system: [bloquePliego(pliegoText)],
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -315,8 +328,27 @@ export function buildMemoriaPrompt(parts: {
   /** Bloque del esqueleto mínimo (bloqueSeccionesRequeridas), o vacío. */
   requeridas?: string
 }): string {
+  const r = buildMemoriaRequest(parts)
+  return `${r.system.map((b) => b.text).join('\n\n')}\n\n${r.user}`
+}
+
+/**
+ * La petición en dos partes: `system` con lo ESTABLE por expediente (el pliego,
+ * cacheado 1 h y compartido con la extracción; brain + corpus + memorias de
+ * ejemplo, cacheados 5 min) y `user` con lo que cambia entre regeneraciones
+ * (criterios, instrucciones, enseñanza, fijas, esqueleto). Así regenerar tras
+ * ajustar instrucciones paga el 10 % de la entrada grande.
+ */
+export function buildMemoriaRequest(parts: Parameters<typeof buildMemoriaPrompt>[0]): { system: Anthropic.TextBlockParam[]; user: string } {
   const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas, fijas, requeridas } = parts
-  return `You are the technical-proposal writer for this company (D4 "Entrega"). Write the MEMORIA TÉCNICA that responds to the tender below, section by section, MAXIMISING the score. Use the company's real document_system (skeleton, reusable blocks, tone) from the brand context, and its real certifications/facts from the client knowledge. Personalise to THIS tender (name the contracting body in each section).
+  const corpus = [
+    brainBlock,
+    knowledge ? `CLIENT KNOWLEDGE (real corpus — certifications, prior memorias, document skeleton):\n${knowledge}` : '',
+    examplesText ? `PAST SUBMITTED MEMORIAS (STRUCTURE AND TONE ONLY — imita su esqueleto, su registro y el tipo de compromiso que asumen; NUNCA sus cifras ni sus nombres. Si hay una MEMORIA DE PARTIDA, su estructura manda sobre las demás):\n${examplesText}` : '',
+  ].filter(Boolean).join('\n\n')
+  const system: Anthropic.TextBlockParam[] = [bloquePliego(pliegoText)]
+  if (corpus) system.push({ type: 'text', text: corpus, cache_control: { type: 'ephemeral' } })
+  const user = `You are the technical-proposal writer for this company (D4 "Entrega"). Write the MEMORIA TÉCNICA that responds to the tender in the system context, section by section, MAXIMISING the score. Use the company's real document_system (skeleton, reusable blocks, tone) from the brand context, and its real certifications/facts from the client knowledge. Personalise to THIS tender (name the contracting body in each section).
 
 SCORING STRUCTURE (do NOT write the price offer):
 ${JSON.stringify(criteria.criteria.filter((c) => c.group !== 'precio'), null, 1)}
@@ -356,17 +388,10 @@ ${fijas ? `${fijas}\n` : ''}
 ${teaching ? `${teaching}\n` : ''}
 ${disenadas ? `${disenadas}\n` : ''}
 ${playbook ? `CLIENT TENDER PLAYBOOK (doctrina destilada de sus ofertas presentadas — prevalece sobre heurísticas genéricas):\n${playbook.slice(0, 6000)}\n` : ''}
-${examplesText ? `PAST SUBMITTED MEMORIAS (STRUCTURE AND TONE ONLY — imita su esqueleto, su registro y el tipo de compromiso que asumen; NUNCA sus cifras ni sus nombres. Si hay una MEMORIA DE PARTIDA, su estructura manda sobre las demás):\n${examplesText}\n` : ''}
-${brainBlock}
-
-${knowledge ? `CLIENT KNOWLEDGE (real corpus — certifications, prior memorias, document skeleton):\n${knowledge}` : ''}
-
-TENDER (for reference — respond to its criteria, do not copy it verbatim):
-"""
-${pliegoText.slice(0, PLIEGO_WINDOW)}
-"""
+The BRAND CONTEXT, the CLIENT KNOWLEDGE, the PAST SUBMITTED MEMORIAS and the TENDER DOCUMENTS are in the system context above.
 
 ${GROUNDING_CONTRACT}`
+  return { system, user }
 }
 
 /**
@@ -493,14 +518,15 @@ export async function generateTenderMemoria(opts: {
 
   const fijas = teaching.standardSections || []
   const requeridas = seccionesRequeridas(teaching.requiredSections || [], fijas)
-  const prompt = buildMemoriaPrompt({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas), fijas: bloqueSeccionesFijas(fijas), requeridas: bloqueSeccionesRequeridas(requeridas) })
+  const peticion = buildMemoriaRequest({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas), fijas: bloqueSeccionesFijas(fijas), requeridas: bloqueSeccionesRequeridas(requeridas) })
 
   const msg = await createMessageForClient(clientId, 'tender/generate', {
     // 16.000: una memoria completa (criterios + secciones de servicio) no cabe
     // en 12.000. Por encima de ~21.000 el SDK exige streaming (medido 01-sep).
     // 24.000 (×2 en los modelos que piensan = 48.000): el esqueleto completo son ~18 secciones y 11 ya ocupaban 23-25k tokens (medido 7-oct).
     model: MODEL, max_tokens: 24000,
-    messages: [{ role: 'user', content: prompt }],
+    system: peticion.system,
+    messages: [{ role: 'user', content: peticion.user }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
   // Una memoria cortada a medias parece una memoria corta: se rechaza.
