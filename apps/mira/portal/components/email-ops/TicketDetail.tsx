@@ -2,13 +2,15 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink } from 'lucide-react'
+import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink, Reply, Copy, Eye } from 'lucide-react'
 import { t, type Locale } from '@/lib/i18n'
 import QuoteFromTicketButton from '@/components/cotizador/QuoteFromTicketButton'
 import type { FieldDef, FieldValue } from '@/lib/email-ops/schema'
 import { fieldLabel } from '@/lib/email-ops/schema'
 import type { TicketRow, MessageRow } from '@/lib/email-ops/types'
 import { confidenceColor, timeAgo } from '@/lib/email-ops/format'
+import { camposARevisar } from '@/lib/email-ops/review'
+import { borradorRespuesta } from '@/lib/email-ops/reply'
 import { PriorityBadge, StatusPill, DeliveryPill, KindPill } from './Badges'
 
 // Detalle de un ticket: datos del parte (editables inline, con confianza y
@@ -17,7 +19,7 @@ import { PriorityBadge, StatusPill, DeliveryPill, KindPill } from './Badges'
 type AttachmentWithUrl = MessageRow['attachments'][number] & { url: string | null }
 type MessageWithUrls = Omit<MessageRow, 'attachments'> & { attachments: AttachmentWithUrl[] }
 
-export default function TicketDetail({ ticketId, clientId, locale, brand }: { ticketId: string; clientId: string; locale: Locale; brand: string }) {
+export default function TicketDetail({ ticketId, clientId, locale, brand, brandName }: { ticketId: string; clientId: string; locale: Locale; brand: string; brandName?: string | null }) {
   const [ticket, setTicket] = useState<TicketRow | null>(null)
   const [messages, setMessages] = useState<MessageWithUrls[]>([])
   const [schema, setSchema] = useState<FieldDef[]>([])
@@ -98,6 +100,13 @@ export default function TicketDetail({ ticketId, clientId, locale, brand }: { ti
 
   const isOther = ticket.kind === 'other'
   const missing = new Set(ticket.missing_fields || [])
+  // Lo que MIRA dedujo (no está escrito tal cual): se marca para revisión, campo a campo.
+  const revisar = new Map(camposARevisar(ticket, schema).map((c) => [c.key, c]))
+  // Respuesta al remitente: borrador desde los datos del parte, sin modelo, en el cliente de correo de la persona.
+  const borrador = borradorRespuesta({ ticket, messages, schema, firma: `${t('emailops.reply.signature', locale)}${brandName ? ` · ${brandName}` : ''}` })
+  const copiarRespuesta = async () => {
+    try { await navigator.clipboard.writeText(`Para: ${borrador.to}\nAsunto: ${borrador.subject}\n\n${borrador.body}`); flash(t('emailops.toast.copied', locale)) } catch { flash(t('emailops.toast.error', locale)) }
+  }
 
   return (
     <div className="mx-auto max-w-6xl px-8 py-8">
@@ -119,6 +128,17 @@ export default function TicketDetail({ ticketId, clientId, locale, brand }: { ti
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {/* Responder: abre el correo en el cliente de la persona con el borrador; «Copiar» para quien usa webmail. */}
+          {borrador.to && (
+            <>
+              <a href={borrador.mailto} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-white" style={{ background: brand }} title={`${t('emailops.action.reply', locale)} · ${borrador.to}`}>
+                <Reply size={12} /> {t('emailops.action.reply', locale)}
+              </a>
+              <button onClick={copiarRespuesta} className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-2 text-xs text-ink-secondary hover:text-ink" title={borrador.subject}>
+                <Copy size={12} /> {t('emailops.action.copy-reply', locale)}
+              </button>
+            </>
+          )}
           {ticket.status !== 'closed' && !isOther && (
             <button onClick={() => patch({ status: 'closed' }, 'close')} disabled={!!busy}
               className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-white disabled:opacity-50" style={{ background: '#10B981' }}>
@@ -154,6 +174,13 @@ export default function TicketDetail({ ticketId, clientId, locale, brand }: { ti
 
       {toast && <div className="mb-4 inline-block rounded-lg bg-surface px-3 py-1.5 text-xs text-ink-secondary">{toast}</div>}
 
+      {revisar.size > 0 && !isOther && (
+        <div className="mb-4 flex items-start gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 px-3 py-2 text-xs text-amber-300">
+          <Eye size={14} className="mt-0.5 shrink-0" />
+          <span>{t('emailops.detail.review-banner', locale).replace('{n}', String(revisar.size))} <span className="text-amber-400/80">({[...revisar.keys()].map((k) => { const f = schema.find((x) => x.key === k); return f ? fieldLabel(f, locale) : k }).join(', ')})</span></span>
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
         {/* Datos del parte */}
         <section className="rounded-2xl border border-line bg-card p-5">
@@ -177,14 +204,16 @@ export default function TicketDetail({ ticketId, clientId, locale, brand }: { ti
               const conf = ticket.confidence?.[f.key]
               const ev = ticket.evidence?.[f.key]
               const isMissing = missing.has(f.key)
+              const rev = revisar.get(f.key)
               return (
-                <div key={f.key} className={clsx('rounded-xl border px-3 py-2', isMissing && !editing ? 'border-amber-500/30 bg-amber-500/5' : 'border-line-subtle')}>
+                <div key={f.key} className={clsx('rounded-xl border px-3 py-2', (isMissing || rev) && !editing ? 'border-amber-500/30 bg-amber-500/5' : 'border-line-subtle')}>
                   <div className="mb-0.5 flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-ink-muted">
                     <span className="h-1.5 w-1.5 rounded-full" style={{ background: value == null ? '#94A3B8' : confidenceColor(conf, manual) }} title={manual ? t('emailops.detail.manual', locale) : `${t('emailops.detail.confidence', locale)}: ${conf !== undefined ? Math.round(conf * 100) + '%' : '—'}`} />
                     {fieldLabel(f, locale)}
                     {f.required && <span className="text-ink-muted">*</span>}
                     {manual && <span className="ml-auto text-[9px] normal-case text-emerald-400">{t('emailops.detail.manual', locale)}</span>}
                     {isMissing && !manual && <span className="ml-auto inline-flex items-center gap-1 text-[9px] normal-case text-amber-400"><AlertCircle size={10} /> {t('emailops.detail.missing', locale)}</span>}
+                    {rev && !editing && <span className="ml-auto inline-flex items-center gap-1 text-[9px] normal-case text-amber-400" title={rev.evidencia ? `${t('emailops.detail.evidence', locale)}: ${rev.evidencia}` : undefined}><Eye size={10} /> {t(`emailops.detail.${rev.motivo}`, locale)}</span>}
                   </div>
                   {editing ? (
                     f.type === 'enum' ? (

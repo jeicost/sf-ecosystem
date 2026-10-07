@@ -13,12 +13,19 @@
 
 import type Anthropic from '@anthropic-ai/sdk'
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { ajustesModelo } from '@/lib/ai/models'
+import { ajustesModelo, modeloConPensamiento } from '@/lib/ai/models'
 import { buildToolInputSchema, coerceFields, type FieldDef } from './schema'
 import { formatExamplesForPrompt, type TrainingExample } from './learning'
 import type { Extraction, TicketKind } from './types'
 
 export const EMAIL_OPS_MODEL = process.env.EMAIL_OPS_MODEL || 'claude-sonnet-5-5'
+/**
+ * Pensamiento del modelo en la extracción. 'off' (por defecto): Sonnet 5.5 sin
+ * razonamiento (`between_tools`, que sin herramientas es «sin pensar»): la
+ * salida pasa de ~1.000 tokens a ~400 y el coste por correo baja a la mitad
+ * (Carlos, 7-oct: «lo más eficiente posible»). 'on' vuelve al adaptativo.
+ */
+export const EMAIL_OPS_THINKING = process.env.EMAIL_OPS_THINKING || 'off'
 export const EMAIL_OPS_ROUTE = 'email-ops-extract'
 const MAX_BODY_CHARS = 30000
 
@@ -95,7 +102,7 @@ ${fieldGuide(input.schema)}
 REGLAS DURAS:
 1. Si un dato no está en el correo ni en los adjuntos, el campo va vacío (""). No deduzcas direcciones, horas ni pesos "probables". La única deducción permitida es tipo_entrega a partir de las direcciones (misma área metropolitana → local; otra provincia de España → nacional; otro país → internacional) y la fecha relativa ("mañana", "el viernes") resuelta con la fecha del correo.
 2. Copia direcciones, nombres y teléfonos literales; normaliza solo formatos (fechas a YYYY-MM-DD, horas a HH:MM 24h, pesos a kg).
-3. Para cada campo con valor, evidence[campo] es el fragmento literal del que sale (máx. 200 caracteres) y confidence[campo] va de 0 a 1 (1 = escrito tal cual; 0.6 = deducido de forma segura; 0.3 = ambiguo). Si el campo va vacío, evidence vacío y confidence 0.
+3. Para cada campo con valor, evidence[campo] es el fragmento literal del que sale (máx. 200 caracteres) y confidence[campo] va de 0 a 1: 1 SOLO si el dato está escrito tal cual en el correo o en un adjunto; 0.6 si lo deduces, calculas o supones (una fecha relativa resuelta, un tipo de entrega por las direcciones, un vehículo por el volumen, una suma de bultos); 0.3 si es ambiguo. Toda suposición tuya debe quedar marcada con confianza ≤ 0.6: el operador la revisará antes de confirmar al cliente. Si el campo va vacío, evidence vacío y confidence 0.
 4. Si el correo es un reenvío, original_sender es quien pidió el envío en las cabeceras citadas (De:/From:), no quien lo reenvía.
 5. urgency: 5 si dice urgente/inmediato/hoy mismo o la recogida es en pocas horas; 4 si es para hoy; 3 normal; 2 sin prisa; 1 informativo.
 6. Cuando el correo es una RESPUESTA dentro de un hilo (confirmación, cambio de hora, dato que faltaba), extrae solo lo que este correo aporta o cambia; el resto de campos vacíos. El sistema los fusiona con lo que ya tenía.
@@ -159,6 +166,8 @@ export async function analyzeEmail(input: AnalyzeInput): Promise<Extraction> {
     system: buildSystemBlocks(input),
     messages: [{ role: 'user' as const, content: userContent(input) }],
     output_config: { format: { type: 'json_schema', schema: buildOutputSchema(input.schema) }, ...(ajustesModelo(EMAIL_OPS_MODEL, 'low').output_config as Record<string, unknown> | undefined) },
+    // Solo los 5.x admiten apagar el pensamiento así; en los demás no se manda nada.
+    ...(EMAIL_OPS_THINKING === 'off' && modeloConPensamiento(EMAIL_OPS_MODEL) ? { thinking: { type: 'between_tools' } } : {}),
   }
   // output_config no está en los tipos del SDK 0.39 (es de 2026); el SDK lo manda tal cual.
   const response = await createMessageForClient(input.clientId, EMAIL_OPS_ROUTE, params as unknown as Anthropic.MessageCreateParamsNonStreaming)

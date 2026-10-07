@@ -9,5 +9,5 @@ export default function EmailOpsTicketPage({ params }: { params: Promise<{ ticke
   const { locale } = useLocaleContext()
   const { activeClient } = useActiveClient()
   if (!activeClient) return null
-  return <TicketDetail ticketId={ticketId} clientId={activeClient.id} locale={locale} brand={activeClient.primaryColor || '#6366F1'} />
+  return <TicketDetail ticketId={ticketId} clientId={activeClient.id} locale={locale} brand={activeClient.primaryColor || '#6366F1'} brandName={activeClient.name} />
 }

@@ -14,6 +14,8 @@ import { validateExtraction } from '../../lib/email-ops/extract'
 import { htmlToText, autoReplyReason } from '../../lib/email-ops/pipeline'
 import { sniffImageType } from '../../lib/vision'
 import type { Extraction } from '../../lib/email-ops/types'
+import { motivoRevision, camposARevisar, cuentaRevision } from '../../lib/email-ops/review'
+import { destinatarioRespuesta, asuntoRespuesta, cuerpoRespuesta, borradorRespuesta } from '../../lib/email-ops/reply'
 
 let failures = 0
 function check(name: string, cond: boolean, detail?: unknown) {
@@ -111,4 +113,24 @@ check('extractAddress/name', extractAddress('Marta Ruiz <Marta@X.es>') === 'mart
 check('htmlToText', htmlToText('<div>Hola<br>mundo &amp; <b>fin</b></div><style>x{}</style>') === 'Hola\nmundo & fin')
 
 console.log(failures ? `\n❌ ${failures} fallos` : '\n✅ todo en verde')
+
+// ── Revisión de lo deducido y respuesta al remitente (7-oct-2026) ──
+check('revisión: literal (1) no se marca', motivoRevision('Madrid', 1, 'Madrid', false) === null)
+check('revisión: deducido (0.6) se marca', motivoRevision('local', 0.6, 'ambas en Madrid', false) === 'deducido')
+check('revisión: ambiguo (0.3)', motivoRevision('2026-10-08', 0.3, 'mañana', false) === 'ambiguo')
+check('revisión: con valor y sin evidencia', motivoRevision(3, 1, '', false) === 'sin-evidencia')
+check('revisión: corregido a mano no se marca', motivoRevision('x', 0.3, '', true) === null)
+check('revisión: vacío no se marca', motivoRevision(null, 0, '', false) === null)
+const tk = { fields: { fecha: '2026-10-08', tipo_entrega: 'local', bultos: 2, remitente: 'Museo' }, confidence: { fecha: 0.6, tipo_entrega: 0.6, bultos: 1, remitente: 1 }, evidence: { fecha: 'mañana', tipo_entrega: 'Madrid → Madrid', bultos: 'dos sobres', remitente: 'Museo' }, manual_overrides: {}, missing_fields: ['recogida_direccion'], summary: 'Recogida de dos sobres', original_sender: null, from_address: 'Ana <ana@museo.es>', subject: 'Fwd: Recogida urgente' }
+const rev = camposARevisar(tk, COURIER_V1_FIELDS)
+check('camposARevisar: fecha y tipo_entrega deducidos, bultos y remitente no', rev.map((r) => r.key).sort().join(',') === 'fecha,tipo_entrega' && cuentaRevision(tk) === 2)
+check('destinatario: el correo del remitente aunque venga con nombre', destinatarioRespuesta(tk) === 'ana@museo.es')
+check('destinatario: original_sender manda si trae correo', destinatarioRespuesta({ original_sender: 'Pepe <pepe@cliente.com>', from_address: 'ana@museo.es' }) === 'pepe@cliente.com')
+check('asunto: RE: y sin Fwd', asuntoRespuesta('Fwd: Recogida urgente') === 'RE: Recogida urgente' && asuntoRespuesta('RE: x') === 'RE: x' && asuntoRespuesta(null) === 'RE: su solicitud de envío')
+const cuerpo = cuerpoRespuesta({ ticket: tk, schema: COURIER_V1_FIELDS, firma: 'Equipo de operaciones · GLS' })
+check('cuerpo: fecha en dd/mm/yyyy y marcada para confirmar; bultos sin marca', cuerpo.includes('Fecha: 08/10/2026 (por favor, confírmenlo)') && cuerpo.includes('Bultos: 2') && !cuerpo.includes('Bultos: 2 (por favor'))
+check('cuerpo: pide lo que falta y firma', cuerpo.includes('necesitamos que nos indiquen: dirección de recogida') && cuerpo.trim().endsWith('Equipo de operaciones · GLS'))
+const b = borradorRespuesta({ ticket: tk, schema: COURIER_V1_FIELDS, firma: 'Ops' })
+check('mailto: destinatario, asunto y cuerpo codificados', b.mailto.startsWith('mailto:ana%40museo.es?subject=RE%3A%20Recogida%20urgente&body=Buenos') && decodeURIComponent(b.mailto.split('&body=')[1]).includes('Fecha: 08/10/2026'))
+
 process.exit(failures ? 1 : 0)

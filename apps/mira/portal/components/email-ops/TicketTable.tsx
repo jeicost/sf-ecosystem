@@ -1,10 +1,11 @@
 'use client'
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import { AlertCircle, Paperclip } from 'lucide-react'
+import { AlertCircle, Paperclip, Eye } from 'lucide-react'
 import { t, type Locale } from '@/lib/i18n'
 import type { TicketRow } from '@/lib/email-ops/types'
 import { fmtDate, fmtWindow, timeAgo } from '@/lib/email-ops/format'
+import { cuentaRevision } from '@/lib/email-ops/review'
 import { PriorityBadge, DeliveryPill, StatusPill, KindPill } from './Badges'
 
 // Tabla de tickets. Filas enlazadas al detalle; columnas = lo que un operador
@@ -27,6 +28,7 @@ export default function TicketTable({
             <th className={clsx(th, 'w-full')}>{t('emailops.col.summary', locale)}</th>
             <th className={th}>{t('emailops.col.from', locale)}</th>
             <th className={th}>{t('emailops.col.missing', locale)}</th>
+            <th className={th}>{t('emailops.col.review', locale)}</th>
             {showStatus && <th className={th} />}
             <th className={th}>{t('emailops.col.age', locale)}</th>
           </tr>
@@ -35,6 +37,7 @@ export default function TicketTable({
           {tickets.map((tk) => {
             const missing = tk.missing_fields?.length || 0
             const isOther = tk.kind === 'other'
+            const revisar = isOther ? 0 : cuentaRevision(tk)
             return (
               <tr key={tk.id} className="group border-t border-line-subtle transition-colors hover:bg-surface">
                 <td className="px-3 py-2.5 align-top">
@@ -65,6 +68,13 @@ export default function TicketTable({
                   {missing > 0 && !isOther ? (
                     <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[11px] font-medium text-amber-400" title={tk.missing_fields.join(', ')}>
                       <AlertCircle size={11} /> {missing}
+                    </span>
+                  ) : <span className="text-ink-muted">—</span>}
+                </td>
+                <td className="px-3 py-2.5 align-top">
+                  {revisar > 0 ? (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[11px] font-medium text-amber-400" title={t('emailops.detail.review-banner', locale).replace('{n}', String(revisar))}>
+                      <Eye size={11} /> {revisar}
                     </span>
                   ) : <span className="text-ink-muted">—</span>}
                 </td>
