@@ -60,6 +60,51 @@ export interface Teaching {
   lessons: Lesson[]
   /** Secciones fijas de la casa (todas, activas o no; el bloque del prompt filtra). */
   standardSections: StandardSection[]
+  /** Títulos que toda memoria lleva (esqueleto de la casa); «Plan de contingencia» va siempre además. */
+  requiredSections: string[]
+}
+
+/** Carlos (7-oct): «Plan de contingencia incluir siempre y ellos verán si lo mantienen». Para todas las marcas. */
+export const SECCIONES_SIEMPRE = ['Plan de contingencia']
+export const REQUIRED_SECTIONS_MAX = 30
+
+/** JSON guardado → títulos limpios, sin repetidos. Puro. */
+export function parseRequiredSections(raw: unknown): string[] {
+  if (!Array.isArray(raw)) return []
+  const out: string[] = []
+  for (const x of raw) {
+    if (typeof x !== 'string') continue
+    const t = x.replace(/\s+/g, ' ').trim().slice(0, STANDARD_TITLE_MAX)
+    if (t && !out.some((y) => tituloCoincide(y, t))) out.push(t)
+  }
+  return out.slice(0, REQUIRED_SECTIONS_MAX)
+}
+
+/** Lo requerido por la marca + lo que va siempre, sin repetir y sin lo que ya es sección fija. */
+export function seccionesRequeridas(required: string[], fijas: StandardSection[] = []): string[] {
+  const out: string[] = []
+  for (const t of [...required, ...SECCIONES_SIEMPRE]) {
+    if (!out.some((y) => tituloCoincide(y, t)) && !fijas.some((f) => f.enabled && tituloCoincide(f.title, t))) out.push(t)
+  }
+  return out
+}
+
+/** Títulos requeridos que la memoria no trae. Puro. */
+export function requeridasQueFaltan(secciones: SeccionGenerada[], requeridas: string[]): string[] {
+  return requeridas.filter((r) => !secciones.some((s) => tituloCoincide(s.titulo || '', r)))
+}
+
+/** Bloque del prompt: el esqueleto mínimo. Puro. */
+export function bloqueSeccionesRequeridas(requeridas: string[]): string {
+  if (!requeridas.length) return ''
+  return `ESQUELETO MÍNIMO — la memoria se entrega LO MÁS COMPLETA POSIBLE: además de las secciones que puntúan, incluye SIEMPRE una sección para cada uno de estos títulos (con el contenido real de la empresa aplicado a este contrato; si el pliego no dice nada del tema, se describe la práctica habitual de la empresa). La responsable eliminará después lo que no considere necesario; quitar una de estas secciones no es decisión tuya.
+${requeridas.map((t) => `- ${t}`).join('\n')}`
+}
+
+export async function saveRequiredSections(clientId: string, list: string[]): Promise<void> {
+  const { error } = await adminClient().from('tender_settings')
+    .upsert({ client_id: clientId, required_sections: toJson(list), updated_at: new Date().toISOString() }, { onConflict: 'client_id' })
+  if (error) throw error
 }
 
 export const STANDARD_SECTIONS_MAX = 8
@@ -149,7 +194,7 @@ export const REGLA_MEDIOS_MATERIALES = 'La sección de MEDIOS / EQUIPO MATERIAL 
 export async function loadTeaching(clientId: string): Promise<Teaching> {
   const db = adminClient()
   const [settings, lessons] = await Promise.all([
-    db.from('tender_settings').select('guide,standard_sections').eq('client_id', clientId).maybeSingle(),
+    db.from('tender_settings').select('guide,standard_sections,required_sections').eq('client_id', clientId).maybeSingle(),
     db.from('tender_lessons').select('id,text,source,created_at')
       .eq('client_id', clientId).eq('active', true)
       .order('created_at', { ascending: false }).limit(LESSONS_MAX),
@@ -157,7 +202,7 @@ export async function loadTeaching(clientId: string): Promise<Teaching> {
   if (settings.error) throw settings.error
   if (lessons.error) throw lessons.error
   const guide = typeof settings.data?.guide === 'string' && settings.data.guide.trim() ? settings.data.guide : null
-  return { guide, lessons: (lessons.data || []) as Lesson[], standardSections: parseStandardSections(settings.data?.standard_sections) }
+  return { guide, lessons: (lessons.data || []) as Lesson[], standardSections: parseStandardSections(settings.data?.standard_sections), requiredSections: parseRequiredSections(settings.data?.required_sections) }
 }
 
 /** Guarda la guía de redacción (y/o el playbook) de la marca. Parcial: solo lo que viene. */

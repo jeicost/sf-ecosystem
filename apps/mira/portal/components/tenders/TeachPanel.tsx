@@ -46,6 +46,13 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
   const [savingGuide, setSavingGuide] = useState(false)
   const [guideSavedAt, setGuideSavedAt] = useState<string | null>(null)
 
+  // Esqueleto: títulos que toda memoria lleva (una por línea)
+  const [req, setReq] = useState('')
+  const [reqSaved, setReqSaved] = useState('')
+  const [savingReq, setSavingReq] = useState(false)
+  const [reqSavedAt, setReqSavedAt] = useState<string | null>(null)
+  const [siempre, setSiempre] = useState<string[]>([])
+
   // Secciones fijas
   const [fijas, setFijas] = useState<Fija[]>([])
   const [fijasSaved, setFijasSaved] = useState('[]')
@@ -70,6 +77,7 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
     setGuide(''); setGuideSaved(''); setGuideSavedAt(null)
     setLessons([]); setNueva('')
     setFijas([]); setFijasSaved('[]'); setFijasSavedAt(null)
+    setReq(''); setReqSaved(''); setReqSavedAt(null)
   }, [clientId])
 
   useEffect(() => {
@@ -101,6 +109,8 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
         setLessons(Array.isArray(ld.lessons) ? ld.lessons : [])
         const fj: Fija[] = Array.isArray(fd.sections) ? fd.sections : []
         setFijas(fj); setFijasSaved(JSON.stringify(fj))
+        const rq = Array.isArray(fd.required) ? (fd.required as string[]).join('\n') : ''
+        setReq(rq); setReqSaved(rq); setSiempre(Array.isArray(fd.always) ? fd.always : [])
         setLoaded(true)
       } catch { if (!cancelado()) { setErr('Network error'); setLoadFailed(true) } } finally { if (!cancelado()) setLoading(false) }
     })()
@@ -137,6 +147,24 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
       trackAction('/licitaciones', 'ensenar-fijas', clientId, { n: fj.length })
     } catch { setErr('Network error') } finally { setSavingFijas(false) }
   }
+  const saveReq = async () => {
+    setSavingReq(true); setErr(null)
+    try {
+      const lista = req.split('\n').map((x) => x.trim()).filter(Boolean)
+      const res = await fetch('/api/tender/standard-sections', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, required: lista }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setErr(data.error || 'Could not save'); return }
+      const rq = Array.isArray(data.required) ? (data.required as string[]).join('\n') : req
+      setReq(rq); setReqSaved(rq)
+      setReqSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
+      trackAction('/licitaciones', 'ensenar-esqueleto', clientId, { n: lista.length })
+    } catch { setErr('Network error') } finally { setSavingReq(false) }
+  }
+  const reqDirty = loaded && req !== reqSaved
+
   const setFija = (id: string, patch: Partial<Fija>) => setFijas((prev) => prev.map((x) => (x.id === id ? { ...x, ...patch } : x)))
   const fijasDirty = loaded && JSON.stringify(fijas) !== fijasSaved
   const fijasOk = fijas.every((x) => x.title.trim() && x.content.trim())
@@ -279,7 +307,21 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
                 </div>
               </div>
 
-              {/* (d) Dónde entra todo esto */}
+              {/* (d) Esqueleto mínimo: títulos que toda memoria lleva */}
+              <p className="mb-1.5 mt-5 text-xs font-medium text-ink-secondary">Sections every proposal includes</p>
+              <p className="mb-2 text-[11px] text-ink-muted">One title per line. MIRA writes all of them (as complete as possible) and you delete what you do not need in each proposal.{siempre.length ? ` Always included anyway: ${siempre.join(', ')}.` : ''}</p>
+              <textarea value={req} onChange={(e) => setReq(e.target.value)} rows={Math.min(14, Math.max(4, req.split('\n').length + 1))} disabled={!loaded}
+                placeholder={'Descripción general del servicio\nCircuito operativo del servicio\nGestión de incidencias\nPuesta en marcha\n…'}
+                className="w-full resize-y rounded-xl border border-line bg-page p-3 text-[12.5px] leading-relaxed text-ink outline-none focus:ring-1 focus:ring-ink-muted disabled:opacity-60" />
+              <div className="mt-2 flex items-center justify-end gap-2">
+                {reqSavedAt && !reqDirty && <span className="text-[11px] text-ink-muted">Saved {reqSavedAt}</span>}
+                <button onClick={saveReq} disabled={savingReq || !loaded || !reqDirty}
+                  className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                  {savingReq ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save skeleton</>}
+                </button>
+              </div>
+
+              {/* (e) Dónde entra todo esto */}
               <p className="mt-4 text-[11px] text-ink-muted">Everything here is read on every proposal, offer and improvement for this brand. Pricing rules live in the pricing playbook.</p>
             </>
           )}

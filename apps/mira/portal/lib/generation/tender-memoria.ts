@@ -7,7 +7,8 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { getPlaybook } from '@/lib/generation/tender-oferta'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
-import { loadBaseMemoria, loadTeaching, teachingBlockDetallado, bloqueSeccionesFijas, comprobarSeccionesFijas, insertarSeccionesFijas, REGLA_MEDIOS_MATERIALES, type BaseMemoria, type Teaching } from '@/lib/tenders/teaching'
+import { loadBaseMemoria, loadTeaching, teachingBlockDetallado, bloqueSeccionesFijas, comprobarSeccionesFijas, insertarSeccionesFijas, REGLA_MEDIOS_MATERIALES, seccionesRequeridas, requeridasQueFaltan, bloqueSeccionesRequeridas, type BaseMemoria, type Teaching } from '@/lib/tenders/teaching'
+import { CHEAP_MODEL } from '@/lib/ai/models'
 
 // Herramienta de licitaciones (D4 Entrega — el vertical que gana dinero).
 // Dos pasos: (1) del PLIEGO extrae los criterios de puntuación reales; (2) con
@@ -311,8 +312,10 @@ export function buildMemoriaPrompt(parts: {
   disenadas?: string
   /** Bloque de secciones fijas de la casa (bloqueSeccionesFijas), o vacío. */
   fijas?: string
+  /** Bloque del esqueleto mínimo (bloqueSeccionesRequeridas), o vacío. */
+  requeridas?: string
 }): string {
-  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas, fijas } = parts
+  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas, fijas, requeridas } = parts
   return `You are the technical-proposal writer for this company (D4 "Entrega"). Write the MEMORIA TÉCNICA that responds to the tender below, section by section, MAXIMISING the score. Use the company's real document_system (skeleton, reusable blocks, tone) from the brand context, and its real certifications/facts from the client knowledge. Personalise to THIS tender (name the contracting body in each section).
 
 SCORING STRUCTURE (do NOT write the price offer):
@@ -321,8 +324,9 @@ ${JSON.stringify(criteria.criteria.filter((c) => c.group !== 'precio'), null, 1)
 WHAT THE MEMORIA MUST CONTAIN — two kinds of sections:
 1. One section per scoring criterion above ('juicio_valor' or 'automatico_tecnico'), titled with the criterion, puntos_objetivo = its points. These are written to MAXIMISE the score.
 2. The sections the tender's technical specifications (PPT) require the bidder to describe even when they do not score. A technical proposal is still judged on whether it proves the service can be delivered: typically the service description and operating procedure, human and material resources assigned, start-up plan, quality and incident management, and contingency plan. Write them with the company's own skeleton (see the past memorias), personalised to this contract. puntos_objetivo = null for these.
+3. COMPLETENESS BY DEFAULT: the memoria is delivered as complete as possible — every section of the company's usual skeleton, and ALWAYS a contingency plan («Plan de contingencia»), even when the tender does not score it. The person in charge will delete afterwards what she does not need; leaving a section out is not your decision.
 Order the sections as the PCAP/PPT asks for them; if it doesn't say, follow the company's usual skeleton. A memoria that only answers the scoring criteria is incomplete.
-
+${requeridas ? `\n${requeridas}\n` : ''}
 Return ONLY a JSON object:
 {
   "titulo": "título de la memoria",
@@ -393,6 +397,58 @@ export function avisosDeInstrucciones(parsed: Record<string, unknown>, hayInstru
 }
 
 /** Paso 2 — genera la memoria respondiendo criterio a criterio. */
+/**
+ * Redacta las secciones del esqueleto que el redactor dejó fuera, con el modelo
+ * barato y el mismo material (brain + corpus + pliego). Una llamada para todas.
+ * Si falla, devuelve [] y la memoria sale sin ellas, con aviso: nunca rompe la
+ * generación principal.
+ */
+export async function completarSeccionesRequeridas(opts: {
+  clientId: string
+  titulos: string[]
+  pliegoText: string
+  criteria: TenderCriteria
+  brainBlock: string
+  knowledge: string
+  existentes: string[]
+}): Promise<Array<{ titulo: string; contenido: string; criterio: null; puntos_objetivo: null; datos_a_confirmar: string[] }>> {
+  if (!opts.titulos.length) return []
+  const prompt = `Eres quien redacta las memorias técnicas de licitación de esta empresa. La memoria para el pliego de abajo ya tiene estas secciones: ${opts.existentes.map((t) => `«${t}»`).join(', ')}. FALTAN estas, que la empresa incluye SIEMPRE: ${opts.titulos.map((t) => `«${t}»`).join(', ')}.
+
+Escribe cada sección que falta, con el contenido real de la empresa (BRAND CONTEXT y CLIENT KNOWLEDGE) aplicado a ESTE contrato: operativa concreta, paso a paso, en la voz institucional. Si el pliego no dice nada del tema, describe la práctica habitual de la empresa. No repitas lo que ya cubren las secciones existentes. Nada de precios. Todo hecho que no esté en el material va como [FALTA: dato] y a datos_a_confirmar.
+
+Devuelve SOLO este JSON:
+{ "secciones": [ { "titulo": "título tal como se te ha dado", "contenido": "texto en párrafos, con saltos de línea", "datos_a_confirmar": ["…"] } ] }
+
+CRITERIOS DEL PLIEGO (contexto): ${JSON.stringify(opts.criteria.criteria.map((c) => c.name)).slice(0, 2000)}
+
+${opts.brainBlock}
+
+${opts.knowledge ? `CLIENT KNOWLEDGE (real corpus):\n${opts.knowledge.slice(0, 24000)}` : ''}
+
+<pliego_extracto>
+${opts.pliegoText.slice(0, 40000)}
+</pliego_extracto>
+
+${GROUNDING_CONTRACT}`
+  try {
+    const msg = await createMessageForClient(opts.clientId, 'tender/completar', {
+      model: CHEAP_MODEL, max_tokens: 8000,
+      messages: [{ role: 'user', content: prompt }],
+    })
+    const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
+    const parsed = extractJson(text) as { secciones?: Array<{ titulo?: string; contenido?: string; datos_a_confirmar?: unknown }> } | null
+    const secs = Array.isArray(parsed?.secciones) ? parsed!.secciones : []
+    return opts.titulos.flatMap((t) => {
+      const s = secs.find((x) => typeof x.titulo === 'string' && typeof x.contenido === 'string' && x.contenido.trim() && (x.titulo === t || x.titulo.toLowerCase().includes(t.toLowerCase().slice(0, 12))))
+      return s ? [{ titulo: t, contenido: String(s.contenido), criterio: null, puntos_objetivo: null, datos_a_confirmar: Array.isArray(s.datos_a_confirmar) ? (s.datos_a_confirmar as unknown[]).map(String).slice(0, 8) : [] }] : []
+    })
+  } catch (e) {
+    console.warn('tender/completar falló:', e instanceof Error ? e.message : e)
+    return []
+  }
+}
+
 export async function generateTenderMemoria(opts: {
   clientId: string
   pliegoText: string
@@ -435,12 +491,14 @@ export async function generateTenderMemoria(opts: {
   const hayEnsenanza = teachingText.length > 0
 
   const fijas = teaching.standardSections || []
-  const prompt = buildMemoriaPrompt({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas), fijas: bloqueSeccionesFijas(fijas) })
+  const requeridas = seccionesRequeridas(teaching.requiredSections || [], fijas)
+  const prompt = buildMemoriaPrompt({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas), fijas: bloqueSeccionesFijas(fijas), requeridas: bloqueSeccionesRequeridas(requeridas) })
 
   const msg = await createMessageForClient(clientId, 'tender/generate', {
     // 16.000: una memoria completa (criterios + secciones de servicio) no cabe
     // en 12.000. Por encima de ~21.000 el SDK exige streaming (medido 01-sep).
-    model: MODEL, max_tokens: 16000,
+    // 24.000 (×2 en los modelos que piensan = 48.000): el esqueleto completo son ~18 secciones y 11 ya ocupaban 23-25k tokens (medido 7-oct).
+    model: MODEL, max_tokens: 24000,
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -460,6 +518,17 @@ export async function generateTenderMemoria(opts: {
     gaps.push(`Secciones fijas de la casa que el redactor había omitido y se han insertado tal cual: ${fijasCheck.faltan.map((f) => `«${f.title}»`).join(', ')}. Revisa la referencia al órgano.`)
   }
   for (const r of fijasCheck.reescritas) gaps.push(`La sección fija «${r.title}» se ha reescrito (conserva el ${r.coincidencia} % de su texto): restáurala desde Teach MIRA si no era intención.`)
+  // Esqueleto mínimo: lo que el redactor no haya incluido se redacta aparte (modelo barato) y se añade.
+  const faltanReq = requeridasQueFaltan(parsed.secciones as Array<{ titulo?: string; contenido?: string }>, requeridas)
+  if (faltanReq.length) {
+    const extra = await completarSeccionesRequeridas({ clientId, titulos: faltanReq, pliegoText, criteria, brainBlock, knowledge: knowledge ?? '', existentes: (parsed.secciones as Array<{ titulo: string }>).map((s) => s.titulo) })
+    if (extra.length) {
+      parsed.secciones = [...(parsed.secciones as Array<Record<string, unknown>>), ...extra]
+      gaps.push(`Secciones del esqueleto añadidas por completitud (el redactor las había omitido): ${extra.map((s) => `«${s.titulo}»`).join(', ')}. Quita las que no procedan.`)
+    }
+    const sinRedactar = faltanReq.filter((t) => !extra.some((s) => s.titulo === t))
+    if (sinRedactar.length) gaps.push(`No se han podido redactar estas secciones del esqueleto: ${sinRedactar.map((t) => `«${t}»`).join(', ')}.`)
+  }
   // Marcas de páginas diseñadas: el modelo marca, TS valida. Una marca inventada no llega al Word.
   const marcasRaras: string[] = []
   for (const sec of (parsed.secciones as Array<Record<string, unknown>>)) {

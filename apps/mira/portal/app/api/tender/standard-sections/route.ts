@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { trackRoute } from '@/lib/activity'
 import { requireTool } from '@/lib/tools/access'
 import { errorMessage } from '@/lib/email-ops/auth'
-import { loadTeaching, parseStandardSections, saveStandardSections, STANDARD_SECTIONS_MAX, STANDARD_CONTENT_CAP } from '@/lib/tenders/teaching'
+import { loadTeaching, parseStandardSections, saveStandardSections, parseRequiredSections, saveRequiredSections, STANDARD_SECTIONS_MAX, STANDARD_CONTENT_CAP, REQUIRED_SECTIONS_MAX, SECCIONES_SIEMPRE } from '@/lib/tenders/teaching'
 
 // Secciones FIJAS de la casa (tender_settings.standard_sections): el texto
 // institucional que toda memoria reproduce tal cual («quiénes somos», «equipo
@@ -16,7 +16,7 @@ export async function GET(req: NextRequest) {
     const access = await requireTool('tenders', req.nextUrl.searchParams.get('clientId'))
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const teaching = await loadTeaching(access.clientId)
-    return NextResponse.json({ sections: teaching.standardSections, max: STANDARD_SECTIONS_MAX, contentCap: STANDARD_CONTENT_CAP })
+    return NextResponse.json({ sections: teaching.standardSections, required: teaching.requiredSections, always: SECCIONES_SIEMPRE, max: STANDARD_SECTIONS_MAX, requiredMax: REQUIRED_SECTIONS_MAX, contentCap: STANDARD_CONTENT_CAP })
   } catch (error) {
     console.error('tender/standard-sections GET error:', error)
     return NextResponse.json({ error: errorMessage(error) }, { status: 500 })
@@ -26,10 +26,18 @@ export async function GET(req: NextRequest) {
 export async function PUT(req: NextRequest) {
   let done: ReturnType<typeof trackRoute> | null = null
   try {
-    const body = (await req.json().catch(() => ({}))) as { clientId?: string; sections?: unknown }
+    const body = (await req.json().catch(() => ({}))) as { clientId?: string; sections?: unknown; required?: unknown }
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     done = trackRoute('tender/standard-sections', access)
+    // Solo el esqueleto (títulos que toda memoria lleva): lista de textos.
+    if (body.sections === undefined && Array.isArray(body.required)) {
+      if (body.required.length > REQUIRED_SECTIONS_MAX) return NextResponse.json({ error: `Como mucho ${REQUIRED_SECTIONS_MAX} secciones en el esqueleto` }, { status: 400 })
+      const required = parseRequiredSections(body.required)
+      await saveRequiredSections(access.clientId, required)
+      done({ required: required.length })
+      return NextResponse.json({ ok: true, required })
+    }
     if (!Array.isArray(body.sections)) return NextResponse.json({ error: 'sections debe ser una lista' }, { status: 400 })
     if (body.sections.length > STANDARD_SECTIONS_MAX) return NextResponse.json({ error: `Como mucho ${STANDARD_SECTIONS_MAX} secciones fijas` }, { status: 400 })
     // Una sección sin título o sin texto es un 400, no una limpieza silenciosa: la persona creería que guardó.

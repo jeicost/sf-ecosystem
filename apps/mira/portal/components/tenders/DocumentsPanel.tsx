@@ -164,6 +164,14 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
     await load()
   }
 
+  // El editor final quita lo que no necesite (Carlos, 7-oct): las memorias salen lo más completas posible.
+  const quitarSeccion = (docId: string, i: number, titulo: string) => {
+    if (!confirm(`Remove the section “${titulo}” from this document? You can still cancel by reloading without saving.`)) return
+    setDocs((prev) => prev.map((d) => (d.id !== docId ? d : { ...d, sections: d.sections.filter((_, idx) => idx !== i) })))
+    setSucio((s) => ({ ...s, [docId]: true }))
+    trackAction('/licitaciones', 'documento-quitar-seccion', clientId)
+  }
+
   const editar = (docId: string, i: number, contenido: string) => {
     setDocs((prev) => prev.map((d) => d.id !== docId ? d
       : { ...d, sections: d.sections.map((s, idx) => (idx === i ? { ...s, contenido } : s)) }))
@@ -259,6 +267,8 @@ export default function DocumentsPanel({ clientId, tenderId, brand, fileToUpload
                             <SectionRewriter titulo={s.titulo} brand={brand}
                               onRewrite={pedirMejora(doc.id, i)}
                               onAccept={(contenido) => editar(doc.id, i, contenido)} />
+                            <button onClick={() => quitarSeccion(doc.id, i, s.titulo)} title="Remove this section" aria-label={`Remove section ${s.titulo}`}
+                              className="rounded-lg p-1 text-ink-muted transition-colors hover:text-red-400"><Trash2 size={12} /></button>
                           </div>
                         </div>
                         <textarea value={s.contenido} onChange={(e) => editar(doc.id, i, e.target.value)}

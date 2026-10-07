@@ -315,5 +315,14 @@ check('bloque: solo activas, con título y texto, y la orden de no reescribir', 
 check('sin activas, bloque vacío', bloqueSeccionesFijas([FIJAS[2]]) === '')
 check('la regla de medios materiales prohíbe ofrecer lo no pedido', /no pida expresamente/.test(REGLA_MEDIOS_MATERIALES) && /ESTE pliego/.test(REGLA_MEDIOS_MATERIALES))
 
+console.log('\nEsqueleto mínimo: plan de contingencia siempre; lo que falte se detecta')
+import { parseRequiredSections, seccionesRequeridas, requeridasQueFaltan, bloqueSeccionesRequeridas, SECCIONES_SIEMPRE } from '../../lib/tenders/teaching'
+check('parse: limpia, sin repetidos (con número y mayúsculas)', parseRequiredSections(['Gestión de incidencias', ' 1. GESTIÓN DE INCIDENCIAS ', 'Puesta en marcha', 7]).join('|') === 'Gestión de incidencias|Puesta en marcha')
+const reqs = seccionesRequeridas(['Puesta en marcha', 'Equipo humano'], FIJAS)
+check('requeridas = lista + Plan de contingencia, sin las que ya son fijas', reqs.join('|') === 'Puesta en marcha|Plan de contingencia' && SECCIONES_SIEMPRE[0] === 'Plan de contingencia')
+check('sin lista, al menos el plan de contingencia', seccionesRequeridas([]).join() === 'Plan de contingencia')
+check('faltan: detecta la que no está y acepta «1.8 Plan de contingencia»', requeridasQueFaltan([{ titulo: '1.8 PLAN DE CONTINGENCIA' }, { titulo: 'Servicio' }], reqs).join() === 'Puesta en marcha')
+check('bloque: lo más completa posible, con la lista', bloqueSeccionesRequeridas(reqs).includes('- Plan de contingencia') && /COMPLETA POSIBLE/.test(bloqueSeccionesRequeridas(reqs)) && bloqueSeccionesRequeridas([]) === '')
+
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)

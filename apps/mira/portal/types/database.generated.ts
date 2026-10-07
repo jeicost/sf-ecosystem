@@ -4245,6 +4245,7 @@ export type Database = {
           client_id: string
           guide: string | null
           playbook: string | null
+          required_sections: Json
           standard_sections: Json
           template: Json
           updated_at: string
@@ -4253,6 +4254,7 @@ export type Database = {
           client_id: string
           guide?: string | null
           playbook?: string | null
+          required_sections?: Json
           standard_sections?: Json
           template?: Json
           updated_at?: string
@@ -4261,6 +4263,7 @@ export type Database = {
           client_id?: string
           guide?: string | null
           playbook?: string | null
+          required_sections?: Json
           standard_sections?: Json
           template?: Json
           updated_at?: string

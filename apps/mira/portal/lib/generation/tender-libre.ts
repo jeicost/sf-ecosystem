@@ -1,7 +1,7 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { TENDER_MODEL } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, loadDisenadas, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
-import { loadTeaching, teachingBlock, bloqueSeccionesFijas, REGLA_MEDIOS_MATERIALES, type Teaching } from '@/lib/tenders/teaching'
+import { loadTeaching, teachingBlock, bloqueSeccionesFijas, bloqueSeccionesRequeridas, seccionesRequeridas, REGLA_MEDIOS_MATERIALES, type Teaching } from '@/lib/tenders/teaching'
 import { adminClient } from '@/lib/supabase'
 import { extractJson } from '@/lib/generation/extract-json'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
@@ -292,7 +292,7 @@ export async function generarDesdeBrief(opts: {
     loadMemoriaExamples(clientId, null, null, { pliegoActual: textoEncargo, legitimos: [brain?.brandName] }),
     marcasHermanas(clientId),
     loadDisenadas(adminClient(), clientId).catch((): Disenada[] => []),
-    loadTeaching(clientId).catch((): Teaching => ({ guide: null, lessons: [], standardSections: [] })),
+    loadTeaching(clientId).catch((): Teaching => ({ guide: null, lessons: [], standardSections: [], requiredSections: [] })),
   ])
   const brainBlock = brain ? `BRAND CONTEXT (the company's own facts, voice and document_system):\n${formatBrandBrainForPrompt(brain)}` : ''
   // En una oferta siempre se aplica la regla de tarifas: es su razón de ser.
@@ -300,7 +300,7 @@ export async function generarDesdeBrief(opts: {
   const pista = adjunto ? pistaOrigen(adjunto.texto, brain?.brandName) : null
 
   // Lo que la responsable ha enseñado (guía, lecciones) y, en una memoria, las secciones fijas de la casa.
-  const ensenanza = [teachingBlock({ guide: teaching.guide, lessons: teaching.lessons }), kind === 'memoria' ? bloqueSeccionesFijas(teaching.standardSections) : ''].filter(Boolean).join('\n\n')
+  const ensenanza = [teachingBlock({ guide: teaching.guide, lessons: teaching.lessons }), kind === 'memoria' ? bloqueSeccionesFijas(teaching.standardSections) : '', kind === 'memoria' ? bloqueSeccionesRequeridas(seccionesRequeridas(teaching.requiredSections, teaching.standardSections)) : ''].filter(Boolean).join('\n\n')
   const prompt = construirPromptLibre({ brief, kind, adjunto, pista, pideTarifas, examplesText: examples.text, brainBlock, knowledge: knowledge ?? '', disenadas: bloqueDisenadasPrompt(disenadas), ensenanza })
 
   const msg = await createMessageForClient(clientId, 'tender/libre', {
