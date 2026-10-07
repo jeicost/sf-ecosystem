@@ -9,7 +9,8 @@ import { isUuid, loadTeaching, resolveTenderTeaching } from '@/lib/tenders/teach
 // Paso 2b: del pliego a la OFERTA ECONÓMICA propuesta línea a línea, aprendida
 // de las ofertas que el cliente ya presentó. Sale para revisar y editar; la
 // persona decide, el agente propone.
-export const maxDuration = 300
+// 800 (antes 300): la memoria completa con esqueleto (21 secciones, 47k tokens) tarda 6-7 min en Opus 5.5 (medido 7-oct).
+export const maxDuration = 800
 
 export async function POST(req: NextRequest) {
   let done: ReturnType<typeof trackRoute> | null = null

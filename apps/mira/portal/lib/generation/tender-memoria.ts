@@ -523,8 +523,8 @@ export async function generateTenderMemoria(opts: {
   const msg = await createMessageForClient(clientId, 'tender/generate', {
     // 16.000: una memoria completa (criterios + secciones de servicio) no cabe
     // en 12.000. Por encima de ~21.000 el SDK exige streaming (medido 01-sep).
-    // 24.000 (×2 en los modelos que piensan = 48.000): el esqueleto completo son ~18 secciones y 11 ya ocupaban 23-25k tokens (medido 7-oct).
-    model: MODEL, max_tokens: 24000,
+    // 32.000 (×2 en los modelos que piensan = 64.000, el máximo): la memoria completa de 21 secciones midió 46.764 tokens de salida (7-oct).
+    model: MODEL, max_tokens: 32000,
     system: peticion.system,
     messages: [{ role: 'user', content: peticion.user }],
   })

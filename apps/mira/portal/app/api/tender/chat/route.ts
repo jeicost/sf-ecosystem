@@ -30,8 +30,9 @@ import { buildStatePrompt, buildSystemPrompt, defaultDeps, runTenderChat, type C
 // para elegir marca, nunca para leer ni escribir. tender_chats tiene RLS sin
 // políticas: solo el service role la toca, y siempre con .eq('client_id').
 
-// Una memoria completa son 2-4 min; el bucle corta nuevas vueltas a los 240 s.
-export const maxDuration = 300
+// Una memoria completa son 5-8 min (esqueleto de 21 secciones); el bucle corta nuevas vueltas a los 660 s.
+// 800 (antes 300): la memoria completa con esqueleto (21 secciones, 47k tokens) tarda 6-7 min en Opus 5.5 (medido 7-oct).
+export const maxDuration = 800
 
 const LIST_COLS = 'id,title,tender_id,updated_at,created_at,n:messages->-1->n'
 

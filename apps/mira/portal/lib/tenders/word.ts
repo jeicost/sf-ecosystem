@@ -4,8 +4,10 @@ import { jsonObject } from '@/lib/db-json'
 import { aplicarMembrete, leerMembrete, MARCA_CABECERA, MARCA_PIE, MAX_MEMBRETE_BYTES, type MargenesMembrete, type Membrete } from '@/lib/tenders/membrete'
 import { encajar, medirImagen, px, type LogoWord } from '@/lib/tenders/word-imagen'
 import { resolverReferencia, type DisenadaResuelta } from '@/lib/tenders/disenadas'
+import { paleta, contrasteSobre, luminancia, TIPO, ESPACIO, INTERLINEADO, iconoParaTitulo, iconoPng, ICONO_INDICE, ICONO_NOTAS, ICONO_ANEXOS } from '@/lib/tenders/word-estilo'
 
 export { medirImagen, type LogoWord }
+export { contrasteSobre, paleta }
 
 // Word con membrete de marca para Licitaciones.
 //
@@ -26,10 +28,33 @@ export { medirImagen, type LogoWord }
 // Un solo constructor para las tres fuentes (memoria, oferta, documento) y
 // para la muestra de la plantilla.
 //
+// Desde el 7-oct el aspecto sale de un SISTEMA DE DISEÑO (word-estilo.ts):
+// de los dos colores de la plantilla se deriva la paleta (acento, acento como
+// texto, tinta al 7 %, filetes, grises con sesgo), y las escalas de tipografía
+// y espacio son fijas para que todas las marcas se vean de la misma casa.
+//   · Títulos de sección: una «banda» (tabla de una fila) con el número en una
+//     caja del acento, el título en mayúsculas con estilo Heading 1 y una
+//     loseta con un icono elegido por las palabras del título (Lucide, PNG
+//     monocromos en lib/tenders/iconos/, incrustados en base64: en Vercel no
+//     hay fs fiable). Sin número (índice, anexos, bloques) el icono va en la caja.
+//   · Tablas: cabecera con el acento y versales, cebra con la tinta, solo
+//     filetes horizontales, numéricas a la derecha, filas que no se parten y
+//     cabecera que se repite; el cierre es un filete más grueso del acento oscuro.
+//   · Portada: logo sobre blanco (nunca dentro del bloque: un PNG con fondo
+//     salía como una tarjeta), bloque de color con rótulo, regla corta y
+//     título, y debajo la rejilla de datos. Cabe en una página por presupuesto
+//     de altura, no por fe.
+//   · Avisos (por confirmar, [FALTA], notas internas) en ámbar fijo.
+//
 // Reglas de la librería docx (^9.8) que ya nos han mordido: el PageBreak va
 // DENTRO de un Paragraph; ImageRun exige `type`; un '\n' dentro de un TextRun
 // no salta de línea; el sombreado es ShadingType.CLEAR; los anchos van en DXA
-// (nada de WidthType.PERCENTAGE) y los colores SIN '#'.
+// (nada de WidthType.PERCENTAGE) y los colores SIN '#'. Una tabla no tiene
+// espaciado propio: el aire antes y después lo pone un párrafo «Espaciador»
+// (estilo de 4 pt; un párrafo vacío normal mide una línea entera). El borde de
+// párrafo respeta las sangrías (así se hace una regla corta). El `keepNext` de
+// los párrafos de una fila mantiene la banda con lo que sigue en Word;
+// LibreOffice no lo honra en tablas y puede dejar un título a pie de página.
 
 // ---------------------------------------------------------------------------
 // Plantilla
@@ -55,16 +80,7 @@ export interface PlantillaWord {
 export const CLAVES_PLANTILLA = ['cover_color', 'accent_color', 'company_name', 'brand_name', 'tagline', 'footer_line', 'logo_path', 'letterhead_path', 'letterhead_name', 'body_font'] as const
 export type ClavePlantilla = (typeof CLAVES_PLANTILLA)[number]
 
-/** Luminancia relativa (0-1, WCAG) de un hex sin '#'. */
-function luminancia(hex: string): number {
-  const n = parseInt(hex.slice(0, 6), 16)
-  if (!Number.isFinite(n)) return 0
-  const c = [16, 8, 0].map((d) => { const v = ((n >> d) & 255) / 255; return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4 })
-  return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
-}
-/** Texto que se lee ENCIMA de un fondo de marca: blanco sobre oscuro (GTD azul), casi negro sobre claro (Albasanz y GLS son amarillas). */
-export function contrasteSobre(fondo: string): string { return luminancia(fondo) > 0.45 ? '1A1A1A' : 'FFFFFF' }
-/** El acento usado como COLOR DE TEXTO sobre página blanca: si es demasiado claro para leerse, gris oscuro. */
+/** El acento usado como COLOR DE TEXTO sobre página blanca: si es demasiado claro para leerse, gris oscuro. (La paleta completa está en word-estilo.ts.) */
 export function acentoLegible(acento: string): string { return luminancia(acento) > 0.55 ? '333333' : acento }
 
 const HEX = /^#?([0-9A-Fa-f]{6})$/
@@ -361,10 +377,7 @@ export interface EntradaWord {
   anexos?: DisenadaResuelta[]
 }
 
-const GRIS = '545454'
-const GRIS_CLARO = '8A8A8A'
-const AMBAR = '946200'
-const AMBAR_BORDE = 'E5B800'
+const AMBAR = '8A5A00'
 /** 1 pt = 12700 EMU; 1 px (96 dpi) = 9525 EMU. */
 const EMU_PX = 9525
 const A4_PT = { w: A4.width / 20, h: A4.height / 20 }
@@ -377,13 +390,14 @@ function fechaPortada(ciudad: string): string {
 export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   const {
     Document, Packer, Paragraph, TextRun, ImageRun, PageBreak, AlignmentType, PageOrientation, BorderStyle,
-    Table, TableRow, TableCell, WidthType, ShadingType, HeightRule, VerticalAlignTable, LevelFormat,
+    Table, TableRow, TableCell, WidthType, ShadingType, HeightRule, VerticalAlignTable, LevelFormat, TableLayoutType, LeaderType,
     Header, Footer, PageNumber, TabStopType, Tab, SectionType, HorizontalPositionRelativeFrom, VerticalPositionRelativeFrom, TextWrappingType,
   } = await import('docx')
 
   type Parrafo = InstanceType<typeof Paragraph>
   type Tabla = InstanceType<typeof Table>
   type Hijo = Parrafo | Tabla
+  type Run = InstanceType<typeof TextRun> | InstanceType<typeof ImageRun>
 
   // El texto se sanea aquí, pieza a pieza; la plantilla trae Buffers y no se toca.
   const { plantilla: p } = entrada
@@ -403,35 +417,115 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   const margenes = p.margenes
   const anchoUtil = A4.width - margenes.left - margenes.right
   const altoUtil = A4.height - margenes.top - margenes.bottom
-  const acento = acentoLegible(p.accent_color)
+  const E = paleta(p.cover_color, p.accent_color)
 
   const sinBorde = { style: BorderStyle.NONE, size: 0, color: 'FFFFFF' }
   const sinBordes = { top: sinBorde, bottom: sinBorde, left: sinBorde, right: sinBorde }
+  const sinBordesTabla = { ...sinBordes, insideHorizontal: sinBorde, insideVertical: sinBorde }
+  const filete = (color = E.linea, size = 4) => ({ style: BorderStyle.SINGLE, size, color })
+  const sombra = (fill: string) => ({ type: ShadingType.CLEAR, fill, color: 'auto' })
+  const altText = (nombre: string) => ({ name: nombre, description: nombre, title: nombre })
 
   // ----- Piezas ------------------------------------------------------------
-  const runs = (texto: string, base: { color?: string; size?: number; bold?: boolean; italics?: boolean } = {}) =>
+  const runs = (texto: string, base: { color?: string; size?: number; bold?: boolean; italics?: boolean } = {}): Run[] =>
     trozosInline(texto).map((tr) => new TextRun({
       text: tr.texto,
-      bold: tr.negrita || base.bold || undefined,
+      bold: tr.aviso || tr.negrita || base.bold || undefined,
       italics: base.italics,
       size: base.size,
-      color: tr.aviso ? AMBAR : base.color,
-      ...(tr.aviso ? { highlight: 'yellow' as const } : {}),
+      color: tr.aviso ? E.ambar.texto : base.color,
+      // El [FALTA: …] va resaltado en ámbar: tiene que verse para que no se cuele en lo que se presenta.
+      ...(tr.aviso ? { shading: sombra(E.ambar.resalte) } : {}),
     }))
 
   let instanciaLista = 0
   const parrafo = (texto: string, opts: { color?: string; justificar?: boolean } = {}) =>
-    new Paragraph({ alignment: opts.justificar === false ? AlignmentType.LEFT : AlignmentType.JUSTIFIED, spacing: { after: 120 }, widowControl: true, children: runs(texto, { color: opts.color }) })
+    new Paragraph({ alignment: opts.justificar === false ? AlignmentType.LEFT : AlignmentType.JUSTIFIED, spacing: { after: ESPACIO.parrafo }, widowControl: true, children: runs(texto, { color: opts.color }) })
   const vineta = (t: string, color?: string) =>
-    new Paragraph({ numbering: { reference: 'vinetas', level: 0 }, spacing: { after: 60 }, children: runs(t, { color }) })
+    new Paragraph({ numbering: { reference: color === AMBAR ? 'vinetas-ambar' : 'vinetas', level: 0 }, spacing: { after: ESPACIO.item }, children: runs(t, { color: color === AMBAR ? E.ambar.texto : color }) })
   const numerado = (t: string, instance: number) =>
-    new Paragraph({ numbering: { reference: 'numeros', level: 0, instance }, spacing: { after: 60 }, children: runs(t) })
-  const subtitulo = (t: string, numero?: string) => new Paragraph({ heading: 'Heading2', children: [
-    ...(numero ? [new TextRun({ text: `${numero} `, color: GRIS })] : []),
-    ...runs(t.replace(/\*\*/g, ''), { color: acento }),
-  ] })
+    new Paragraph({ numbering: { reference: 'numeros', level: 0, instance }, spacing: { after: ESPACIO.item }, children: runs(t) })
+  /** Párrafo mínimo (4 pt) para dar aire antes o después de una tabla, que no admite espaciado propio. */
+  const espacio = (o: { before?: number; after?: number; keepNext?: boolean; pageBreakBefore?: boolean } = {}) =>
+    new Paragraph({ style: 'Espaciador', spacing: { before: o.before ?? 0, after: o.after ?? 0, line: 240 }, keepNext: o.keepNext, pageBreakBefore: o.pageBreakBefore, children: [] })
   const salto = () => new Paragraph({ children: [new PageBreak()] })
+  /** Rótulo pequeño en versales espaciadas (etiquetas de portada, cabeceras de tabla). */
+  const versales = (texto: string, o: { color: string; size: number; bold?: boolean }) =>
+    new TextRun({ text: texto.toUpperCase(), bold: o.bold ?? true, size: o.size, color: o.color, characterSpacing: 12 })
 
+  // El subapartado («## Ámbito» → 1.1 Ámbito): número en el margen, título alineado con el de la sección.
+  const sangriaTitulo = ESPACIO.cajaTitulo + ESPACIO.huecoTitulo
+  const subtitulo = (t: string, numero?: string) => new Paragraph({
+    heading: 'Heading2',
+    ...(numero ? { indent: { left: sangriaTitulo, hanging: sangriaTitulo }, tabStops: [{ type: TabStopType.LEFT, position: sangriaTitulo }] } : {}),
+    children: [
+      ...(numero ? [new TextRun({ children: [numero, new Tab()], bold: false, color: E.acentoTexto })] : []),
+      ...runs(t.replace(/\*\*/g, ''), { color: E.acentoTexto, bold: true }),
+    ],
+  })
+
+  /** Icono Lucide en PNG, al tamaño en puntos; null si no existe. */
+  const icono = (nombre: string, variante: 'oscuro' | 'blanco', pt: number): Run | null => {
+    const data = iconoPng(nombre, variante)
+    return data ? new ImageRun({ type: 'png', data, transformation: { width: px(pt), height: px(pt) }, altText: altText(nombre) }) : null
+  }
+
+  /**
+   * La pieza de marca de los títulos: una caja con el acento (el número de la
+   * sección, o un icono cuando no hay número), el título en mayúsculas y, si
+   * la sección va numerada, una loseta suave a la derecha con el icono que le
+   * corresponde por sus palabras. Es una tabla de una fila: el párrafo del
+   * título lleva el estilo Heading 1 (navegación de Word) y todos los párrafos
+   * de la fila llevan keepNext para que la fila viaje con lo que la sigue.
+   */
+  const banda = (o: { titulo: string; numero?: number; puntos?: number | null; icono?: string; heading?: boolean; fill?: string; sobreFill?: string; color?: string }): Hijo[] => {
+    const fill = o.fill || E.acento
+    const sobreFill = o.sobreFill || contrasteSobre(fill)
+    const color = o.color || E.acentoTexto
+    const caja = ESPACIO.cajaTitulo
+    const variante = sobreFill === 'FFFFFF' ? 'blanco' : 'oscuro'
+    const numerada = typeof o.numero === 'number'
+    const enCaja: Run = numerada
+      ? new TextRun({ text: String(o.numero), bold: true, size: TIPO.h1Numero, color: sobreFill })
+      : (o.icono && icono(o.icono, variante, 17)) || new TextRun({ text: '—', bold: true, size: TIPO.h1Numero, color: sobreFill })
+    const loseta = numerada && o.icono ? icono(o.icono, 'oscuro', 17) : null
+    const anchoTitulo = anchoUtil - caja - (loseta ? caja : 0)
+    const celdaCaja = (relleno: string, hijo: Run) => new TableCell({
+      borders: sinBordes, width: { size: caja, type: WidthType.DXA }, shading: sombra(relleno), verticalAlign: VerticalAlignTable.CENTER,
+      margins: { top: 0, bottom: 0, left: 0, right: 0 },
+      children: [new Paragraph({ alignment: AlignmentType.CENTER, spacing: { before: 0, after: 0, line: 240 }, keepNext: true, children: [hijo] })],
+    })
+    const fila = new TableRow({
+      cantSplit: true, height: { value: caja, rule: HeightRule.ATLEAST },
+      children: [
+        celdaCaja(fill, enCaja),
+        new TableCell({
+          borders: { ...sinBordes, bottom: filete(E.linea, 6) }, width: { size: anchoTitulo, type: WidthType.DXA }, verticalAlign: VerticalAlignTable.CENTER,
+          margins: { top: 40, bottom: 40, left: ESPACIO.huecoTitulo, right: 120 },
+          children: [new Paragraph({
+            ...(o.heading === false ? {} : { heading: 'Heading1' }),
+            keepNext: true, keepLines: true, spacing: { before: 0, after: 0, line: 240 },
+            children: [
+              new TextRun({ text: o.titulo.toUpperCase(), bold: true, size: TIPO.h1, color }),
+              ...(typeof o.puntos === 'number' && Number.isFinite(o.puntos) ? [new TextRun({ text: `   ${o.puntos} puntos`, bold: false, size: TIPO.nota, color: E.textoMudo })] : []),
+            ],
+          })],
+        }),
+        ...(loseta ? [celdaCaja(E.tinta, loseta)] : []),
+      ],
+    })
+    return [
+      espacio({ before: ESPACIO.antesH1, keepNext: true }),
+      new Table({ width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: loseta ? [caja, anchoTitulo, caja] : [caja, anchoTitulo], layout: TableLayoutType.FIXED, borders: sinBordesTabla, rows: [fila] }),
+      espacio({ after: ESPACIO.despuesH1, keepNext: true }),
+    ]
+  }
+
+  /**
+   * Tabla de datos: cabecera con el acento, cebra con la tinta, solo filetes
+   * horizontales, numéricas a la derecha, filas que no se parten y cabecera
+   * que se repite al cambiar de página.
+   */
   const tablaDocx = (t: TablaWord): Tabla => {
     const n = t.cabecera.length
     let anchos = t.anchos && t.anchos.length === n ? t.anchos.slice() : []
@@ -445,58 +539,81 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
     if (total !== anchoUtil && total > 0) anchos = anchos.map((a) => Math.round((a * anchoUtil) / total))
     anchos[n - 1] += anchoUtil - anchos.reduce((a, b) => a + b, 0)
     const derecha = new Set(t.alinearDerecha || [])
-    const borde = { style: BorderStyle.SINGLE, size: 4, color: 'CCCCCC' }
-    const bordes = { top: borde, bottom: borde, left: borde, right: borde }
-    const tam = n > 4 ? 18 : 20
-    const celda = (texto: string, i: number, opts: { cabecera?: boolean; fill?: string }) => new TableCell({
-      borders: bordes, width: { size: anchos[i], type: WidthType.DXA },
-      ...(opts.fill ? { shading: { type: ShadingType.CLEAR, fill: opts.fill, color: 'auto' } } : {}),
-      margins: { top: 80, bottom: 80, left: 120, right: 120 },
+    const densa = n > 4 || t.filas.length > 12
+    const tam = densa ? TIPO.tablaDensa : TIPO.tabla
+    const ultima = t.filas.length - 1
+    const celda = (texto: string, i: number, o: { cabecera?: boolean; fila?: number }) => new TableCell({
+      borders: {
+        top: o.cabecera ? sinBorde : filete(),
+        bottom: o.cabecera ? sinBorde : o.fila === ultima ? filete(E.acentoOscuro, 8) : filete(),
+        left: sinBorde, right: sinBorde,
+      },
+      width: { size: anchos[i], type: WidthType.DXA },
+      shading: sombra(o.cabecera ? E.acento : (o.fila ?? 0) % 2 ? E.tinta : 'FFFFFF'),
+      verticalAlign: VerticalAlignTable.CENTER,
+      margins: { top: ESPACIO.celdaV, bottom: ESPACIO.celdaV, left: ESPACIO.celdaH, right: ESPACIO.celdaH },
       children: [new Paragraph({
         alignment: derecha.has(i) ? AlignmentType.RIGHT : AlignmentType.LEFT,
-        children: runs(texto, { bold: !!opts.cabecera, size: tam, color: opts.cabecera ? contrasteSobre(p.accent_color) : GRIS_NEUTRO }),
+        spacing: { before: 0, after: 0, line: 240 },
+        children: o.cabecera
+          ? [versales(texto, { color: E.sobreAcento, size: TIPO.tablaCabecera })]
+          : runs(texto, { size: tam, color: E.texto }),
       })],
     })
     return new Table({
-      width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: anchos,
+      width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: anchos, layout: TableLayoutType.FIXED, borders: sinBordesTabla,
       rows: [
-        new TableRow({ tableHeader: true, cantSplit: true, children: t.cabecera.map((x, i) => celda(x, i, { cabecera: true, fill: p.accent_color })) }),
+        new TableRow({ tableHeader: true, cantSplit: true, height: { value: ESPACIO.cabeceraMin, rule: HeightRule.ATLEAST }, children: t.cabecera.map((x, i) => celda(x, i, { cabecera: true })) }),
         ...t.filas.map((fila, r) => new TableRow({
-          cantSplit: true,
-          children: Array.from({ length: n }, (_, i) => celda(String(fila[i] ?? ''), i, { fill: r % 2 === 0 ? 'FFFFFF' : 'F2F2F2' })),
+          cantSplit: true, height: { value: ESPACIO.filaMin, rule: HeightRule.ATLEAST },
+          children: Array.from({ length: n }, (_, i) => celda(String(fila[i] ?? ''), i, { fila: r })),
         })),
       ],
     })
   }
+  /** Tabla + su pie opcional + el aire de después, que la tabla no sabe darse. */
+  const tablaCompleta = (t: TablaWord): Hijo[] => [
+    espacio({ before: ESPACIO.antesTabla, keepNext: true }),
+    tablaDocx(t),
+    ...(t.pie ? [new Paragraph({ spacing: { before: 120, after: 0 }, alignment: AlignmentType.LEFT, children: [new TextRun({ text: t.pie, bold: true, size: TIPO.pieTabla, color: E.acentoTexto })] })] : []),
+    espacio({ after: ESPACIO.despuesTabla }),
+  ]
   const tablaDeTexto = (filas: string[][]): Hijo[] => {
     const n = Math.max(...filas.map((f) => f.length))
     const cabecera = Array.from({ length: n }, (_, i) => filas[0][i] ?? '')
     const cuerpo = filas.slice(1).map((f) => Array.from({ length: n }, (_, i) => f[i] ?? ''))
     const alinearDerecha = Array.from({ length: n }, (_, i) => i).filter((i) => i > 0 && columnaNumerica(cuerpo, i))
     const anchos = n >= 3 ? [Math.round(anchoUtil * 0.34), ...Array.from({ length: n - 1 }, () => Math.floor((anchoUtil * 0.66) / (n - 1)))] : undefined
-    return [tablaDocx({ cabecera, filas: cuerpo, alinearDerecha, anchos }), new Paragraph({ spacing: { after: 120 }, children: [] })]
+    return tablaCompleta({ cabecera, filas: cuerpo, alinearDerecha, anchos })
   }
 
+  /** Aviso editorial: bloque ámbar con banda a la izquierda. Una celda, para que el fondo abrace todas las líneas. */
   const porConfirmar = (items: string[]): Hijo[] => [
-    new Paragraph({
-      spacing: { before: 200, after: 80 }, keepNext: true,
-      border: { top: { style: BorderStyle.SINGLE, size: 6, color: AMBAR_BORDE, space: 4 } },
-      children: [new TextRun({ text: 'Por confirmar antes de presentar:', bold: true, color: AMBAR })],
+    espacio({ before: ESPACIO.antesAviso, keepNext: true }),
+    new Table({
+      width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: [anchoUtil], layout: TableLayoutType.FIXED, borders: sinBordesTabla,
+      rows: [new TableRow({ cantSplit: true, children: [new TableCell({
+        borders: { ...sinBordes, left: { style: BorderStyle.SINGLE, size: 24, color: E.ambar.borde } },
+        width: { size: anchoUtil, type: WidthType.DXA }, shading: sombra(E.ambar.fondo),
+        margins: { top: 140, bottom: 100, left: 240, right: 200 },
+        children: [
+          new Paragraph({ spacing: { before: 0, after: 80 }, keepNext: true, children: [versales('Por confirmar antes de presentar', { color: E.ambar.texto, size: TIPO.tablaCabecera })] }),
+          ...items.filter((d) => d && d.trim()).map((d) => vineta(d, AMBAR)),
+        ],
+      })] })],
     }),
-    ...items.filter((d) => d && d.trim()).map((d) => vineta(d, AMBAR)),
+    espacio({ after: ESPACIO.despuesAviso }),
   ]
-
-  const altText = (nombre: string) => ({ name: nombre, description: nombre, title: nombre })
 
   /** Figura dentro del texto: imagen al ancho útil (como mucho el 55 % del alto) y su pie. */
   const figuras = (d: DisenadaResuelta): Hijo[] => d.imagenes.flatMap((img, i) => [
     new Paragraph({
-      alignment: AlignmentType.CENTER, spacing: { before: 200, after: 60 }, keepNext: true,
+      alignment: AlignmentType.CENTER, spacing: { before: 240, after: 80 }, keepNext: true,
       children: [new ImageRun({ type: img.type, data: img.data, transformation: encajar(img, anchoUtil / 20, (altoUtil / 20) * 0.55), altText: altText(d.title) })],
     }),
     new Paragraph({
-      alignment: AlignmentType.CENTER, spacing: { after: 200 },
-      children: [new TextRun({ text: d.imagenes.length > 1 ? `${d.title} (${i + 1}/${d.imagenes.length})` : d.title, italics: true, size: 18, color: GRIS })],
+      alignment: AlignmentType.CENTER, spacing: { after: 280 },
+      children: [new TextRun({ text: d.imagenes.length > 1 ? `${d.title} (${i + 1}/${d.imagenes.length})` : d.title, italics: true, size: TIPO.pieFigura, color: E.textoSuave })],
     }),
   ])
 
@@ -540,108 +657,137 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   }
 
   // ----- PORTADA -----------------------------------------------------------
-  // Bloque de color: una tabla de dos filas (logo arriba, título abajo) sin
-  // bordes y con el mismo relleno, que se ve como un solo bloque de ~55-60 %
-  // de la página. Un párrafo sombreado no llega: el sombreado de párrafo no
-  // crece a la altura que hace falta. Con hoja oficial el logo ya va en la
-  // cabecera de todas las páginas y el bloque no lo repite.
-  const altoBloque = Math.round(altoUtil * (conHoja ? 0.52 : 0.6))
-  const altoLogo = conHoja ? Math.round(altoBloque * 0.22) : Math.round(altoBloque * 0.38)
-  const celdaPortada = (alto: number, valign: (typeof VerticalAlignTable)[keyof typeof VerticalAlignTable], hijos: Parrafo[]) =>
+  // Logo sobre papel blanco (un PNG con fondo blanco dentro del bloque de
+  // color salía como una tarjeta pegada), bloque de color de ~55 % de la
+  // página con el rótulo grande y el título, y debajo la razón social, el
+  // tagline y una rejilla de datos (expediente, órgano, fecha). Con hoja
+  // oficial el logo ya va en la cabecera y la portada no lo repite.
+  const anchoBloqueInterior = anchoUtil - 2 * 680
+  const anchoEtiqueta = 3100
+  const datosPortada: [string, string][] = [
+    ...(expediente ? [['Expediente', expediente] as [string, string]] : []),
+    ...(organo ? [['Órgano de contratación', organo] as [string, string]] : []),
+    ['Lugar y fecha', fechaPortada(ciudad)],
+  ]
+  // La portada tiene que caber en UNA página: el bloque se lleva la mitad del
+  // alto útil, salvo que lo que va encima (logo) y debajo (razón social,
+  // tagline, rejilla de datos) no le dejen; entonces cede él, con una reserva
+  // para un título de tres líneas y las diferencias entre Word y LibreOffice.
+  const altoLogo = conHoja ? 240 : (p.logo ? Math.round(encajar(p.logo, 190, 56).height * 15) : 720) + 280
+  const altoDebajo = 360 + 600 + (p.tagline ? 480 : 0) + 400 + datosPortada.length * 500
+  const altoBloque = Math.min(Math.round(altoUtil * 0.5), altoUtil - altoLogo - altoDebajo - 900)
+  const altoEtiqueta = Math.round(altoBloque * 0.3)
+  const filaPortada = (alto: number, valign: (typeof VerticalAlignTable)[keyof typeof VerticalAlignTable], hijos: Parrafo[]) =>
     new TableRow({
       height: { value: alto, rule: HeightRule.ATLEAST },
       children: [new TableCell({
         borders: sinBordes, verticalAlign: valign,
         width: { size: anchoUtil, type: WidthType.DXA },
-        shading: { type: ShadingType.CLEAR, fill: p.cover_color, color: 'auto' },
-        margins: { top: 500, bottom: 500, left: 600, right: 600 },
+        shading: sombra(E.portada),
+        margins: { top: 560, bottom: 620, left: 680, right: 680 },
         children: hijos,
       })],
     })
-  const textoPortada = contrasteSobre(p.cover_color)
-  const logoPortada = conHoja
-    ? [new Paragraph({ children: [new TextRun({ text: (p.company_name || p.brand_name).toUpperCase(), bold: true, color: textoPortada, size: 20 })] })]
-    : p.logo
-      ? [new Paragraph({ alignment: AlignmentType.LEFT, children: [new ImageRun({ type: p.logo.type, data: p.logo.data, transformation: encajar(p.logo, 260, 110), altText: altText(p.brand_name || 'Logo') })] })]
-      : [new Paragraph({ children: [new TextRun({ text: p.brand_name.toUpperCase(), bold: true, color: textoPortada, size: 40 })] })]
+  if (!conHoja) {
+    add(p.logo
+      ? new Paragraph({ spacing: { before: 0, after: 280, line: 240 }, children: [new ImageRun({ type: p.logo.type, data: p.logo.data, transformation: encajar(p.logo, 190, 56), altText: altText(p.brand_name || 'Logo') })] })
+      : new Paragraph({ spacing: { before: 0, after: 280, line: 240 }, children: [new TextRun({ text: p.brand_name, bold: true, size: 36, color: E.acentoTexto })] }))
+  } else {
+    add(espacio({ after: 240 }))
+  }
   add(new Table({
-    width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: [anchoUtil],
-    borders: { ...sinBordes, insideHorizontal: sinBorde, insideVertical: sinBorde },
+    width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: [anchoUtil], layout: TableLayoutType.FIXED, borders: sinBordesTabla,
     rows: [
-      celdaPortada(altoLogo, VerticalAlignTable.TOP, logoPortada),
-      celdaPortada(altoBloque - altoLogo, VerticalAlignTable.BOTTOM, [
-        new Paragraph({ spacing: { after: 240 }, children: [new TextRun({ text: rotulo.toUpperCase(), bold: true, color: textoPortada, size: 76 })] }),
-        new Paragraph({ children: [new TextRun({ text: titulo.toUpperCase(), color: textoPortada, size: 28 })] }),
+      filaPortada(altoEtiqueta, VerticalAlignTable.TOP, [
+        new Paragraph({ spacing: { after: 0 }, children: [versales(p.brand_name || p.company_name, { color: E.sobrePortada, size: TIPO.portadaEtiqueta })] }),
+      ]),
+      filaPortada(altoBloque - altoEtiqueta, VerticalAlignTable.BOTTOM, [
+        new Paragraph({ spacing: { after: 160, line: 240 }, children: [new TextRun({ text: rotulo.toUpperCase(), bold: true, color: E.sobrePortada, size: TIPO.portadaRotulo })] }),
+        // Una regla corta (3 cm): el borde de párrafo respeta las sangrías, así que se acorta por la derecha.
+        new Paragraph({ style: 'Espaciador', indent: { right: Math.max(0, anchoBloqueInterior - 1700) }, spacing: { before: 0, after: 300, line: 240 }, border: { bottom: { style: BorderStyle.SINGLE, size: 12, color: E.sobrePortada, space: 1 } }, children: [] }),
+        new Paragraph({ spacing: { after: 0, line: 300 }, children: [new TextRun({ text: titulo.toUpperCase(), color: E.sobrePortada, size: TIPO.portadaTitulo })] }),
       ]),
     ],
   }))
-  add(new Paragraph({ spacing: { before: 480, after: 60 }, children: [new TextRun({ text: p.company_name || p.brand_name, bold: true, size: 24, color: GRIS_NEUTRO })] }))
-  if (p.tagline) add(new Paragraph({ spacing: { after: 200 }, children: [new TextRun({ text: p.tagline, italics: true, size: 22, color: GRIS })] }))
-  if (expediente) add(new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: `Expediente ${expediente}`, size: 22, color: GRIS_NEUTRO })] }))
-  if (organo) add(new Paragraph({ spacing: { after: 60 }, children: [new TextRun({ text: `Órgano de contratación: ${organo}`, size: 22, color: GRIS_NEUTRO })] }))
-  add(new Paragraph({ spacing: { before: 200 }, children: [new TextRun({ text: fechaPortada(ciudad), size: 22, color: GRIS })] }))
+  add(new Paragraph({ spacing: { before: 360, after: 40, line: 240 }, children: [new TextRun({ text: p.company_name || p.brand_name, bold: true, size: TIPO.portadaEmpresa, color: E.texto })] }))
+  if (p.tagline) add(new Paragraph({ spacing: { after: 0, line: 240 }, children: [new TextRun({ text: p.tagline, italics: true, size: TIPO.portadaMeta, color: E.textoSuave })] }))
+  add(
+    espacio({ before: 280, after: 120 }),
+    new Table({
+      width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: [anchoEtiqueta, anchoUtil - anchoEtiqueta], layout: TableLayoutType.FIXED, borders: sinBordesTabla,
+      rows: datosPortada.map(([k, v], i) => new TableRow({ cantSplit: true, children: [
+        new TableCell({
+          borders: { ...sinBordes, top: filete(E.linea, i === 0 ? 8 : 4) }, width: { size: anchoEtiqueta, type: WidthType.DXA }, verticalAlign: VerticalAlignTable.CENTER,
+          margins: { top: 100, bottom: 100, left: 0, right: 120 },
+          children: [new Paragraph({ spacing: { after: 0, line: 240 }, children: [versales(k, { color: E.textoMudo, size: TIPO.tablaCabecera })] })],
+        }),
+        new TableCell({
+          borders: { ...sinBordes, top: filete(E.linea, i === 0 ? 8 : 4) }, width: { size: anchoUtil - anchoEtiqueta, type: WidthType.DXA }, verticalAlign: VerticalAlignTable.CENTER,
+          margins: { top: 100, bottom: 100, left: 120, right: 0 },
+          children: [new Paragraph({ spacing: { after: 0, line: 240 }, children: [new TextRun({ text: v, size: TIPO.portadaMeta, color: E.texto })] })],
+        }),
+      ] })),
+    }),
+  )
   add(salto())
 
   // ----- ÍNDICE ------------------------------------------------------------
   // Manual, sin campo TOC: el campo pide «actualizar» al abrir y confunde. Los
   // números salen del numbering (DECIMAL), nunca escritos a mano, y coinciden
-  // con los de las secciones porque estas se numeran en el mismo orden.
-  const bandaIzq = { left: { style: BorderStyle.SINGLE, size: 24, color: p.accent_color, space: 12 } }
-  add(new Paragraph({ border: bandaIzq, spacing: { after: 240 }, indent: { left: 240 }, children: [new TextRun({ text: 'ÍNDICE', bold: true, size: 30, color: acento })] }))
-  const entradaIndiceSinNumero = (t: string, color = GRIS) => new Paragraph({ indent: { left: 567 }, spacing: { after: 100 }, children: [new TextRun({ text: t.toUpperCase(), size: 22, color })] })
-  // Dos niveles (Carlos, 7-oct): «en el índice debe aparecer el desglose de los servicios
-  // específicos para que el licitador encuentre todo de forma muy fácil». Los subapartados
-  // salen de los «## » del texto, numerados igual que en el cuerpo (1.1, 1.2…).
+  // con los de las secciones porque estas se numeran en el mismo orden. Dos
+  // niveles (Carlos, 7-oct): «en el índice debe aparecer el desglose de los
+  // servicios específicos para que el licitador encuentre todo de forma muy
+  // fácil». Los subapartados salen de los «## » del texto, numerados igual que
+  // en el cuerpo (1.1, 1.2…). Si las secciones traen puntuación, va a la
+  // derecha con puntos de guía: el evaluador ve de un vistazo dónde está el peso.
+  add(...banda({ titulo: 'Índice', icono: ICONO_INDICE, heading: false }))
+  const puntosDe = (s: SeccionWord) => { const l = limpiarTituloSeccion(s.titulo || 'Sección'); return typeof s.puntos === 'number' ? s.puntos : l.puntos }
+  const hayPuntos = secciones.some((s) => typeof puntosDe(s) === 'number' && Number.isFinite(puntosDe(s) as number))
+  const tabIndice = hayPuntos ? [{ type: TabStopType.RIGHT, position: anchoUtil, leader: LeaderType.DOT }] : []
+  const entradaIndiceSinNumero = (t: string, color = E.texto) => new Paragraph({
+    indent: { left: sangriaTitulo }, spacing: { before: 140, after: 60 }, keepNext: true,
+    border: { top: filete(E.linea, 4) },
+    children: [new TextRun({ text: t.toUpperCase(), bold: true, size: TIPO.indice, color })],
+  })
   secciones.forEach((s, i) => {
     const limpio = limpiarTituloSeccion(s.titulo || 'Sección')
-    const puntos = typeof s.puntos === 'number' ? s.puntos : limpio.puntos
+    const puntos = puntosDe(s)
+    const subs = parseBloques(s.contenido || '').filter((b): b is Extract<Bloque, { t: 'h' }> => b.t === 'h')
     add(new Paragraph({
-      numbering: { reference: 'indice', level: 0 }, spacing: { after: 60 }, keepNext: true,
+      numbering: { reference: 'indice', level: 0 }, spacing: { before: i ? 140 : 0, after: subs.length ? 40 : 60 }, keepNext: true, tabStops: tabIndice,
+      ...(i ? { border: { top: filete(E.linea, 4) } } : {}),
       children: [
-        new TextRun({ text: limpio.titulo.toUpperCase(), size: 22, color: GRIS_NEUTRO }),
-        ...(typeof puntos === 'number' && Number.isFinite(puntos) ? [new TextRun({ text: `  (${puntos} puntos)`, size: 18, color: GRIS_CLARO })] : []),
+        new TextRun({ text: limpio.titulo.toUpperCase(), bold: true, size: TIPO.indice, color: E.texto }),
+        ...(typeof puntos === 'number' && Number.isFinite(puntos) ? [new TextRun({ children: [new Tab(), `${puntos} puntos`], size: TIPO.nota, color: E.textoSuave })] : []),
       ],
     }))
-    const subs = parseBloques(s.contenido || '').filter((b): b is Extract<Bloque, { t: 'h' }> => b.t === 'h')
     subs.forEach((b, j) => add(new Paragraph({
-      indent: { left: 1134 }, spacing: { after: 40 },
-      children: [new TextRun({ text: `${i + 1}.${j + 1}  `, size: 19, color: GRIS_CLARO }), new TextRun({ text: b.texto.replace(/\*\*/g, ''), size: 19, color: GRIS })],
+      indent: { left: sangriaTitulo + 720, hanging: 720 }, tabStops: [{ type: TabStopType.LEFT, position: sangriaTitulo + 720 }], spacing: { after: 30 },
+      children: [new TextRun({ children: [`${i + 1}.${j + 1}`, new Tab()], size: TIPO.indiceSub, color: E.acentoTexto }), new TextRun({ text: b.texto.replace(/\*\*/g, ''), size: TIPO.indiceSub, color: E.textoSuave })],
     })))
-    if (subs.length) add(new Paragraph({ spacing: { after: 60 }, children: [] }))
   })
   bloques.forEach((b) => add(entradaIndiceSinNumero(b.titulo || '')))
   if (tabla && !secciones.length && !bloques.length) add(entradaIndiceSinNumero('Desglose de precios'))
   if (anexos.length) {
-    add(entradaIndiceSinNumero('Anexos', GRIS_NEUTRO))
-    anexos.forEach((a) => add(new Paragraph({ indent: { left: 1134 }, spacing: { after: 80 }, children: [new TextRun({ text: a.title, size: 20, color: GRIS })] })))
+    add(entradaIndiceSinNumero('Anexos'))
+    anexos.forEach((a) => add(new Paragraph({ indent: { left: sangriaTitulo + 720 }, spacing: { after: 30 }, children: [new TextRun({ text: a.title, size: TIPO.indiceSub, color: E.textoSuave })] })))
   }
   add(salto())
 
   // ----- SECCIONES ---------------------------------------------------------
-  const encabezado = (texto: string, numero?: number, puntos?: number | null) => new Paragraph({
-    heading: 'Heading1',
-    children: [
-      ...(typeof numero === 'number' ? [new TextRun({ text: `${numero}. `, color: GRIS })] : []),
-      new TextRun({ text: texto.toUpperCase(), color: acento }),
-      ...(typeof puntos === 'number' && Number.isFinite(puntos) ? [new TextRun({ text: ` (${puntos} puntos)`, bold: false, size: 22, color: GRIS_CLARO })] : []),
-    ],
-  })
   secciones.forEach((s, i) => {
     const limpio = limpiarTituloSeccion(s.titulo || 'Sección')
-    add(encabezado(limpio.titulo, i + 1, typeof s.puntos === 'number' ? s.puntos : limpio.puntos))
+    add(...banda({ titulo: limpio.titulo, numero: i + 1, puntos: puntosDe(s), icono: iconoParaTitulo(limpio.titulo) }))
     renderTexto(s.contenido || '', undefined, i + 1)
     if (s.porConfirmar?.length) add(...porConfirmar(s.porConfirmar))
   })
 
   // ----- TABLA (oferta) ----------------------------------------------------
-  if (tabla && tabla.cabecera.length) {
-    add(tablaDocx(tabla))
-    if (tabla.pie) add(new Paragraph({ spacing: { before: 200, after: 120 }, children: [new TextRun({ text: tabla.pie, bold: true })] }))
-  }
+  if (tabla && tabla.cabecera.length) add(...tablaCompleta(tabla))
 
   // ----- BLOQUES (secciones sin número) ------------------------------------
   for (const b of bloques) {
-    add(encabezado(b.titulo || ''))
+    add(...banda({ titulo: b.titulo || '', icono: iconoParaTitulo(b.titulo || '') }))
     for (const t of b.parrafos || []) renderTexto(t)
   }
   if (pendientes.length) add(...porConfirmar(pendientes))
@@ -649,7 +795,7 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   // ----- ANEXOS: páginas diseñadas de «siempre» que el texto no colocó -----
   const anexosPendientes = anexos.filter((a) => !usadas.has(a.id))
   if (anexosPendientes.length) {
-    add(encabezado('Anexos'))
+    add(...banda({ titulo: 'Anexos', icono: ICONO_ANEXOS }))
     add(parrafo('Se incluyen a continuación los siguientes documentos de la empresa:', { justificar: false }))
     add(...anexosPendientes.map((a) => vineta(a.title)))
     for (const a of anexosPendientes) insertarDisenada(a)
@@ -659,14 +805,17 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   // Sin estilo de encabezado a propósito: iban con Heading 1 y entraban en la
   // navegación y en el índice, y se presentaban a la administración.
   if (internas.length) {
-    add(new Paragraph({ pageBreakBefore: true, spacing: { after: 200 }, children: [new TextRun({ text: 'NOTAS INTERNAS — ELIMINAR ANTES DE PRESENTAR', bold: true, color: AMBAR, size: 26 })] }))
+    add(espacio({ pageBreakBefore: true }))
+    add(...banda({ titulo: 'Notas internas — eliminar antes de presentar', icono: ICONO_NOTAS, heading: false, fill: E.ambar.texto, sobreFill: 'FFFFFF', color: E.ambar.texto }))
+    add(new Paragraph({ spacing: { after: 160 }, children: [new TextRun({ text: 'Esta página es de trabajo y no forma parte de la memoria que se presenta.', italics: true, size: TIPO.nota, color: E.textoSuave })] }))
     for (const nnota of internas) add(vineta(nnota, AMBAR))
   }
 
   // ----- CABECERA Y PIE ----------------------------------------------------
   // Con hoja: marcas que membrete.ts sustituye por la cabecera y el pie reales.
-  // Sin hoja: logo + rótulo arriba, línea legal + «Página X de Y» abajo, y la
-  // portada limpia (titlePage + first vacíos).
+  // Sin hoja: logo + rótulo arriba sobre un filete del acento, línea legal a
+  // la izquierda y «Página X de Y» a la derecha abajo, y la portada limpia
+  // (titlePage + first vacíos).
   const tituloCorto = titulo.length > 70 ? `${titulo.slice(0, 69).trimEnd()}…` : titulo
   const vacio = () => ({ children: [new Paragraph({ children: [] })] })
   const cabecera = () => conHoja
@@ -674,29 +823,33 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
     : new Header({
       children: [new Paragraph({
         tabStops: [{ type: TabStopType.RIGHT, position: anchoUtil }],
-        border: { bottom: { style: BorderStyle.SINGLE, size: 6, color: p.accent_color, space: 4 } },
-        spacing: { after: 120 },
+        border: { bottom: { style: BorderStyle.SINGLE, size: 8, color: E.acento, space: 6 } },
+        spacing: { after: 0, line: 240 },
         children: [
           ...(p.logo
-            ? [new ImageRun({ type: p.logo.type, data: p.logo.data, transformation: encajar(p.logo, 170, 60), altText: altText(p.brand_name || 'Logo') })]
-            : [new TextRun({ text: p.brand_name, bold: true, size: 16, color: acento })]),
+            ? [new ImageRun({ type: p.logo.type, data: p.logo.data, transformation: encajar(p.logo, 150, 44), altText: altText(p.brand_name || 'Logo') })]
+            : [new TextRun({ text: p.brand_name, bold: true, size: TIPO.cabecera, color: E.acentoTexto })]),
           // Tab REAL (<w:tab/>), no el carácter: dentro de <w:t> es texto y no obedece al tab stop.
-          new TextRun({ children: [new Tab(), `${rotulo} — ${tituloCorto}`], size: 16, color: GRIS }),
+          new TextRun({ children: [new Tab(), rotulo], bold: true, size: TIPO.cabecera, color: E.acentoTexto }),
+          new TextRun({ text: `  ·  ${tituloCorto}`, size: TIPO.cabecera, color: E.textoSuave }),
         ],
       })],
     })
   const pie = () => conHoja
     ? new Footer({ children: [new Paragraph({ children: [new TextRun({ text: MARCA_PIE, size: 2, color: 'FFFFFF' })] })] })
     : new Footer({
-      children: [
-        new Paragraph({ alignment: AlignmentType.CENTER, spacing: { after: 40 }, children: [new TextRun({ text: p.footer_line || p.company_name || p.brand_name, size: 14, color: GRIS })] }),
-        new Paragraph({ alignment: AlignmentType.CENTER, children: [
-          new TextRun({ text: 'Página ', size: 14, color: GRIS_CLARO }),
-          new TextRun({ children: [PageNumber.CURRENT], size: 14, color: GRIS_CLARO }),
-          new TextRun({ text: ' de ', size: 14, color: GRIS_CLARO }),
-          new TextRun({ children: [PageNumber.TOTAL_PAGES], size: 14, color: GRIS_CLARO }),
-        ] }),
-      ],
+      children: [new Paragraph({
+        tabStops: [{ type: TabStopType.RIGHT, position: anchoUtil }],
+        border: { top: { style: BorderStyle.SINGLE, size: 4, color: E.linea, space: 6 } },
+        spacing: { before: 0, after: 0, line: 240 },
+        children: [
+          new TextRun({ text: p.footer_line || p.company_name || p.brand_name, size: TIPO.pieDoc, color: E.textoSuave }),
+          new TextRun({ children: [new Tab(), 'Página '], size: TIPO.pieDoc, color: E.textoMudo }),
+          new TextRun({ children: [PageNumber.CURRENT], size: TIPO.pieDoc, bold: true, color: E.textoSuave }),
+          new TextRun({ text: ' de ', size: TIPO.pieDoc, color: E.textoMudo }),
+          new TextRun({ children: [PageNumber.TOTAL_PAGES], size: TIPO.pieDoc, bold: true, color: E.textoSuave }),
+        ],
+      })],
     })
 
   const pagina = { size: { width: A4.width, height: A4.height, orientation: PageOrientation.PORTRAIT } }
@@ -747,27 +900,33 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
     styles: {
       default: {
         document: {
-          run: { font: p.body_font, size: 22, color: GRIS_NEUTRO },
-          paragraph: { spacing: { line: 276, after: 120 } },
+          run: { font: p.body_font, size: TIPO.cuerpo, color: E.texto },
+          paragraph: { spacing: { line: INTERLINEADO, after: ESPACIO.parrafo } },
         },
       },
       paragraphStyles: [
+        // El Heading 1 vive dentro de la banda (tabla): sin espaciado propio, que lo pone la banda.
         { id: 'Heading1', name: 'Heading 1', basedOn: 'Normal', next: 'Normal', quickFormat: true,
-          run: { size: 30, bold: true, font: p.body_font, color: acento },
-          paragraph: { spacing: { before: 360, after: 160 }, outlineLevel: 0, keepNext: true, keepLines: true } },
+          run: { size: TIPO.h1, bold: true, font: p.body_font, color: E.acentoTexto },
+          paragraph: { spacing: { before: 0, after: 0, line: 240 }, outlineLevel: 0, keepNext: true, keepLines: true } },
         { id: 'Heading2', name: 'Heading 2', basedOn: 'Normal', next: 'Normal', quickFormat: true,
-          run: { size: 24, bold: true, font: p.body_font, color: acento },
-          paragraph: { spacing: { before: 240, after: 100 }, outlineLevel: 1, keepNext: true, keepLines: true } },
+          run: { size: TIPO.h2, bold: true, font: p.body_font, color: E.acentoTexto },
+          paragraph: { spacing: { before: ESPACIO.antesH2, after: ESPACIO.despuesH2, line: 240 }, outlineLevel: 1, keepNext: true, keepLines: true } },
+        { id: 'Espaciador', name: 'Espaciador', basedOn: 'Normal', next: 'Normal',
+          run: { size: 8, font: p.body_font },
+          paragraph: { spacing: { before: 0, after: 0, line: 240 } } },
       ],
     },
     numbering: {
       config: [
-        { reference: 'indice', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.START,
-          style: { paragraph: { indent: { left: 567, hanging: 360 } }, run: { bold: true, color: acento } } }] },
+        { reference: 'indice', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1', alignment: AlignmentType.LEFT,
+          style: { paragraph: { indent: { left: sangriaTitulo, hanging: sangriaTitulo } }, run: { bold: true, size: TIPO.indice, color: E.acentoTexto } } }] },
         { reference: 'vinetas', levels: [{ level: 0, format: LevelFormat.BULLET, text: '•', alignment: AlignmentType.LEFT,
-          style: { paragraph: { indent: { left: 567, hanging: 283 } } } }] },
+          style: { paragraph: { indent: { left: 567, hanging: 283 } }, run: { color: E.acentoTexto } } }] },
+        { reference: 'vinetas-ambar', levels: [{ level: 0, format: LevelFormat.BULLET, text: '•', alignment: AlignmentType.LEFT,
+          style: { paragraph: { indent: { left: 567, hanging: 283 } }, run: { color: E.ambar.texto } } }] },
         { reference: 'numeros', levels: [{ level: 0, format: LevelFormat.DECIMAL, text: '%1.', alignment: AlignmentType.LEFT,
-          style: { paragraph: { indent: { left: 567, hanging: 360 } } } }] },
+          style: { paragraph: { indent: { left: 567, hanging: 360 } }, run: { color: E.acentoTexto } } }] },
       ],
     },
     sections,

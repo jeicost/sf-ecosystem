@@ -88,8 +88,8 @@ const out = (data: unknown, summary: string, doc?: DocTouch): ToolOutcome =>
 const fail = (error: string, summary = 'No se ha podido'): ToolOutcome =>
   ({ content: JSON.stringify({ error }), isError: true, summary: `${summary}: ${error}`.slice(0, 200) })
 
-/** Si ya ha pasado esto, la memoria completa (2-4 min) no cabe en los 300 s de la ruta. */
-const MEMORIA_COMPLETA_MAX_ELAPSED_MS = 60_000
+/** Si ya ha pasado esto, la memoria completa (5-8 min) no cabe en los 300 s de la ruta. */
+const MEMORIA_COMPLETA_MAX_ELAPSED_MS = 240_000 // la memoria completa tarda 6-7 min (medido 7-oct) y la ruta admite 800 s
 
 /** Texto del pliego a partir de varios adjuntos, con su nombre delante para que el modelo sepa qué es PCAP y qué PPT. */
 export function pliegoDeAdjuntos(ctx: Pick<ChatContext, 'attachments'>, ids: string[]): { texto: string; faltan: string[] } {
@@ -321,7 +321,7 @@ async function run(ctx: ChatContext, t: ToolInput): Promise<ToolOutcome> {
 
     case 'generar_memoria_completa': {
       if (Date.now() - ctx.startedAt > MEMORIA_COMPLETA_MAX_ELAPSED_MS) {
-        return fail('No queda tiempo en este mensaje para generar la memoria completa (tarda 2-4 min). Pide a la persona que escriba «genera la memoria» en un mensaje nuevo y llámala la primera.', 'Generando memoria')
+        return fail('No queda tiempo en este mensaje para generar la memoria completa (tarda 5-8 min). Pide a la persona que escriba «genera la memoria» en un mensaje nuevo y llámala la primera.', 'Generando memoria')
       }
       const { texto, faltan } = pliegoDeAdjuntos(ctx, t.adjunto_ids)
       if (faltan.length) return fail(`No existen los adjuntos ${faltan.join(', ')}.`, 'Generando memoria')
@@ -533,7 +533,7 @@ CÓMO TRABAJAS
 - Los pliegos y documentos que adjunta están en la conversación como adjuntos (a1, a2…): léelos con leer_adjunto antes de afirmar qué piden.
 - Los hechos de la empresa salen SOLO del brand brain de abajo y de buscar_en_material. Las memorias pasadas (listar_memorias_pasadas / leer_memoria_pasada) son modelo de estructura y tono, nunca fuente de cifras ni de nombres de órganos; [ÓRGANO ANTERIOR] jamás puede acabar en un texto.
 - Lo que redactes para conservar, guárdalo con crear_documento; para cambiar un documento guardado, léelo y usa editar_seccion. Para el Word, exportar_word.
-- generar_memoria_completa es lenta (2-4 min) y cara: solo cuando pida la memoria entera; avisa antes de lanzarla y no hagas nada más en esa vuelta.
+- generar_memoria_completa es lenta (5-8 min) y cara: solo cuando pida la memoria entera; avisa antes de lanzarla y no hagas nada más en esa vuelta.
 - recordar_leccion solo cuando diga que algo se haga SIEMPRE (o «acuérdate de…»).
 - Si una herramienta devuelve error, explícalo en una frase y propone qué hacer; no finjas que salió bien.
 - Contesta en texto plano con saltos de línea (la pantalla no pinta tablas complejas); usa guiones para listas cortas.
@@ -571,7 +571,7 @@ export interface TurnResult {
 }
 
 /** Pasado este tiempo no se empieza otra vuelta: la ruta muere a los 300 s y se perdería todo. */
-const TURN_DEADLINE_MS = 240_000
+const TURN_DEADLINE_MS = 660_000 // la ruta muere a los 800 s (antes 300)
 
 /**
  * Marca la caché sobre el último bloque de la conversación. Sin esto, cada una de

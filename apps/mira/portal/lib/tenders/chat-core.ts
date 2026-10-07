@@ -328,7 +328,7 @@ export const TOOL_DEFS: Anthropic.Tool[] = [
   },
   {
     name: 'generar_memoria_completa',
-    description: 'Genera de una vez la memoria técnica entera contra el pliego de esos adjuntos (criterio a criterio + secciones de servicio) y la guarda como documento. Es LENTA (2-4 minutos) y cara: úsala solo cuando la persona pida la memoria completa; no la combines con otras herramientas en la misma vuelta.',
+    description: 'Genera de una vez la memoria técnica entera contra el pliego de esos adjuntos (criterio a criterio + secciones de servicio) y la guarda como documento. Es LENTA (5-8 minutos) y cara: úsala solo cuando la persona pida la memoria completa; no la combines con otras herramientas en la misma vuelta.',
     input_schema: { type: 'object', properties: {
       adjunto_ids: { type: 'array', items: { type: 'string' } },
       instrucciones: { type: 'string', description: 'Lo que la persona ha pedido para esta memoria (enfoque, límites, términos)' },

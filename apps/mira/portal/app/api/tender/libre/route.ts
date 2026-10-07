@@ -19,7 +19,8 @@ import { COLS } from '../documents/route'
 // ruta es de ESTA marca (prefijo tenders/<clientId>/), lee el fichero y lo
 // borra: no queda copia, solo el texto en source_text.
 
-export const maxDuration = 300
+// 800 (antes 300): la memoria completa con esqueleto (21 secciones, 47k tokens) tarda 6-7 min en Opus 5.5 (medido 7-oct).
+export const maxDuration = 800
 
 /** Con adjunto, el brief puede ir vacío; sin adjunto, sigue haciendo falta. */
 const BRIEF_MIN = 80

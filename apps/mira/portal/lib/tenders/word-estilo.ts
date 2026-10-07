@@ -130,9 +130,9 @@ export const ESPACIO = {
   cajaTitulo: 640,
   /** Hueco entre la caja y el texto del título. */
   huecoTitulo: 200,
-  celdaV: 90,
+  celdaV: 80,
   celdaH: 140,
-  filaMin: 380,
+  filaMin: 360,
   cabeceraMin: 440,
 } as const
 

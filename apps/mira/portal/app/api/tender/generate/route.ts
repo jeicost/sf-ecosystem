@@ -8,7 +8,8 @@ import { isUuid, loadTeaching, resolveTenderTeaching } from '@/lib/tenders/teach
 // tuviera acceso al CLIENTE, no que el cliente tuviera contratada Licitaciones —
 // una asimetría ya documentada en lib/email-ops/auth.ts. Con el catálogo en BD
 // (client_tools, 0073) se cierra: requireTool hace las dos comprobaciones.
-export const maxDuration = 300
+// 800 (antes 300): la memoria completa con esqueleto (21 secciones, 47k tokens) tarda 6-7 min en Opus 5.5 (medido 7-oct).
+export const maxDuration = 800
 
 // Paso 2: con el pliego + los criterios, genera la memoria criterio a criterio.
 export async function POST(req: NextRequest) {
