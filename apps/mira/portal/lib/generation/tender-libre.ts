@@ -1,6 +1,7 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { TENDER_MODEL } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, loadDisenadas, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
+import { loadTeaching, teachingBlock, bloqueSeccionesFijas, REGLA_MEDIOS_MATERIALES, type Teaching } from '@/lib/tenders/teaching'
 import { adminClient } from '@/lib/supabase'
 import { extractJson } from '@/lib/generation/extract-json'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
@@ -189,8 +190,10 @@ export function construirPromptLibre(opts: {
   knowledge: string
   /** Bloque de páginas con diseño propio (bloqueDisenadasPrompt), o vacío. */
   disenadas?: string
+  /** Guía, lecciones y secciones fijas de la casa (teachingBlock + bloqueSeccionesFijas), o vacío. */
+  ensenanza?: string
 }): string {
-  const { brief, kind, adjunto, pista, pideTarifas, examplesText, brainBlock, knowledge, disenadas } = opts
+  const { brief, kind, adjunto, pista, pideTarifas, examplesText, brainBlock, knowledge, disenadas, ensenanza } = opts
   const lim = LIMITES[kind]
   return `Eres quien redacta la documentación técnica y comercial de esta empresa de transporte y mensajería.
 
@@ -214,13 +217,14 @@ CÓMO HACERLO
 - Personalízalo al destinatario: nómbralo y responde a lo que pide, no a un pliego genérico.
 - Entre ${lim.minSecciones} y ${lim.maxSecciones} secciones${lim.maxPalabras ? `, ${lim.maxPalabras} palabras como máximo en total` : ''}. Ninguna sección vacía ni de relleno: si no hay nada real que decir en una, no la escribas.
 
-${disenadas ? `${disenadas}\n\n` : ''}REGLAS INNEGOCIABLES
+${ensenanza ? `${ensenanza}\n\n` : ''}${disenadas ? `${disenadas}\n\n` : ''}REGLAS INNEGOCIABLES
 - Todo hecho (flota, plantilla, certificaciones, KPIs, plazos, sedes, sistemas) sale del CLIENT KNOWLEDGE o del BRAND CONTEXT. Lo que no consta se escribe como [FALTA: qué dato exacto] y se añade a "nota" de la sección. Un dato inventado en una oferta descalifica.
 ${pideTarifas ? '- El encargo pide TARIFAS o precios. NO escribas ninguna cifra de precio. Deja la estructura de servicios y tramos que hay que tarificar y [FALTA: tarifa] en cada uno, y di en la nota que las fija el equipo comercial.' : ''}
 - Las PAST SUBMITTED MEMORIAS son modelo de ESTRUCTURA y TONO, nunca fuente de cifras: sus números son de otros contratos y otros años. No copies ninguno. Sus órganos aparecen como [ÓRGANO ANTERIOR]; no nombres a ningún cliente anterior.
 - Escribe SOLO en nombre de esta empresa (BRAND CONTEXT). Si el corpus menciona otras empresas del mismo grupo, no las presentes como la nuestra ni mezcles sus medios con los nuestros.
 - Si dos fuentes dan cifras distintas, usa la más reciente y márcalo en la nota.
 - Registro institucional, en español, sin humor.
+- ${REGLA_MEDIOS_MATERIALES}
 
 Devuelve SOLO este JSON:
 {
@@ -278,7 +282,7 @@ export async function generarDesdeBrief(opts: {
   // El brain va primero: su brandName es texto LEGÍTIMO para el enmascarado de
   // las memorias de ejemplo (la propia marca no es un «órgano anterior»).
   const brain = await fetchBrandBrain(clientId)
-  const [knowledge, examples, hermanas, disenadas] = await Promise.all([
+  const [knowledge, examples, hermanas, disenadas, teaching] = await Promise.all([
     getKnowledgeContext(clientId, {
       query: `${brief.slice(0, 1200)} ${adjunto ? adjunto.texto.slice(0, 800) : ''} servicios medios flota equipo certificaciones calidad KPIs incidencias trazabilidad puesta en marcha`,
       charBudget: 6000,
@@ -288,13 +292,16 @@ export async function generarDesdeBrief(opts: {
     loadMemoriaExamples(clientId, null, null, { pliegoActual: textoEncargo, legitimos: [brain?.brandName] }),
     marcasHermanas(clientId),
     loadDisenadas(adminClient(), clientId).catch((): Disenada[] => []),
+    loadTeaching(clientId).catch((): Teaching => ({ guide: null, lessons: [], standardSections: [] })),
   ])
   const brainBlock = brain ? `BRAND CONTEXT (the company's own facts, voice and document_system):\n${formatBrandBrainForPrompt(brain)}` : ''
   // En una oferta siempre se aplica la regla de tarifas: es su razón de ser.
   const pideTarifas = kind === 'oferta' || /tarifa|precio|presupuesto|coste|importe|€/i.test(textoEncargo)
   const pista = adjunto ? pistaOrigen(adjunto.texto, brain?.brandName) : null
 
-  const prompt = construirPromptLibre({ brief, kind, adjunto, pista, pideTarifas, examplesText: examples.text, brainBlock, knowledge: knowledge ?? '', disenadas: bloqueDisenadasPrompt(disenadas) })
+  // Lo que la responsable ha enseñado (guía, lecciones) y, en una memoria, las secciones fijas de la casa.
+  const ensenanza = [teachingBlock({ guide: teaching.guide, lessons: teaching.lessons }), kind === 'memoria' ? bloqueSeccionesFijas(teaching.standardSections) : ''].filter(Boolean).join('\n\n')
+  const prompt = construirPromptLibre({ brief, kind, adjunto, pista, pideTarifas, examplesText: examples.text, brainBlock, knowledge: knowledge ?? '', disenadas: bloqueDisenadasPrompt(disenadas), ensenanza })
 
   const msg = await createMessageForClient(clientId, 'tender/libre', {
     model: MODEL, max_tokens: 16000,

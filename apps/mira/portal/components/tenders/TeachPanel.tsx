@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useRef, useState } from 'react'
-import { GraduationCap, Loader2, Plus, Save, Trash2 } from 'lucide-react'
+import { GraduationCap, Loader2, Plus, Save, Trash2, Lock } from 'lucide-react'
 import { trackAction } from '@/lib/activity-client'
 
 // «Teach MIRA»: lo que la persona enseña y MIRA aplica en TODAS las memorias,
@@ -19,6 +19,10 @@ import { trackAction } from '@/lib/activity-client'
 // Guardar activo borraría la guía de la marca); al cambiar de marca se descarta.
 
 interface Lesson { id: string; text: string; source: string; created_at: string }
+/** Sección fija de la casa: texto institucional que toda memoria reproduce tal cual. */
+interface Fija { id: string; title: string; content: string; enabled: boolean }
+const FIJA_CONTENT_MAX = 6000
+const FIJAS_MAX = 8
 
 const GUIDE_MAX = 20000
 const LESSON_MAX = 1000
@@ -42,6 +46,12 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
   const [savingGuide, setSavingGuide] = useState(false)
   const [guideSavedAt, setGuideSavedAt] = useState<string | null>(null)
 
+  // Secciones fijas
+  const [fijas, setFijas] = useState<Fija[]>([])
+  const [fijasSaved, setFijasSaved] = useState('[]')
+  const [savingFijas, setSavingFijas] = useState(false)
+  const [fijasSavedAt, setFijasSavedAt] = useState<string | null>(null)
+
   // Lecciones
   const [lessons, setLessons] = useState<Lesson[]>([])
   const [nueva, setNueva] = useState('')
@@ -59,6 +69,7 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
     setLoaded(false); setLoading(false); setLoadFailed(false); setErr(null)
     setGuide(''); setGuideSaved(''); setGuideSavedAt(null)
     setLessons([]); setNueva('')
+    setFijas([]); setFijasSaved('[]'); setFijasSavedAt(null)
   }, [clientId])
 
   useEffect(() => {
@@ -75,17 +86,21 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
     const cancelado = () => clientIdRef.current !== lanzadaPara
     ;(async () => {
       try {
-        const [g, l] = await Promise.all([
+        const [g, l, f] = await Promise.all([
           fetch(`/api/tender/playbook?clientId=${clientId}`),
           fetch(`/api/tender/lessons?clientId=${clientId}`),
+          fetch(`/api/tender/standard-sections?clientId=${clientId}`),
         ])
         const gd = await g.json()
         const ld = await l.json()
+        const fd = await f.json()
         if (cancelado()) return
-        if (!g.ok || !l.ok) { setErr(gd.error || ld.error || 'Could not load'); setLoadFailed(true); return }
+        if (!g.ok || !l.ok || !f.ok) { setErr(gd.error || ld.error || fd.error || 'Could not load'); setLoadFailed(true); return }
         const guideText = typeof gd.guide === 'string' ? gd.guide : ''
         setGuide(guideText); setGuideSaved(guideText)
         setLessons(Array.isArray(ld.lessons) ? ld.lessons : [])
+        const fj: Fija[] = Array.isArray(fd.sections) ? fd.sections : []
+        setFijas(fj); setFijasSaved(JSON.stringify(fj))
         setLoaded(true)
       } catch { if (!cancelado()) { setErr('Network error'); setLoadFailed(true) } } finally { if (!cancelado()) setLoading(false) }
     })()
@@ -106,6 +121,25 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
       trackAction('/licitaciones', 'ensenar-guia', clientId, { chars: guide.length })
     } catch { setErr('Network error') } finally { setSavingGuide(false) }
   }
+
+  const saveFijas = async () => {
+    setSavingFijas(true); setErr(null)
+    try {
+      const res = await fetch('/api/tender/standard-sections', {
+        method: 'PUT', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ clientId, sections: fijas }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setErr(data.error || 'Could not save'); return }
+      const fj: Fija[] = Array.isArray(data.sections) ? data.sections : fijas
+      setFijas(fj); setFijasSaved(JSON.stringify(fj))
+      setFijasSavedAt(new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }))
+      trackAction('/licitaciones', 'ensenar-fijas', clientId, { n: fj.length })
+    } catch { setErr('Network error') } finally { setSavingFijas(false) }
+  }
+  const setFija = (id: string, patch: Partial<Fija>) => setFijas((prev) => prev.map((x) => (x.id === id ? { ...x, ...patch } : x)))
+  const fijasDirty = loaded && JSON.stringify(fijas) !== fijasSaved
+  const fijasOk = fijas.every((x) => x.title.trim() && x.content.trim())
 
   const addLesson = async () => {
     const text = nueva.replace(/\s+/g, ' ').trim()
@@ -208,7 +242,44 @@ export default function TeachPanel({ clientId, brand, tenderId }: { clientId: st
                 </button>
               </div>
 
-              {/* (c) Dónde entra todo esto */}
+              {/* (c) Secciones fijas de la casa */}
+              <p className="mb-1.5 mt-5 flex items-center gap-1.5 text-xs font-medium text-ink-secondary"><Lock size={12} /> Standard sections — identical in every proposal</p>
+              <p className="mb-2 text-[11px] text-ink-muted">Approved house text (who we are, our team, what we offer…). MIRA reproduces it as it is, only adapting the reference to the contracting body; if the writer skips one, it is inserted anyway.</p>
+              {fijas.length === 0 ? (
+                <p className="rounded-xl border border-dashed border-line px-3 py-3 text-[11.5px] text-ink-muted">No standard sections yet. Add the ones that are always the same, with the exact text you want in every proposal.</p>
+              ) : (
+                <div className="space-y-2">
+                  {fijas.map((f, i) => (
+                    <div key={f.id} className={`rounded-xl border border-line bg-page p-3 ${f.enabled ? '' : 'opacity-60'}`}>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[10px] text-ink-muted">{i + 1}</span>
+                        <input value={f.title} onChange={(e) => setFija(f.id, { title: e.target.value.slice(0, 120) })} placeholder="Section title (e.g. Quiénes somos)"
+                          className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-2 py-1 text-xs font-semibold text-ink outline-none focus:ring-1 focus:ring-ink-muted" />
+                        <label className="flex items-center gap-1 text-[11px] text-ink-muted"><input type="checkbox" checked={f.enabled} onChange={(e) => setFija(f.id, { enabled: e.target.checked })} /> Active</label>
+                        <button onClick={() => setFijas((prev) => prev.filter((x) => x.id !== f.id))} title="Remove" className="rounded-lg p-1 text-ink-muted transition-colors hover:text-red-400"><Trash2 size={13} /></button>
+                      </div>
+                      <textarea value={f.content} onChange={(e) => setFija(f.id, { content: e.target.value.slice(0, FIJA_CONTENT_MAX) })} rows={Math.min(14, Math.max(4, Math.ceil(f.content.length / 110)))}
+                        className="mt-2 w-full resize-y rounded-lg border border-line bg-surface p-2.5 text-xs leading-relaxed text-ink-secondary outline-none focus:ring-1 focus:ring-ink-muted" />
+                      <p className="mt-1 text-right text-[10px] text-ink-muted">{f.content.length}/{FIJA_CONTENT_MAX}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <button onClick={() => setFijas((prev) => [...prev, { id: `s${Date.now().toString(36)}`, title: '', content: '', enabled: true }])} disabled={!loaded || fijas.length >= FIJAS_MAX}
+                  className="flex items-center gap-1.5 rounded-lg border border-line bg-page px-3 py-1.5 text-xs font-semibold text-ink-secondary transition-all hover:text-ink disabled:opacity-50">
+                  <Plus size={13} /> Add section
+                </button>
+                <div className="flex items-center gap-2">
+                  {fijasSavedAt && !fijasDirty && <span className="text-[11px] text-ink-muted">Saved {fijasSavedAt}</span>}
+                  <button onClick={saveFijas} disabled={savingFijas || !loaded || !fijasDirty || !fijasOk}
+                    className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50" style={{ background: brand }}>
+                    {savingFijas ? <><Loader2 size={13} className="animate-spin" /> Saving</> : <><Save size={13} /> Save sections</>}
+                  </button>
+                </div>
+              </div>
+
+              {/* (d) Dónde entra todo esto */}
               <p className="mt-4 text-[11px] text-ink-muted">Everything here is read on every proposal, offer and improvement for this brand. Pricing rules live in the pricing playbook.</p>
             </>
           )}

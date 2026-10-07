@@ -290,5 +290,30 @@ const contenido = [{ type: 'thinking', thinking: '', signature: 'x' }, { type: '
 check('primerTexto salta el bloque de pensamiento', primerTexto(contenido)?.text === '{"a":1}')
 check('textoDe une solo los bloques de texto', textoDe(contenido) === '{"a":1} fin')
 
+console.log('\nSecciones fijas de la casa: el modelo las recibe, TS comprueba que están y no se reescribieron')
+import { parseStandardSections, tituloCoincide, coincidenciaTexto, comprobarSeccionesFijas, insertarSeccionesFijas, bloqueSeccionesFijas, REGLA_MEDIOS_MATERIALES, type StandardSection } from '../../lib/tenders/teaching'
+const FIJAS: StandardSection[] = [
+  { id: 'a', title: 'Quiénes somos', content: 'GTD mensajeros es una compañía fundada en 1990, especializada en transporte urgente y líder en servicios de transporte integral a la administración pública.', enabled: true },
+  { id: 'b', title: 'Equipo humano', content: 'GTD cuenta con un equipo de profesionales compuesto por personal propio y colaboradores, incluyendo mensajeros, conductores y personal de apoyo.', enabled: true },
+  { id: 'c', title: 'Qué te ofrecemos', content: 'Transporte y mensajería nacional e internacional.', enabled: false },
+]
+check('parse: descarta lo sin forma, recorta, conserva enabled', parseStandardSections([{ title: ' Quiénes  somos ', content: 'x', enabled: false }, { title: 'sin texto' }, 'basura']).length === 1 && parseStandardSections([{ title: 'Q', content: 'x', enabled: false }])[0].enabled === false)
+check('título coincide con número delante y mayúsculas', tituloCoincide('1. QUIÉNES SOMOS', 'Quiénes somos') && tituloCoincide('Equipo humano y medios', 'Equipo humano'))
+check('título distinto no coincide', !tituloCoincide('Plan de contingencia', 'Quiénes somos'))
+check('coincidencia de texto: igual 1, distinto ~0', coincidenciaTexto(FIJAS[0].content, FIJAS[0].content) === 1 && coincidenciaTexto('Otra cosa totalmente distinta y nueva', FIJAS[0].content) < 0.2)
+const comp = comprobarSeccionesFijas([
+  { titulo: '1. QUIÉNES SOMOS', contenido: FIJAS[0].content.replace('administración pública', 'Administración Pública del Estado') },
+  { titulo: 'Equipo humano', contenido: 'Un equipo joven y dinámico que trabaja con pasión por el cliente final en toda España.' },
+], FIJAS)
+check('la que está casi igual pasa; la reescrita se avisa; la desactivada no cuenta', comp.faltan.length === 0 && comp.reescritas.length === 1 && comp.reescritas[0].title === 'Equipo humano')
+const comp2 = comprobarSeccionesFijas([{ titulo: 'Servicio', contenido: 'x' }], FIJAS)
+check('las que faltan se detectan (2 activas)', comp2.faltan.map((f) => f.id).join() === 'a,b')
+const ins = insertarSeccionesFijas([{ titulo: 'Servicio', contenido: 'x' }], comp2.faltan)
+check('se insertan al principio en orden con su texto y aviso', ins.length === 3 && ins[0].titulo === 'Quiénes somos' && ins[1].titulo === 'Equipo humano' && ins[2].titulo === 'Servicio' && ins[0].contenido === FIJAS[0].content)
+const blq = bloqueSeccionesFijas(FIJAS)
+check('bloque: solo activas, con título y texto, y la orden de no reescribir', blq.includes('titulo="Quiénes somos"') && blq.includes(FIJAS[1].content) && !blq.includes('Qué te ofrecemos') && blq.includes('tal cual'))
+check('sin activas, bloque vacío', bloqueSeccionesFijas([FIJAS[2]]) === '')
+check('la regla de medios materiales prohíbe ofrecer lo no pedido', /no pida expresamente/.test(REGLA_MEDIOS_MATERIALES) && /ESTE pliego/.test(REGLA_MEDIOS_MATERIALES))
+
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)

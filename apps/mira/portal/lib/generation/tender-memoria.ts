@@ -7,7 +7,7 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { getPlaybook } from '@/lib/generation/tender-oferta'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
-import { loadBaseMemoria, loadTeaching, teachingBlockDetallado, type BaseMemoria, type Teaching } from '@/lib/tenders/teaching'
+import { loadBaseMemoria, loadTeaching, teachingBlockDetallado, bloqueSeccionesFijas, comprobarSeccionesFijas, insertarSeccionesFijas, REGLA_MEDIOS_MATERIALES, type BaseMemoria, type Teaching } from '@/lib/tenders/teaching'
 
 // Herramienta de licitaciones (D4 Entrega — el vertical que gana dinero).
 // Dos pasos: (1) del PLIEGO extrae los criterios de puntuación reales; (2) con
@@ -309,8 +309,10 @@ export function buildMemoriaPrompt(parts: {
   knowledge: string | null
   /** Bloque de páginas con diseño propio (bloqueDisenadasPrompt), o vacío. */
   disenadas?: string
+  /** Bloque de secciones fijas de la casa (bloqueSeccionesFijas), o vacío. */
+  fijas?: string
 }): string {
-  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas } = parts
+  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas, fijas } = parts
   return `You are the technical-proposal writer for this company (D4 "Entrega"). Write the MEMORIA TÉCNICA that responds to the tender below, section by section, MAXIMISING the score. Use the company's real document_system (skeleton, reusable blocks, tone) from the brand context, and its real certifications/facts from the client knowledge. Personalise to THIS tender (name the contracting body in each section).
 
 SCORING STRUCTURE (do NOT write the price offer):
@@ -342,8 +344,10 @@ HARD RULES: every factual claim (KPIs, certificaciones, flota, plazos, plantilla
 - The PAST SUBMITTED MEMORIAS are a model of STRUCTURE and TONE only. They are NOT a source of facts: their figures belong to other contracts and other years. Never copy a number from them.
 - They were written for OTHER contracting bodies. Their names appear masked as [ÓRGANO ANTERIOR]; never write any contracting body's name except the one in THIS tender.
 - If two knowledge sources give different figures for the same fact, use the most recent and add it to datos_a_confirmar.
+- ${REGLA_MEDIOS_MATERIALES}
 - The person in charge may have left INSTRUCTIONS, a WRITING GUIDE and LESSONS below. They rule over style, focus, structure and emphasis, and you MUST list in instrucciones_aplicadas each one you followed. If one cannot be met without inventing a company fact, do NOT invent: leave [FALTA: …] where the fact goes and list it in instrucciones_no_aplicadas with the reason. If there are none, return both arrays empty.
 
+${fijas ? `${fijas}\n` : ''}
 ${teaching ? `${teaching}\n` : ''}
 ${disenadas ? `${disenadas}\n` : ''}
 ${playbook ? `CLIENT TENDER PLAYBOOK (doctrina destilada de sus ofertas presentadas — prevalece sobre heurísticas genéricas):\n${playbook.slice(0, 6000)}\n` : ''}
@@ -430,7 +434,8 @@ export async function generateTenderMemoria(opts: {
   const { text: teachingText, recortes: recortesEnsenanza } = teachingBlockDetallado({ instructions: instrucciones, guide: teaching.guide, lessons: teaching.lessons })
   const hayEnsenanza = teachingText.length > 0
 
-  const prompt = buildMemoriaPrompt({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas) })
+  const fijas = teaching.standardSections || []
+  const prompt = buildMemoriaPrompt({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas), fijas: bloqueSeccionesFijas(fijas) })
 
   const msg = await createMessageForClient(clientId, 'tender/generate', {
     // 16.000: una memoria completa (criterios + secciones de servicio) no cabe
@@ -447,9 +452,17 @@ export async function generateTenderMemoria(opts: {
     throw new Error('La memoria generada no tiene una estructura válida: vuelve a generarla')
   }
   const gaps: string[] = Array.isArray(parsed.data_gaps) ? (parsed.data_gaps as string[]) : []
+  // Secciones fijas de la casa: el modelo recibió la orden; TS comprueba. Las que
+  // faltan se insertan tal cual; las reescritas se avisan (la persona decide).
+  const fijasCheck = comprobarSeccionesFijas(secciones as Array<{ titulo?: string; contenido?: string }>, fijas)
+  if (fijasCheck.faltan.length) {
+    parsed.secciones = insertarSeccionesFijas(secciones, fijasCheck.faltan)
+    gaps.push(`Secciones fijas de la casa que el redactor había omitido y se han insertado tal cual: ${fijasCheck.faltan.map((f) => `«${f.title}»`).join(', ')}. Revisa la referencia al órgano.`)
+  }
+  for (const r of fijasCheck.reescritas) gaps.push(`La sección fija «${r.title}» se ha reescrito (conserva el ${r.coincidencia} % de su texto): restáurala desde Teach MIRA si no era intención.`)
   // Marcas de páginas diseñadas: el modelo marca, TS valida. Una marca inventada no llega al Word.
   const marcasRaras: string[] = []
-  for (const sec of secciones) {
+  for (const sec of (parsed.secciones as Array<Record<string, unknown>>)) {
     const m = normalizarMarcadores(String(sec.contenido), disenadas)
     sec.contenido = m.texto
     marcasRaras.push(...m.desconocidas)

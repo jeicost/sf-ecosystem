@@ -98,6 +98,7 @@ export async function POST(req: NextRequest) {
       criterioTexto,
       teaching: bloque,
       disenadas,
+      fijas: teaching.standardSections,
     })
     // Lo que el modelo no vio de la enseñanza también se avisa aquí.
     const avisos: string[] = [...avisosModelo, ...recortesEnsenanza]

@@ -8,7 +8,7 @@ import { toJson } from '@/lib/db-json'
 import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { GenerationCapExceededError } from '@/lib/anthropic-client'
 import { takeTenderUpload, extractTextFromFile, UnsupportedFileError } from '@/lib/tenders/upload'
-import { isUuid, loadTeaching, loadTenderTeaching, teachingBlockDetallado } from '@/lib/tenders/teaching'
+import { isUuid, loadTeaching, loadTenderTeaching, teachingBlockDetallado, bloqueSeccionesFijas } from '@/lib/tenders/teaching'
 import { loadDisenadas, type Disenada } from '@/lib/tenders/disenadas'
 import { esErrorDePresupuesto, esErrorDePresupuestoMensual } from '@/lib/ai/budget'
 import {
@@ -160,6 +160,7 @@ export async function POST(req: NextRequest) {
           brandName: brain?.brandName || null,
           brainBlock: brain ? `BRAND CONTEXT (Source of Truth — los hechos, la voz y el sistema documental de la empresa):\n${formatBrandBrainForPrompt(brain)}` : '',
           teachingText,
+          fijasText: bloqueSeccionesFijas(teaching.standardSections),
         })
         const { history, olvidados } = buildHistory(messages)
 

@@ -1,4 +1,5 @@
 import { adminClient } from '@/lib/supabase'
+import { toJson } from '@/lib/db-json'
 
 // Lo que la persona ENSEÑA a MIRA para las licitaciones de su marca.
 //
@@ -42,16 +43,113 @@ export interface Lesson {
   created_at: string
 }
 
+/**
+ * Sección FIJA de la casa (Carlos, 7-oct-2026): «quiénes somos, equipo humano y
+ * qué ofreceremos son casi siempre iguales». Texto institucional aprobado que
+ * toda memoria reproduce tal cual, adaptando solo la referencia al órgano.
+ */
+export interface StandardSection {
+  id: string
+  title: string
+  content: string
+  enabled: boolean
+}
+
 export interface Teaching {
   guide: string | null
   lessons: Lesson[]
+  /** Secciones fijas de la casa (todas, activas o no; el bloque del prompt filtra). */
+  standardSections: StandardSection[]
 }
+
+export const STANDARD_SECTIONS_MAX = 8
+export const STANDARD_TITLE_MAX = 120
+export const STANDARD_CONTENT_CAP = 6000
+
+/** JSON guardado → lista tipada; lo que no tenga forma se descarta. Puro. */
+export function parseStandardSections(raw: unknown): StandardSection[] {
+  if (!Array.isArray(raw)) return []
+  return raw.filter((s): s is StandardSection => !!s && typeof s === 'object' && typeof (s as StandardSection).title === 'string' && typeof (s as StandardSection).content === 'string')
+    .map((s) => ({ id: typeof s.id === 'string' && s.id ? s.id : `s${Math.random().toString(36).slice(2, 8)}`, title: s.title.replace(/\s+/g, ' ').trim().slice(0, STANDARD_TITLE_MAX), content: s.content.trim().slice(0, STANDARD_CONTENT_CAP), enabled: s.enabled !== false }))
+    .filter((s) => s.title && s.content)
+    .slice(0, STANDARD_SECTIONS_MAX)
+}
+
+export async function saveStandardSections(clientId: string, list: StandardSection[]): Promise<void> {
+  const { error } = await adminClient().from('tender_settings')
+    .upsert({ client_id: clientId, standard_sections: toJson(list), updated_at: new Date().toISOString() }, { onConflict: 'client_id' })
+  if (error) throw error
+}
+
+const normalizarTitulo = (t: string) => String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/^\d+(\.\d+)*[.)]?\s*/, '').replace(/[^a-z0-9 ]+/g, ' ').replace(/\s+/g, ' ').trim()
+const palabras = (t: string) => new Set(String(t || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 2))
+
+/** ¿Es esta sección de la memoria la sección fija? Título igual (sin número) o que la contenga, o 2/3 de sus palabras. */
+export function tituloCoincide(titulo: string, fija: string): boolean {
+  const a = normalizarTitulo(titulo), b = normalizarTitulo(fija)
+  if (!a || !b) return false
+  if (a === b || a.includes(b) || b.includes(a)) return true
+  const pa = palabras(a), pb = palabras(b)
+  if (!pb.size) return false
+  let comunes = 0
+  for (const w of pb) if (pa.has(w)) comunes++
+  return comunes / pb.size >= 0.66
+}
+
+/** Parecido del texto generado con el fijo: palabras del fijo que siguen ahí (0-1). */
+export function coincidenciaTexto(generado: string, fijo: string): number {
+  const pf = palabras(fijo), pg = palabras(generado)
+  if (!pf.size) return 1
+  let comunes = 0
+  for (const w of pf) if (pg.has(w)) comunes++
+  return comunes / pf.size
+}
+
+export interface SeccionGenerada { titulo?: string; contenido?: string }
+export interface ComprobacionFijas { faltan: StandardSection[]; reescritas: Array<{ title: string; coincidencia: number }> }
+
+/** Qué secciones fijas faltan en la memoria y cuáles están pero reescritas (< 60 % de sus palabras). Puro. */
+export function comprobarSeccionesFijas(secciones: SeccionGenerada[], fijas: StandardSection[]): ComprobacionFijas {
+  const faltan: StandardSection[] = []
+  const reescritas: Array<{ title: string; coincidencia: number }> = []
+  for (const f of fijas.filter((x) => x.enabled)) {
+    const hit = secciones.find((s) => tituloCoincide(s.titulo || '', f.title))
+    if (!hit) { faltan.push(f); continue }
+    const c = coincidenciaTexto(hit.contenido || '', f.content)
+    if (c < 0.6) reescritas.push({ title: f.title, coincidencia: Math.round(c * 100) })
+  }
+  return { faltan, reescritas }
+}
+
+/**
+ * Inserta las fijas que faltan al principio, en su orden, con su texto tal cual.
+ * El modelo recibió la orden de incluirlas; TypeScript garantiza que están.
+ */
+export function insertarSeccionesFijas<T extends SeccionGenerada>(secciones: T[], faltan: StandardSection[]): T[] {
+  if (!faltan.length) return secciones
+  const nuevas = faltan.map((f) => ({ titulo: f.title, contenido: f.content, criterio: null, puntos_objetivo: null, datos_a_confirmar: ['Sección fija insertada tal cual: revisa la referencia al órgano de esta licitación.'] }) as unknown as T)
+  return [...nuevas, ...secciones]
+}
+
+/** Bloque del prompt con las secciones fijas activas. Vacío si no hay. Puro. */
+export function bloqueSeccionesFijas(fijas: StandardSection[]): string {
+  const activas = fijas.filter((f) => f.enabled && f.content.trim())
+  if (!activas.length) return ''
+  return `SECCIONES FIJAS DE LA CASA — texto institucional aprobado por la responsable. La memoria DEBE incluir cada una de estas secciones, con ESTE título y ESTE texto reproducido tal cual: solo se adapta la referencia al órgano o al contrato de ESTE pliego y se añade lo que el pliego pida expresamente. No las resumas, no las reescribas, no las fusiones con otras ni cambies sus cifras. Van donde la estructura habitual de la empresa las lleva (normalmente al principio).
+${activas.map((f) => `<seccion_fija titulo="${f.title.replace(/"/g, "'")}">
+${f.content}
+</seccion_fija>`).join('\n')}`
+}
+
+/** Regla de la casa para los medios materiales (Carlos, 7-oct): se dimensionan al pliego, nunca una sección estándar. */
+export const REGLA_MEDIOS_MATERIALES = 'La sección de MEDIOS / EQUIPO MATERIAL se dimensiona a lo que pide ESTE pliego (tipos de vehículo, equipos, sistemas y materiales que el PPT exige o que la operativa descrita necesita): no es una sección estándar ni se copia de otra memoria. No ofrezcas medios, servicios, mejoras ni compromisos que el pliego no pida expresamente; si la empresa dispone de algo que no se pide, como mucho una mención breve sin convertirlo en oferta.'
+
 
 /** La guía de la marca y sus lecciones activas (más recientes primero). */
 export async function loadTeaching(clientId: string): Promise<Teaching> {
   const db = adminClient()
   const [settings, lessons] = await Promise.all([
-    db.from('tender_settings').select('guide').eq('client_id', clientId).maybeSingle(),
+    db.from('tender_settings').select('guide,standard_sections').eq('client_id', clientId).maybeSingle(),
     db.from('tender_lessons').select('id,text,source,created_at')
       .eq('client_id', clientId).eq('active', true)
       .order('created_at', { ascending: false }).limit(LESSONS_MAX),
@@ -59,7 +157,7 @@ export async function loadTeaching(clientId: string): Promise<Teaching> {
   if (settings.error) throw settings.error
   if (lessons.error) throw lessons.error
   const guide = typeof settings.data?.guide === 'string' && settings.data.guide.trim() ? settings.data.guide : null
-  return { guide, lessons: (lessons.data || []) as Lesson[] }
+  return { guide, lessons: (lessons.data || []) as Lesson[], standardSections: parseStandardSections(settings.data?.standard_sections) }
 }
 
 /** Guarda la guía de redacción (y/o el playbook) de la marca. Parcial: solo lo que viene. */

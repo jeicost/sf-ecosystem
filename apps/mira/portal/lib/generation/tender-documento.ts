@@ -1,6 +1,7 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { TENDER_MODEL, ajustesModelo } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
+import { tituloCoincide, type StandardSection } from '@/lib/tenders/teaching'
 import { extractJson } from '@/lib/generation/extract-json'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
@@ -114,11 +115,14 @@ export async function reescribirSeccion(opts: {
   teaching?: string | null
   /** Páginas con diseño propio de la marca: la instrucción puede pedir incluir una. */
   disenadas?: Disenada[]
+  /** Secciones fijas de la casa: si la sección es una de ellas, solo se cambia lo que pida la instrucción. */
+  fijas?: StandardSection[]
 }): Promise<{ contenido: string; avisos: string[] }> {
   const { clientId, seccion, instruccion, tituloDocumento, otrasSecciones, criterioTexto } = opts
   const teaching = (opts.teaching || '').trim()
   const disenadas = opts.disenadas || []
   const bloqueDisenadas = bloqueDisenadasPrompt(disenadas)
+  const fija = (opts.fijas || []).find((f) => f.enabled && tituloCoincide(seccion.titulo, f.title))
 
   const knowledge = await getKnowledgeContext(clientId, {
     // La búsqueda combina el tema de la sección, lo que se pide y el criterio:
@@ -142,6 +146,7 @@ ${seccion.contenido}
 
 ${teaching ? `LO QUE LA RESPONSABLE HA ENSEÑADO PARA ESTA MARCA Y ESTE EXPEDIENTE (se aplica siempre; la instrucción puntual de abajo manda sobre todo esto):\n${teaching}\n` : ''}
 ${bloqueDisenadas ? `${bloqueDisenadas}\n` : ''}
+${fija ? `ESTA ES UNA SECCIÓN FIJA DE LA CASA («${fija.title}»): su texto institucional se conserva tal cual y solo se cambia lo que pida la instrucción puntual; no la resumas ni la reescribas por tu cuenta.\n` : ''}
 INSTRUCCIÓN PUNTUAL DEL RESPONSABLE (manda sobre todo lo anterior):
 ${instruccion}
 

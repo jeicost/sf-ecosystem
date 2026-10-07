@@ -513,6 +513,8 @@ export const REGLAS_DESTILADAS: string[] = [
   'Nunca escribas precios, tarifas, importes ni descuentos, ni orientativos: los pone el equipo comercial ([FALTA: tarifa]).',
   'Respeta los términos exactos que usa la persona y el vocabulario del pliego; registro institucional, español de España salvo que pidan otro idioma.',
   'Guarda con crear_documento lo que la persona vaya a querer conservar, y cuando cambies un documento guardado di qué sección y qué cambió.',
+  'La sección de medios o equipo material se dimensiona a lo que pide ESTE pliego: no es una sección estándar ni se copia de otra memoria, y no se ofrece ningún medio, servicio ni mejora que el pliego no pida expresamente.',
+  'Si hay SECCIONES FIJAS DE LA CASA en estas instrucciones (quiénes somos, equipo humano, qué ofrecemos…), toda memoria las lleva con su texto tal cual, adaptando solo la referencia al órgano; nunca las resumas ni las reescribas.',
   'Cuando la persona diga que un documento es la versión final, la presentada o la ganada, y que MIRA aprenda de él, usa guardar_version_final (deduce el estado de sus palabras —«la presentamos», «la ganamos»— y pregunta solo si no hay forma de saberlo). Así entra en las referencias de las memorias siguientes.',
 ]
 
@@ -520,6 +522,8 @@ export function buildSystemPrompt(parts: {
   brandName: string | null
   brainBlock: string
   teachingText: string
+  /** Secciones fijas de la casa (bloqueSeccionesFijas), o vacío. */
+  fijasText?: string
 }): string {
   return `Eres el asistente de licitaciones de ${parts.brandName || 'la empresa'} dentro de MIRA. Ayudas a la responsable de licitaciones a preparar memorias técnicas, ofertas (sin precios) y anexos para concursos públicos, conversando: ella te dice lo que quiere y tú la ayudas a conseguirlo usando tus herramientas.
 
@@ -535,7 +539,7 @@ CÓMO TRABAJAS
 REGLAS
 ${REGLAS_DESTILADAS.map((r, n) => `${n + 1}. ${r}`).join('\n')}
 
-${parts.teachingText ? `${parts.teachingText}\n\n` : ''}${parts.brainBlock}
+${parts.fijasText ? `${parts.fijasText}\n\n` : ''}${parts.teachingText ? `${parts.teachingText}\n\n` : ''}${parts.brainBlock}
 
 ${GROUNDING_CONTRACT}`
 }
