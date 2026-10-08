@@ -116,3 +116,20 @@ real de producción. Esto lo evita.
   Albasanz). El botón Responder abre mailto y, en el desplegable, Outlook web,
   Gmail y copiar (en GLS el mailto abría un «nuevo Outlook» que no arrancaba).
 
+## Consumo: medir antes de tocar, caché de 1 h, modelo barato donde está probado (8-oct-2026)
+
+- Perfil real por ruta y modelo desde `mira_usage_log` (gratis):
+  `npx tsx --env-file=.env.local evals/_scratch/perfil-consumo.ts 30` y la secuencia de una ruta
+  (`perfil-secuencia.ts tender/chat 45`) para ver escrituras (cw) frente a lecturas (cr) de caché.
+  El 8-oct: 50 $/30 días; el 55 % era tender/chat + email-ops-extract, y en los dos la caché de
+  5 min se tiraba (pausas humanas > 5 min; cron cada 10 min).
+- Regla: todo prefijo que reutiliza una persona a ritmo humano o un cron de ≥ 5 min va con
+  `CACHE_1H` (`lib/ai/models.ts`); `CACHE_5M` solo para bucles de herramientas dentro de un
+  mismo mensaje con un system que cambia por turno (brain/chat, documents-guided).
+- Modelo por paso, con variable de entorno por delante para volver atrás sin desplegar:
+  `TENDER_EXTRACT_MODEL` (Sonnet 5.5, probado contra Opus en 2 pliegos reales); generar,
+  reescribir y el chat siguen en Opus 5.5 porque ahí está la calidad que juzga Usoa.
+- Cualquier cambio que toque el modelo: UNA pasada real (`evals/email-ops/run.ts` con
+  `EVAL_CLIENT_ID` de GTD y de Albasanz, o un script de comparación) y el resto lo juzga
+  Claude Code. Los casos GLS de Email Ops están etiquetados con la marca GTD, donde vive el buzón.
+
