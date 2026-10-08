@@ -2,7 +2,7 @@
   "id": "gls-dos-sobres-sin-destino",
   "description": "\"Son dos sobres\" en letra sí es una cifra (2); servicio 14h del cuerpo; sin destinos declarados; dirección de la firma",
   "fixture": "gls-dos-sobres-sin-destino.txt",
-  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "client_id": "3949b629-feec-4497-9d73-91214027cca1",
   "received_at": "2026-08-28T07:02:00Z",
   "expected": {
     "kind": "shipment_request",

@@ -12,7 +12,7 @@ import {
 } from '@/lib/generation/tender-memoria'
 import { sanearImportes, sanearPorcentajes } from '@/lib/generation/tender-libre'
 import { addLesson, loadTenderTeaching } from '@/lib/tenders/teaching'
-import { ajustesModelo } from '@/lib/ai/models'
+import { ajustesModelo, CACHE_1H } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import {
   CHAT_MODEL, MAX_TURNS, MAX_TOKENS_TURN, TOOL_DEFS, CHUNK_MAX, SECTION_CONTENT_MAX,
@@ -592,7 +592,7 @@ export function conCacheAlFinal(conv: Anthropic.MessageParam[]): Anthropic.Messa
   const b = blocks[i] as Anthropic.ContentBlockParam & { cache_control?: unknown }
   // Los bloques de pensamiento no admiten marca de caché.
   if (b.type === 'thinking' || b.type === 'redacted_thinking') return conv
-  blocks[i] = { ...b, cache_control: { type: 'ephemeral' } } as Anthropic.ContentBlockParam
+  blocks[i] = { ...b, cache_control: CACHE_1H } as Anthropic.ContentBlockParam
   out[out.length - 1] = { ...last, content: blocks }
   return out
 }
@@ -615,13 +615,15 @@ export async function runTenderChat(opts: {
     ctx.emit('delta', { text: s })
   }
 
-  // Caché: el system (brain + enseñanza + reglas) y las herramientas son iguales
-  // en las 8 vueltas de un mensaje; el bloque de estado cambia y va aparte.
+  // Caché de 1 HORA: el system (brain + enseñanza + reglas) y las herramientas son
+  // iguales en las 8 vueltas de un mensaje Y entre mensajes; el bloque de estado
+  // cambia y va aparte. Con 5 min, cada pausa de Usoa para leer o escribir
+  // reescribía todo el prefijo (medido el 7-oct: 3 × 60k tokens en una mañana).
   const systemBlocks: Anthropic.TextBlockParam[] = [
-    { type: 'text', text: system, cache_control: { type: 'ephemeral' } },
+    { type: 'text', text: system, cache_control: CACHE_1H },
     { type: 'text', text: state },
   ]
-  const toolDefs: Anthropic.Tool[] = TOOL_DEFS.map((t, n) => (n === TOOL_DEFS.length - 1 ? { ...t, cache_control: { type: 'ephemeral' } } : t))
+  const toolDefs: Anthropic.Tool[] = TOOL_DEFS.map((t, n) => (n === TOOL_DEFS.length - 1 ? { ...t, cache_control: CACHE_1H } : t))
 
   try {
     // 'tender/chat' activa el freno de gasto diario (lib/ai/budget.ts).

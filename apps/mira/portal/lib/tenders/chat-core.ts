@@ -17,7 +17,10 @@ export const CHAT_MODEL = TENDER_MODEL
 /** Vueltas de herramientas por mensaje: suficiente para leer, buscar y guardar; acota el coste de un bucle tonto. */
 export const MAX_TURNS = 8
 /** Salida por vuelta. Una sección larga cabe; los 5.x piensan dentro de este techo, por eso 12k y no 8k. El coste manda: el bucle corta a MAX_TURNS. */
-export const MAX_TOKENS_TURN = 12000
+// 16k (antes 12k): el 7-oct dos respuestas de Usoa se cortaron en 12.000 tokens
+// (una sección larga de crear_documento) y hubo que pedir «sigue»: 0,24 $ de
+// salida tirados cada vez más la vuelta repetida. El techo incluye el pensamiento.
+export const MAX_TOKENS_TURN = 16000
 /** Lo que se guarda de cada resultado de herramienta para retomar la conversación otro día. */
 export const TOOL_RESULT_SAVE_CAP = 2000
 /** Lo mismo para los textos largos que el modelo puso en la ENTRADA de una herramienta (una sección entera en crear_documento). */

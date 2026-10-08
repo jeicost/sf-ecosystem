@@ -48,7 +48,7 @@ check('asociar_expediente: null sin título', !validateToolInput('asociar_expedi
 check('asociar_expediente: null con título', validateToolInput('asociar_expediente', { tender_id: null, titulo: 'Exp nuevo' }).ok)
 check('herramienta desconocida', !validateToolInput('borrar_todo', {}).ok)
 check('toda herramienta definida tiene validador', TOOL_DEFS.every((t) => !String((validateToolInput(t.name, {}) as { error?: string }).error || '').startsWith('Herramienta desconocida')))
-check('límites del bucle: 8 vueltas, ≤ 12000 tokens', MAX_TURNS === 8 && MAX_TOKENS_TURN <= 12000)
+check('límites del bucle: 8 vueltas, ≤ 16000 tokens', MAX_TURNS === 8 && MAX_TOKENS_TURN <= 16000)
 
 console.log('\nAdjuntos: troceo por caracteres y recorte avisado')
 const big: ChatAttachment = { id: 'a1', filename: 'pcap.pdf', mime: 'application/pdf', chars: 150_000, text: 'x'.repeat(150_000) }

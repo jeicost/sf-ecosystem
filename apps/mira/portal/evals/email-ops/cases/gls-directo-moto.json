@@ -2,7 +2,7 @@
   "id": "gls-directo-moto",
   "description": "Servicio directo con todo en el cuerpo: ventana de recogida, ambas direcciones, sobre → moto, local, urgente",
   "fixture": "gls-directo-moto.txt",
-  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "client_id": "3949b629-feec-4497-9d73-91214027cca1",
   "received_at": "2026-08-27T09:40:00Z",
   "expected": {
     "kind": "shipment_request",

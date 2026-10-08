@@ -31,10 +31,33 @@ export const DEFAULT_EFFORT = (process.env.MIRA_EFFORT || 'medium') as Esfuerzo
 export const TENDER_EFFORT = (process.env.TENDER_EFFORT || DEFAULT_EFFORT) as Esfuerzo
 /** Tareas baratas: chats de agentes y del Cerebro, entrevistas por tool-use, puntuar concursos, clasificar. */
 export const CHEAP_MODEL = process.env.CHEAP_MODEL || 'claude-sonnet-5-5'
+/**
+ * Extracción de criterios del pliego (tender/extract). Medido el 8-oct-2026
+ * con dos pliegos reales: Sonnet 5.5 devolvió exactamente los mismos 7
+ * criterios y puntos que Opus 5.5 en Turismo de Ronda, y en Baeza desglosó en
+ * 5 subcriterios con sus puntos lo que la extracción guardada (Opus 4.8)
+ * había fundido en uno — en 15-20 s frente a minutos, a un tercio del coste.
+ * Si algún pliego raro lo pide, se vuelve a Opus desde Vercel sin desplegar.
+ */
+export const TENDER_EXTRACT_MODEL = process.env.TENDER_EXTRACT_MODEL || CHEAP_MODEL
 /** Lo más barato y sin pensamiento: resúmenes de Drive, visión de adjuntos, puntuar leads. El id con fecha es el que ya corre en prod. */
 export const FAST_MODEL = process.env.FAST_MODEL || 'claude-haiku-4-5-20251001'
 
 export type Esfuerzo = 'low' | 'medium' | 'high' | 'xhigh' | 'max'
+
+/**
+ * Marcas de caché de prompt. Medido el 8-oct-2026 en mira_usage_log: con la
+ * caché de 5 minutos, cada pausa humana de más de 5 min en el chat de
+ * licitaciones REESCRIBÍA la conversación entera (el 7-oct, tres reescrituras
+ * de 55-65k tokens en una mañana) y el cron de Email Ops, que corre cada 10
+ * min, reescribía los 13k tokens del system en CADA pasada. La caché de 1 h
+ * cuesta 2× en la primera escritura (frente a 1,25×) pero se lee al 10 % y
+ * cada lectura renueva la hora: para todo lo que una persona usa a ritmo
+ * humano, o un cron de 10 min, sale mucho más barata. El SDK 0.39 no tipa
+ * `ttl`: por eso el cast.
+ */
+export const CACHE_1H = { type: 'ephemeral', ttl: '1h' } as unknown as Anthropic.CacheControlEphemeral
+export const CACHE_5M = { type: 'ephemeral' } as Anthropic.CacheControlEphemeral
 
 /** Los 5.x piensan siempre: el pensamiento consume parte de max_tokens y hay que dar más techo. */
 export function modeloConPensamiento(model: string): boolean {

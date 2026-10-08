@@ -21,7 +21,7 @@ import {
   departmentSlugToAgentDomain,
 } from '@/lib/department-prompt'
 import type Anthropic from '@anthropic-ai/sdk'
-import { CHEAP_MODEL, ajustesModelo, techoSalida } from '@/lib/ai/models'
+import { CHEAP_MODEL, ajustesModelo, techoSalida, CACHE_1H } from '@/lib/ai/models'
 
 // Sin esto, esta ruta (la más usada de toda la app — chat de los 23 agentes,
 // a diario por cada cliente) caía al timeout por defecto de la plataforma.
@@ -245,7 +245,7 @@ export async function POST(req: NextRequest) {
       {
         type: 'text',
         text: fullSystem,
-        ...(fullSystem.length >= CACHE_MIN_CHARS ? { cache_control: { type: 'ephemeral' as const } } : {}),
+        ...(fullSystem.length >= CACHE_MIN_CHARS ? { cache_control: CACHE_1H } : {}),
       },
     ]
     // El conocimiento va FUERA del prefijo cacheado, porque cambia con cada
@@ -405,7 +405,7 @@ export async function POST(req: NextRequest) {
             const tail = blocks[blocks.length - 1]
             // cache_control solo es válido en bloques de texto o imagen.
             if (tail && (tail.type === 'text' || tail.type === 'image')) {
-              blocks[blocks.length - 1] = { ...tail, cache_control: { type: 'ephemeral' } }
+              blocks[blocks.length - 1] = { ...tail, cache_control: CACHE_1H }
               sanitized[sanitized.length - 1] = { ...last, content: blocks }
             }
           }

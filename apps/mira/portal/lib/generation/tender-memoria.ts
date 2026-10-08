@@ -1,5 +1,5 @@
 import { createMessageForClient } from '@/lib/anthropic-client'
-import { TENDER_MODEL } from '@/lib/ai/models'
+import { TENDER_MODEL, TENDER_EXTRACT_MODEL, CACHE_1H } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, loadDisenadas, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import { extractJson } from '@/lib/generation/extract-json'
 import { adminClient } from '@/lib/supabase'
@@ -94,9 +94,13 @@ Rules: points come ONLY from the text. If a criterion's points aren't stated, us
 
 ${GROUNDING_CONTRACT}`
 
+  // Sonnet 5.5 (TENDER_EXTRACT_MODEL): mismos criterios que Opus en las dos
+  // pruebas del 8-oct, en 20 s. El pliego va SIN marca de caché: la caché es por
+  // modelo y la generación (Opus) no la podría leer; escribirla a 1 h costaba el
+  // doble que mandarla plana para no reutilizarla nunca.
   const msg = await createMessageForClient(clientId, 'tender/extract', {
-    model: MODEL, max_tokens: 4000,
-    system: [bloquePliego(pliegoText)],
+    model: TENDER_EXTRACT_MODEL, max_tokens: 4000,
+    system: [{ type: 'text', text: bloquePliego(pliegoText).text }],
     messages: [{ role: 'user', content: prompt }],
   })
   const text = msg.content.map((b) => ('text' in b ? b.text : '')).join('')
@@ -347,7 +351,9 @@ export function buildMemoriaRequest(parts: Parameters<typeof buildMemoriaPrompt>
     examplesText ? `PAST SUBMITTED MEMORIAS (STRUCTURE AND TONE ONLY — imita su esqueleto, su registro y el tipo de compromiso que asumen; NUNCA sus cifras ni sus nombres. Si hay una MEMORIA DE PARTIDA, su estructura manda sobre las demás):\n${examplesText}` : '',
   ].filter(Boolean).join('\n\n')
   const system: Anthropic.TextBlockParam[] = [bloquePliego(pliegoText)]
-  if (corpus) system.push({ type: 'text', text: corpus, cache_control: { type: 'ephemeral' } })
+  // 1 hora, no 5 min: generar tarda 6-7 min, así que la caché de 5 min caducaba
+  // ANTES de que nadie pudiera regenerar y la escritura (1,25×) se tiraba siempre.
+  if (corpus) system.push({ type: 'text', text: corpus, cache_control: CACHE_1H })
   const user = `You are the technical-proposal writer for this company (D4 "Entrega"). Write the MEMORIA TÉCNICA that responds to the tender in the system context, section by section, MAXIMISING the score. Use the company's real document_system (skeleton, reusable blocks, tone) from the brand context, and its real certifications/facts from the client knowledge. Personalise to THIS tender (name the contracting body in each section).
 
 SCORING STRUCTURE (do NOT write the price offer):

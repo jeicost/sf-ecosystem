@@ -2,7 +2,7 @@
   "id": "gls-dos-entregas",
   "description": "Una recogida con dos entregas: como el operador de GLS, entrega null y las dos direcciones resumidas en observaciones",
   "fixture": "gls-dos-entregas.txt",
-  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "client_id": "3949b629-feec-4497-9d73-91214027cca1",
   "received_at": "2026-08-27T09:22:00Z",
   "expected": {
     "kind": "shipment_request",

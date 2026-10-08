@@ -2,7 +2,7 @@
   "id": "gls-manifiesto-una-entrega",
   "description": "Cuerpo dice Bravo Murillo 28, la firma 38 (prevalece la firma); el Excel adjunto trae la única entrega: Elda, 1 bulto, 1.4 kg",
   "fixture": "gls-manifiesto-una-entrega.txt",
-  "client_id": "1a093072-97fb-46e4-aea7-65c3eb9e1e29",
+  "client_id": "3949b629-feec-4497-9d73-91214027cca1",
   "received_at": "2026-08-27T10:43:00Z",
   "expected": {
     "kind": "shipment_request",
