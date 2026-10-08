@@ -1428,6 +1428,221 @@ export type Database = {
         }
         Relationships: []
       }
+      commercial_batches: {
+        Row: {
+          client_id: string
+          collected_at: string | null
+          ended_at: string | null
+          error: string | null
+          errored: number
+          id: string
+          request_count: number
+          status: string
+          submitted_at: string
+          succeeded: number
+        }
+        Insert: {
+          client_id: string
+          collected_at?: string | null
+          ended_at?: string | null
+          error?: string | null
+          errored?: number
+          id: string
+          request_count?: number
+          status?: string
+          submitted_at?: string
+          succeeded?: number
+        }
+        Update: {
+          client_id?: string
+          collected_at?: string | null
+          ended_at?: string | null
+          error?: string | null
+          errored?: number
+          id?: string
+          request_count?: number
+          status?: string
+          submitted_at?: string
+          succeeded?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commercial_batches_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commercial_extraction_jobs: {
+        Row: {
+          attempts: number
+          batch_id: string | null
+          client_id: string
+          created_at: string
+          custom_id: string | null
+          document_id: string
+          error: string | null
+          fichas_count: number
+          id: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          attempts?: number
+          batch_id?: string | null
+          client_id: string
+          created_at?: string
+          custom_id?: string | null
+          document_id: string
+          error?: string | null
+          fichas_count?: number
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          attempts?: number
+          batch_id?: string | null
+          client_id?: string
+          created_at?: string
+          custom_id?: string | null
+          document_id?: string
+          error?: string | null
+          fichas_count?: number
+          id?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commercial_extraction_jobs_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commercial_extraction_jobs_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: true
+            referencedRelation: "agent_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commercial_fichas: {
+        Row: {
+          client_id: string
+          commitments: Json
+          conditions: Json
+          confidence: Json
+          created_at: string
+          customer_contact: string | null
+          customer_name: string | null
+          customer_sector: string | null
+          discounts: string | null
+          doc_date: string | null
+          doc_kind: string
+          document_id: string | null
+          evidence: Json
+          id: string
+          notes: string | null
+          ordinal: number
+          outcome: string
+          payment_terms: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          service_scope: string | null
+          service_summary: string | null
+          source_path: string | null
+          status: string
+          surcharges: Json
+          updated_at: string
+          validity_from: string | null
+          validity_to: string | null
+          volume_estimate: string | null
+        }
+        Insert: {
+          client_id: string
+          commitments?: Json
+          conditions?: Json
+          confidence?: Json
+          created_at?: string
+          customer_contact?: string | null
+          customer_name?: string | null
+          customer_sector?: string | null
+          discounts?: string | null
+          doc_date?: string | null
+          doc_kind?: string
+          document_id?: string | null
+          evidence?: Json
+          id?: string
+          notes?: string | null
+          ordinal?: number
+          outcome?: string
+          payment_terms?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_scope?: string | null
+          service_summary?: string | null
+          source_path?: string | null
+          status?: string
+          surcharges?: Json
+          updated_at?: string
+          validity_from?: string | null
+          validity_to?: string | null
+          volume_estimate?: string | null
+        }
+        Update: {
+          client_id?: string
+          commitments?: Json
+          conditions?: Json
+          confidence?: Json
+          created_at?: string
+          customer_contact?: string | null
+          customer_name?: string | null
+          customer_sector?: string | null
+          discounts?: string | null
+          doc_date?: string | null
+          doc_kind?: string
+          document_id?: string | null
+          evidence?: Json
+          id?: string
+          notes?: string | null
+          ordinal?: number
+          outcome?: string
+          payment_terms?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          service_scope?: string | null
+          service_summary?: string | null
+          source_path?: string | null
+          status?: string
+          surcharges?: Json
+          updated_at?: string
+          validity_from?: string | null
+          validity_to?: string | null
+          volume_estimate?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commercial_fichas_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "commercial_fichas_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "agent_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       concept_reviews: {
         Row: {
           concept: string

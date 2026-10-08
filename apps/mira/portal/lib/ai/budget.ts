@@ -86,7 +86,10 @@ export function sumarGasto(filas: FilaUso[], desde: string): Gasto {
   const porRuta: Record<string, number> = {}
   let total = 0
   for (const u of filas) {
-    const c = estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0)
+    // Las filas de un LOTE (Message Batches API, ruta «…:batch») se facturan a
+    // mitad de precio: lo usan las fichas comerciales (lib/comercial/fichas.ts).
+    const factor = u.route.endsWith(':batch') ? 0.5 : 1
+    const c = factor * estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0)
     porRuta[u.route] = (porRuta[u.route] || 0) + c
     total += c
   }

@@ -1,6 +1,6 @@
 import {
   Layers, FileText, Image, Briefcase, Mail, Calculator, type LucideIcon,
-} from 'lucide-react'
+ BookMarked } from 'lucide-react'
 import { BILLING_ADDONS } from '@/lib/billing/plans'
 
 /**
@@ -94,6 +94,18 @@ export const MIRA_TOOLS: MiraTool[] = [
     availability: 'per_client',
   },
   {
+    // Fichas de condiciones comerciales extraídas del histórico (carpetas de
+    // Microsoft 365) y memoria de precios comparables (8-oct-2026, fase 1 de
+    // propuestas). La extracción va por lotes con el modelo barato.
+    id: 'commercial-memory',
+    name: 'Commercial memory',
+    icon: BookMarked,
+    category: 'operations',
+    descriptionKey: 'tools.catalog.commercial-memory.desc',
+    href: '/comercial/fichas',
+    availability: 'per_client',
+  },
+  {
     // MIRA estructura el envío y guarda la respuesta; el precio lo calcula el
     // Cotizador (motor externo, contrato v1). Aquí no hay tarifas.
     id: 'quotes',
@@ -135,4 +147,5 @@ export const ENTITLEMENT_TO_TOOL_ID: Record<string, string> = {
   tender: 'tenders',
   'email-ops': 'email-ops',
   quotes: 'quotes',
+  'commercial-memory': 'commercial-memory',
 }

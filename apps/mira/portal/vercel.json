@@ -25,6 +25,10 @@
     {
       "path": "/api/cron/microsoft-sync",
       "schedule": "*/30 * * * *"
+    },
+    {
+      "path": "/api/cron/comercial-fichas",
+      "schedule": "15,45 * * * *"
     }
   ]
 }

@@ -4,8 +4,7 @@ import {
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, TrendingUp,
   Search, MessageSquare, FileText,
   Home, Calendar, Brain, ClipboardList, Layers, Archive, Image,
-  Mail, Wrench, LayoutGrid, LifeBuoy, Calculator,
-} from 'lucide-react'
+  Mail, Wrench, LayoutGrid, LifeBuoy, Calculator, BookMarked } from 'lucide-react'
 import type { Entitlement } from './entitlements'
 import { canAccessSection, minPlanForSection, type UserPlan } from './plans'
 
@@ -204,6 +203,7 @@ export const IDEAL_SPACES: IdealSpace[] = [
       { href: '/licitaciones',   label: 'Tenders',       labelKey: 'sidebar.item.tenders',       icon: Briefcase, requires: 'tender' },
       { href: '/email-ops',      label: 'Email Ops',     labelKey: 'sidebar.item.email-ops',     icon: Mail, requires: 'email-ops' },
       { href: '/quotes',         label: 'Shipping Quotes', labelKey: 'sidebar.item.quotes',    icon: Calculator, requires: 'quotes' },
+      { href: '/comercial/fichas', label: 'Commercial memory', labelKey: 'sidebar.item.commercial-memory', icon: BookMarked, requires: 'commercial-memory' },
     ],
   },
   {

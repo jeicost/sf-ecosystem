@@ -81,7 +81,7 @@ export function hasQuotesTool(clientId?: string | null, isAgency = false): boole
 }
 
 /** Herramientas verticales gateadas por cliente (clave usada en NavItem.requires). */
-export type Entitlement = 'tender' | 'email-ops' | 'quotes'
+export type Entitlement = 'tender' | 'email-ops' | 'quotes' | 'commercial-memory'
 
 /** Comprobación genérica, para que la navegación no tenga un if por herramienta. */
 export function hasEntitlement(kind: Entitlement, clientId?: string | null, isAgency = false): boolean {
@@ -91,6 +91,9 @@ export function hasEntitlement(kind: Entitlement, clientId?: string | null, isAg
     // Sin semilla en código: la navegación la resuelve client_tools vía
     // getEnabledTools; este fallback solo cubre a la agencia.
     case 'quotes': return hasQuotesTool(clientId, isAgency)
+    // Memoria comercial (fichas de condiciones, 8-oct-2026): solo client_tools;
+    // la agencia la ve siempre para poder configurarla.
+    case 'commercial-memory': return isAgency && !!clientId
   }
 }
 

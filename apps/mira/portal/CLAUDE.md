@@ -146,3 +146,24 @@ real de producción. Esto lo evita.
   en Email Ops → Settings → «Respuestas desde MIRA». Nunca enviar nada real sin
   que Carlos lo decida.
 
+## Memoria comercial: fichas de condiciones por lotes (fase 1 de propuestas, 8-oct-2026)
+
+- `lib/comercial/fichas.ts`: de cada documento de una carpeta Microsoft con
+  propósito «commercial» (y de lo que se encole a mano) salen fichas
+  estructuradas (cliente, servicio, condiciones con importe/unidad, recargos,
+  compromisos, vigencia, resultado) con confianza y cita por campo; lo
+  deducido (< 0,95 o sin cita) se marca «revisar». Esquema SIN uniones ni
+  anulables (lección del 7-oct); importes como texto → `num()` entiende
+  «1.290,50». Modelo `COMERCIAL_FICHAS_MODEL` (Sonnet 5.5) con salida
+  estructurada y system cacheado 1 h.
+- Va por LOTES (Message Batches API): cola `commercial_extraction_jobs` →
+  `submitBatch` (≤ 100 docs, pasa por el freno mensual) → cron
+  `/api/cron/comercial-fichas` (:15 y :45) recoge con `collectBatch`; el uso se
+  registra con ruta `comercial/fichas:batch` y `sumarGasto` lo cuenta a mitad.
+  `extractFichasNow` es la vía directa para pruebas y para «extraer ahora».
+- `lib/comercial/comparables.ts`: memoria de precios (mín/mediana/máx/última
+  cifra por concepto+unidad) calculada en TS sobre las fichas. Pantalla
+  `/comercial/fichas` (herramienta `commercial-memory`, habilitada en las 3
+  marcas de Aldea). Pruebas: `npx tsx evals/comercial/pure.ts` (28) y una
+  pasada real sobre fixtures INVENTADOS: `evals/comercial/run.ts` (~0,05 $).
+

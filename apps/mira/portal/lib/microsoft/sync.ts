@@ -27,6 +27,7 @@ import { extractTextFromBuffer, mimeFromFileName, isReadableMime, extensionOf } 
 import type { Database } from '@/types/database.generated'
 import { getConnectionToken } from './connections'
 import { deltaItems, downloadItem, relativePath, type GraphDriveItem } from './graph'
+import { enqueueDocument } from '@/lib/comercial/fichas'
 
 type AdminClient = ReturnType<typeof adminClient>
 export type MicrosoftFolderRow = Database['public']['Tables']['microsoft_folders']['Row']
@@ -353,6 +354,9 @@ export async function ingestPending(admin: AdminClient, token: string, folder: M
       }
       out.ingested++
       await admin.from('microsoft_items').update({ status: 'done', document_id: documentId, content_hash: contentHash, ingested_at: now, error: null, updated_at: now }).eq('id', item.id)
+      // Carpeta comercial: el documento entra en la cola de fichas de condiciones
+      // (lib/comercial/fichas.ts); el cron lo manda en el siguiente lote.
+      if (folder.purpose === 'commercial') await enqueueDocument(admin, folder.client_id, documentId)
     } catch (e) {
       out.failed++
       const msg = e instanceof Error ? e.message : 'ingest failed'
