@@ -3,7 +3,7 @@ import type { FieldValue } from './schema'
 
 export type TicketKind = 'shipment_request' | 'other'
 export type TicketStatus = 'open' | 'closed' | 'discarded'
-export type MessageStatus = 'received' | 'processing' | 'processed' | 'failed' | 'ignored'
+export type MessageStatus = 'received' | 'processing' | 'processed' | 'failed' | 'ignored' | 'sent'
 
 /** Salida validada de la IA para UN mensaje. */
 export interface Extraction {
@@ -87,4 +87,7 @@ export interface MessageRow {
   last_error: string | null
   received_at: string
   processed_at: string | null
+  /** 'outbound' = respuesta enviada desde MIRA por el buzón del parte (8-oct-2026). */
+  direction?: 'inbound' | 'outbound'
+  sent_by?: string | null
 }

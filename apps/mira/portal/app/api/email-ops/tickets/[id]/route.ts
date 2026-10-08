@@ -7,13 +7,14 @@ import { applyManualFields, type TicketState } from '@/lib/email-ops/merge'
 import { computePriority } from '@/lib/email-ops/priority'
 import type { MessageRow, TicketRow, TicketStatus } from '@/lib/email-ops/types'
 import { writable } from '@/lib/db-json'
+import { puedeResponder } from '@/lib/email-ops/send'
 
 // Detalle y edición de un ticket. La edición manual es el bucle de aprendizaje:
 // cada campo cambiado se guarda como corrección y, al cerrar, el ticket
 // corregido pasa a ser un ejemplo para la IA.
 
 const MESSAGE_COLS =
-  'id,resend_email_id,message_id,from_address,from_name,to_addresses,cc_addresses,subject,text_body,attachments,extraction,status,attempts,last_error,received_at,processed_at'
+  'id,resend_email_id,message_id,from_address,from_name,to_addresses,cc_addresses,subject,text_body,attachments,extraction,status,attempts,last_error,received_at,processed_at,direction,sent_by'
 
 function rowToState(t: TicketRow): TicketState {
   return {
@@ -54,7 +55,22 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
         url: a.path ? `/api/brand-assets?path=${encodeURIComponent(a.path)}` : null,
       })),
     }))
-    return NextResponse.json({ ticket, messages: withUrls })
+    // Desde qué buzón se respondería (y si se puede), y si la marca está en modo prueba.
+    const [{ data: inboxRow }, { data: settingsRow }] = await Promise.all([
+      ticket.inbox_id
+        ? db.from('email_inboxes').select('id,address,display_name,source,imap_host,imap_user,imap_password,ms_connection_id').eq('id', ticket.inbox_id).maybeSingle()
+        : Promise.resolve({ data: null }),
+      db.from('email_ops_settings').select('reply_test_to,reply_signature').eq('client_id', access.clientId).maybeSingle(),
+    ])
+    const can = puedeResponder(inboxRow)
+    const reply = {
+      inbox: inboxRow ? { id: inboxRow.id, address: inboxRow.address, display_name: inboxRow.display_name, source: inboxRow.source } : null,
+      can: can.ok,
+      reason: can.ok ? null : can.reason,
+      test_to: settingsRow?.reply_test_to || null,
+      signature: settingsRow?.reply_signature || null,
+    }
+    return NextResponse.json({ ticket, messages: withUrls, reply })
   } catch (error) {
     console.error('email-ops/tickets/[id] GET error:', error)
     return NextResponse.json({ error: errorMessage(error) }, { status: 500 })

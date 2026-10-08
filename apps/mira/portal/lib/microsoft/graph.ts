@@ -55,7 +55,14 @@ const BASE_SCOPES = ['openid', 'profile', 'email', 'offline_access', 'User.Read'
 /** Lectura de OneDrive y de las bibliotecas de SharePoint a las que la persona tiene acceso. */
 export const FILES_SCOPES = ['Files.Read.All', 'Sites.Read.All']
 /** Lectura del buzón de la persona que inicia sesión (el buzón de operaciones). */
-export const MAIL_SCOPES = ['Mail.Read']
+export const MAIL_READ_SCOPES = ['Mail.Read']
+/**
+ * Responder desde el buzón (Email Ops → Responder). Se pide SOLO si MS_MAIL_SEND=1:
+ * un permiso no incluido en el consentimiento del administrador del cliente haría
+ * que a la persona le saliera «necesita aprobación» al iniciar sesión.
+ */
+export const MAIL_SEND_SCOPE = 'Mail.Send'
+export const MAIL_SCOPES = process.env.MS_MAIL_SEND === '1' ? [...MAIL_READ_SCOPES, MAIL_SEND_SCOPE] : MAIL_READ_SCOPES
 
 export function scopesFor(purpose: MicrosoftPurpose): string[] {
   return [...BASE_SCOPES, ...(purpose === 'mail' ? MAIL_SCOPES : FILES_SCOPES)]
@@ -64,7 +71,8 @@ export function scopesFor(purpose: MicrosoftPurpose): string[] {
 /** Los permisos de Graph que una conexión necesita para un uso dado. */
 export function hasScopesFor(granted: string[] | null | undefined, purpose: MicrosoftPurpose): boolean {
   const have = new Set((granted || []).map((s) => s.replace(/^https:\/\/graph\.microsoft\.com\//, '')))
-  const need = purpose === 'mail' ? MAIL_SCOPES : FILES_SCOPES
+  // Para «mail» basta con leer: enviar es opcional y se comprueba al enviar.
+  const need = purpose === 'mail' ? MAIL_READ_SCOPES : FILES_SCOPES
   return need.every((s) => have.has(s))
 }
 
@@ -514,3 +522,50 @@ export function formatRecipient(r: GraphRecipient | null | undefined): string {
   if (!a?.address) return ''
   return a.name && a.name !== a.address ? `${a.name} <${a.address}>` : a.address
 }
+
+// ─── Envío ────────────────────────────────────────────────────────
+
+async function graphSend<T = Record<string, unknown>>(token: string, method: 'POST' | 'PATCH', path: string, body?: unknown): Promise<T | null> {
+  const res = await fetch(`${GRAPH}${path}`, {
+    method,
+    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json', Accept: 'application/json' },
+    body: body === undefined ? undefined : JSON.stringify(body),
+  })
+  if (res.status === 202 || res.status === 204) return null
+  const data = (await res.json().catch(() => ({}))) as T & { error?: { code?: string; message?: string } }
+  if (!res.ok) throw new GraphError(res.status, data.error?.code || `http_${res.status}`, data.error?.message || `Graph HTTP ${res.status}`)
+  return data
+}
+
+const recipients = (list: string[]) => list.map((address) => ({ emailAddress: { address } }))
+
+export interface GraphSendDraft { to: string[]; cc: string[]; subject: string; body: string }
+
+/**
+ * Responde a un mensaje concreto, en su hilo: createReply (borrador con el
+ * original citado y las cabeceras de hilo) → se fija texto y destinatarios →
+ * send. Queda en Enviados por sí solo.
+ */
+export async function replyViaGraph(token: string, originalMessageId: string, d: GraphSendDraft): Promise<{ internetMessageId: string | null }> {
+  const draft = await graphSend<{ id: string }>(token, 'POST', `/me/messages/${encodeURIComponent(originalMessageId)}/createReply`, {})
+  if (!draft?.id) throw new GraphError(500, 'no_draft', 'Graph did not return a reply draft')
+  await graphSend(token, 'PATCH', `/me/messages/${encodeURIComponent(draft.id)}`, {
+    subject: d.subject,
+    body: { contentType: 'Text', content: d.body },
+    toRecipients: recipients(d.to),
+    ccRecipients: recipients(d.cc),
+  })
+  const sent = await graphGet<{ internetMessageId?: string | null }>(token, `/me/messages/${encodeURIComponent(draft.id)}?$select=internetMessageId`).catch(() => null)
+  await graphSend(token, 'POST', `/me/messages/${encodeURIComponent(draft.id)}/send`)
+  return { internetMessageId: sent?.internetMessageId || null }
+}
+
+/** Correo nuevo (sin original al que responder). */
+export async function sendMailViaGraph(token: string, d: GraphSendDraft): Promise<{ internetMessageId: string | null }> {
+  await graphSend(token, 'POST', '/me/sendMail', {
+    message: { subject: d.subject, body: { contentType: 'Text', content: d.body }, toRecipients: recipients(d.to), ccRecipients: recipients(d.cc) },
+    saveToSentItems: true,
+  })
+  return { internetMessageId: null }
+}
+

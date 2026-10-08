@@ -1994,6 +1994,9 @@ export type Database = {
           imap_user: string | null
           ms_connection_id: string | null
           ms_delta_link: string | null
+          smtp_host: string | null
+          smtp_port: number | null
+          smtp_secure: boolean
           source: string
         }
         Insert: {
@@ -2014,6 +2017,9 @@ export type Database = {
           imap_user?: string | null
           ms_connection_id?: string | null
           ms_delta_link?: string | null
+          smtp_host?: string | null
+          smtp_port?: number | null
+          smtp_secure?: boolean
           source?: string
         }
         Update: {
@@ -2034,6 +2040,9 @@ export type Database = {
           imap_user?: string | null
           ms_connection_id?: string | null
           ms_delta_link?: string | null
+          smtp_host?: string | null
+          smtp_port?: number | null
+          smtp_secure?: boolean
           source?: string
         }
         Relationships: [
@@ -2060,6 +2069,7 @@ export type Database = {
           cc_addresses: string[] | null
           client_id: string
           created_at: string
+          direction: string
           extraction: Json | null
           from_address: string | null
           from_name: string | null
@@ -2073,6 +2083,7 @@ export type Database = {
           received_at: string
           references_ids: string[] | null
           resend_email_id: string
+          sent_by: string | null
           status: string
           subject: string | null
           text_body: string | null
@@ -2087,6 +2098,7 @@ export type Database = {
           cc_addresses?: string[] | null
           client_id: string
           created_at?: string
+          direction?: string
           extraction?: Json | null
           from_address?: string | null
           from_name?: string | null
@@ -2100,6 +2112,7 @@ export type Database = {
           received_at?: string
           references_ids?: string[] | null
           resend_email_id: string
+          sent_by?: string | null
           status?: string
           subject?: string | null
           text_body?: string | null
@@ -2114,6 +2127,7 @@ export type Database = {
           cc_addresses?: string[] | null
           client_id?: string
           created_at?: string
+          direction?: string
           extraction?: Json | null
           from_address?: string | null
           from_name?: string | null
@@ -2127,6 +2141,7 @@ export type Database = {
           received_at?: string
           references_ids?: string[] | null
           resend_email_id?: string
+          sent_by?: string | null
           status?: string
           subject?: string | null
           text_body?: string | null
@@ -2162,6 +2177,8 @@ export type Database = {
       email_ops_settings: {
         Row: {
           client_id: string
+          reply_signature: string | null
+          reply_test_to: string | null
           required_fields: string[] | null
           rules: string | null
           schema_key: string
@@ -2169,6 +2186,8 @@ export type Database = {
         }
         Insert: {
           client_id: string
+          reply_signature?: string | null
+          reply_test_to?: string | null
           required_fields?: string[] | null
           rules?: string | null
           schema_key?: string
@@ -2176,6 +2195,8 @@ export type Database = {
         }
         Update: {
           client_id?: string
+          reply_signature?: string | null
+          reply_test_to?: string | null
           required_fields?: string[] | null
           rules?: string | null
           schema_key?: string

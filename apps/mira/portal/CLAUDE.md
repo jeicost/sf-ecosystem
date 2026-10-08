@@ -133,3 +133,16 @@ real de producción. Esto lo evita.
   `EVAL_CLIENT_ID` de GTD y de Albasanz, o un script de comparación) y el resto lo juzga
   Claude Code. Los casos GLS de Email Ops están etiquetados con la marca GTD, donde vive el buzón.
 
+## Email Ops: responder desde el buzón del parte (8-oct-2026)
+
+- `lib/email-ops/send.ts`: la respuesta sale por el buzón que recibió el correo
+  (SMTP con las credenciales IMAP cifradas, `imap.x` → `smtp.x` 465, copia en
+  Enviados por IMAP APPEND; en Microsoft 365 por Graph `createReply`, que exige
+  `Mail.Send` y `MS_MAIL_SEND=1` para pedirlo). Fila `direction='outbound'`,
+  `status='sent'` en `email_messages`: el pipeline no la toca. Sin modelo.
+- MODO PRUEBA por marca: `email_ops_settings.reply_test_to`. Mientras tenga
+  dirección, TODO va ahí con asunto «[PRUEBA]» y nota del destino real. Hoy
+  apunta a carlos@startupsfactory.es en GTD y Albasanz; se apaga vaciándolo
+  en Email Ops → Settings → «Respuestas desde MIRA». Nunca enviar nada real sin
+  que Carlos lo decida.
+

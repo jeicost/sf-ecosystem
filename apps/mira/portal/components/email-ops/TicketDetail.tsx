@@ -11,6 +11,7 @@ import type { TicketRow, MessageRow } from '@/lib/email-ops/types'
 import { confidenceColor, timeAgo } from '@/lib/email-ops/format'
 import { camposARevisar } from '@/lib/email-ops/review'
 import { borradorRespuesta } from '@/lib/email-ops/reply'
+import ReplyComposer, { type ReplyInfo } from './ReplyComposer'
 import { PriorityBadge, StatusPill, DeliveryPill, KindPill } from './Badges'
 
 // Detalle de un ticket: datos del parte (editables inline, con confianza y
@@ -38,7 +39,7 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
     const tData = await tRes.json()
     const sData = await sRes.json()
     if (!tRes.ok) { setError(tData.error || 'Error'); setLoading(false); return }
-    setTicket(tData.ticket)
+    setTicket(tData.ticket); if (tData.reply) setReplyInfo(tData.reply as ReplyInfo)
     setMessages(tData.messages || [])
     if (sRes.ok) setSchema(sData.schema || [])
     setLoading(false)
@@ -105,6 +106,8 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
   // Respuesta al remitente: borrador desde los datos del parte, sin modelo, en el cliente de correo de la persona.
   const borrador = borradorRespuesta({ ticket, messages, schema, firma: `${t('emailops.reply.signature', locale)}${brandName ? ` · ${brandName}` : ''}` })
   const [replyMenu, setReplyMenu] = useState(false)
+  const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null)
+  const [composing, setComposing] = useState(false)
   const copiarRespuesta = async () => {
     try { await navigator.clipboard.writeText(`Para: ${borrador.to}\nAsunto: ${borrador.subject}\n\n${borrador.body}`); flash(t('emailops.toast.copied', locale)) } catch { flash(t('emailops.toast.error', locale)) }
   }
@@ -135,9 +138,15 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
               la persona se quedaba sin poder contestar. */}
           {borrador.to && (
             <div className="relative inline-flex rounded-lg text-white" style={{ background: brand }}>
-              <a href={borrador.mailto} className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium" title={`${t('emailops.action.reply', locale)} · ${borrador.to}`}>
-                <Reply size={12} /> {t('emailops.action.reply', locale)}
-              </a>
+              {replyInfo?.can ? (
+                <button onClick={() => setComposing(true)} className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium" title={`${t('emailops.action.reply', locale)} · ${borrador.to}`}>
+                  <Reply size={12} /> {t('emailops.action.reply', locale)}{replyInfo.test_to ? ' · ' + t('emailops.send.test-chip', locale) : ''}
+                </button>
+              ) : (
+                <a href={borrador.mailto} className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium" title={`${t('emailops.action.reply', locale)} · ${borrador.to}`}>
+                  <Reply size={12} /> {t('emailops.action.reply', locale)}
+                </a>
+              )}
               <button onClick={() => setReplyMenu((v) => !v)} aria-label={t('emailops.reply.more', locale)} className="border-l border-white/25 px-2 py-2 text-xs"><ChevronDown size={12} /></button>
               {replyMenu && (
                 <div className="absolute right-0 top-full z-20 mt-1 w-64 overflow-hidden rounded-xl border border-line bg-card p-1 text-xs text-ink shadow-xl" onMouseLeave={() => setReplyMenu(false)}>
@@ -265,9 +274,10 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
             {messages.map((m) => (
               <details key={m.id} className="rounded-xl border border-line-subtle" open={messages.length === 1}>
                 <summary className="cursor-pointer px-3 py-2 text-xs">
-                  <span className="font-medium text-ink">{m.from_name || m.from_address || '—'}</span>
+                  {m.direction === 'outbound' && <span className="mr-2 rounded bg-emerald-500/15 px-1.5 py-px text-[10px] text-emerald-400">{t('emailops.detail.sent-by-mira', locale)}</span>}
+                  <span className="font-medium text-ink">{m.direction === 'outbound' ? `→ ${(m.to_addresses || []).join(', ')}` : (m.from_name || m.from_address || '—')}</span>
                   <span className="text-ink-muted"> · {timeAgo(m.received_at, locale)}</span>
-                  {m.status !== 'processed' && (
+                  {m.status !== 'processed' && m.status !== 'sent' && (
                     <span className={clsx('ml-2 rounded px-1.5 py-px text-[10px]', m.status === 'failed' ? 'bg-red-500/15 text-red-400' : 'bg-surface text-ink-tertiary')}>
                       {m.status === 'failed' ? t('emailops.detail.failed', locale) : t('emailops.detail.processing', locale)}
                     </span>
@@ -298,6 +308,24 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
           </div>
         </section>
       </div>
+      {composing && replyInfo && ticket && (
+        <ReplyComposer
+          ticketId={ticket.id}
+          clientId={clientId}
+          locale={locale}
+          brand={brand}
+          reply={replyInfo}
+          initial={{ to: borrador.to, subject: borrador.subject, body: borrador.body }}
+          alternatives={{ mailto: borrador.mailto, outlookWeb: borrador.outlookWeb, gmail: borrador.gmail, copy: copiarRespuesta }}
+          onClose={() => setComposing(false)}
+          onSent={(info) => {
+            setComposing(false)
+            flash(info.test ? t('emailops.send.sent-test', locale).replace('{to}', info.to.join(', ')) : t('emailops.send.sent', locale).replace('{to}', info.to.join(', ')))
+            if (info.warning) setTimeout(() => flash(info.warning as string), 2500)
+            load()
+          }}
+        />
+      )}
     </div>
   )
 }

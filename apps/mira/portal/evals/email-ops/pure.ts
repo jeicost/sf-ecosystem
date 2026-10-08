@@ -16,6 +16,7 @@ import { sniffImageType } from '../../lib/vision'
 import type { Extraction } from '../../lib/email-ops/types'
 import { motivoRevision, camposARevisar, cuentaRevision } from '../../lib/email-ops/review'
 import { destinatarioRespuesta, asuntoRespuesta, cuerpoRespuesta, borradorRespuesta } from '../../lib/email-ops/reply'
+import { parseRecipients, puedeResponder, smtpConfigFor, threadHeaders, aplicarModoPrueba, validarBorrador, filaEnviada } from '../../lib/email-ops/send'
 
 let failures = 0
 function check(name: string, cond: boolean, detail?: unknown) {
@@ -112,7 +113,6 @@ check('extractAddress/name', extractAddress('Marta Ruiz <Marta@X.es>') === 'mart
 // ── html → texto ─────────────────────────────────────────────────────────
 check('htmlToText', htmlToText('<div>Hola<br>mundo &amp; <b>fin</b></div><style>x{}</style>') === 'Hola\nmundo & fin')
 
-console.log(failures ? `\n❌ ${failures} fallos` : '\n✅ todo en verde')
 
 // ── Revisión de lo deducido y respuesta al remitente (7-oct-2026) ──
 check('revisión: literal (1) no se marca', motivoRevision('Madrid', 1, 'Madrid', false) === null)
@@ -133,4 +133,30 @@ check('cuerpo: pide lo que falta y firma', cuerpo.includes('necesitamos que nos 
 const b = borradorRespuesta({ ticket: tk, schema: COURIER_V1_FIELDS, firma: 'Ops' })
 check('mailto: destinatario, asunto y cuerpo codificados', b.mailto.startsWith('mailto:ana%40museo.es?subject=RE%3A%20Recogida%20urgente&body=Buenos') && decodeURIComponent(b.mailto.split('&body=')[1]).includes('Fecha: 08/10/2026'))
 
+
+// ── responder desde el buzón (8-oct) ─────────────────────────────────────
+check('parseRecipients: limpia, baja a minúsculas, quita nombres y duplicados', JSON.stringify(parseRecipients('María <Maria@Museo.es>, ops@x.es; maria@museo.es\nmal')) === JSON.stringify(['maria@museo.es', 'ops@x.es']))
+check('puedeResponder: IMAP completo sí', puedeResponder({ source: 'imap', imap_host: 'imap.x.es', imap_user: 'a@x.es', imap_password: 'enc', ms_connection_id: null }).ok)
+check('puedeResponder: reenvío no', !puedeResponder({ source: 'resend', imap_host: null, imap_user: null, imap_password: null, ms_connection_id: null }).ok)
+check('puedeResponder: Microsoft sin conexión no', JSON.stringify(puedeResponder({ source: 'microsoft', imap_host: null, imap_user: null, imap_password: null, ms_connection_id: null })) === JSON.stringify({ ok: false, reason: 'ms-disconnected' }))
+check('smtpConfigFor: deriva imap.→smtp. 465 SSL', JSON.stringify(smtpConfigFor({ imap_host: 'imap.serviciodecorreo.es', smtp_host: null, smtp_port: null, smtp_secure: null })) === JSON.stringify({ host: 'smtp.serviciodecorreo.es', port: 465, secure: true }))
+check('smtpConfigFor: explícito manda', smtpConfigFor({ imap_host: 'imap.x.es', smtp_host: 'mail.x.es', smtp_port: 587, smtp_secure: false }).port === 587)
+const hilo = threadHeaders([
+  { message_id: '<a@x>', references_ids: [], received_at: '2026-10-08T07:00:00Z', direction: 'inbound' },
+  { message_id: '<mia@mira>', references_ids: ['<a@x>'], received_at: '2026-10-08T08:00:00Z', direction: 'outbound' },
+  { message_id: '<b@x>', references_ids: ['<a@x>'], received_at: '2026-10-08T09:00:00Z', direction: 'inbound' },
+])
+check('threadHeaders: responde al último recibido, no al enviado', hilo.inReplyTo === '<b@x>' && JSON.stringify(hilo.references) === JSON.stringify(['<a@x>', '<b@x>']))
+check('threadHeaders: sin recibidos → vacío', threadHeaders([]).inReplyTo === null)
+const base = { to: ['cliente@museo.es'], cc: ['ops@museo.es'], subject: 'RE: Recogida', body: 'Hola' }
+const prueba = aplicarModoPrueba(base, 'Carlos@StartupsFactory.es')
+check('modo prueba: redirige, marca asunto y avisa del destino original', prueba.test && prueba.draft.to[0] === 'carlos@startupsfactory.es' && prueba.draft.cc.length === 0 && prueba.draft.subject === '[PRUEBA] RE: Recogida' && prueba.draft.body.includes('cliente@museo.es') && prueba.draft.body.includes('cc ops@museo.es') && prueba.draft.body.endsWith('Hola'))
+check('modo prueba: sin dirección no cambia nada', !aplicarModoPrueba(base, '').test && aplicarModoPrueba(base, null).draft === base)
+check('modo prueba: dirección inválida = apagado', !aplicarModoPrueba(base, 'no-es-correo').test)
+check('validarBorrador: falta destinatario', !validarBorrador({ to: '', subject: 'x', body: 'y' }).ok)
+check('validarBorrador: asunto sin saltos y cc sin repetir el para', (() => { const v = validarBorrador({ to: 'a@x.es', cc: 'a@x.es, b@x.es', subject: 'Hola\nmundo', body: 'ok' }); return v.ok && v.draft.subject === 'Hola mundo' && JSON.stringify(v.draft.cc) === JSON.stringify(['b@x.es']) })())
+const fila = filaEnviada({ ticket: { id: 't1', client_id: 'c1', inbox_id: 'i1', thread_key: 'msg:a@x' }, inbox: { address: 'gtd.local@gtdmensajeros.es', display_name: 'GTD Local' }, draft: base, messageId: '<m@gtd>', inReplyTo: '<b@x>', references: ['<a@x>', '<b@x>'], sentBy: 'u1', now: '2026-10-08T10:00:00Z' })
+check('filaEnviada: outbound/sent, hilo y buzón del parte', fila.direction === 'outbound' && fila.status === 'sent' && fila.thread_key === 'msg:a@x' && fila.from_address === 'gtd.local@gtdmensajeros.es' && fila.resend_email_id.startsWith('sent:') && fila.in_reply_to === '<b@x>' && fila.text_body === 'Hola')
+
+console.log(failures ? `\n❌ ${failures} fallos` : '\n✅ todo en verde')
 process.exit(failures ? 1 : 0)

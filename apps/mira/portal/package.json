@@ -33,6 +33,7 @@
     "mammoth": "^1.12.0",
     "next": "16.2.12",
     "next-intl": "^4.13.2",
+    "nodemailer": "^10.0.16",
     "pdf-parse": "^2.4.5",
     "pdfjs-dist": "5.4.296",
     "pptxgenjs": "^4.0.1",
@@ -46,6 +47,7 @@
   "devDependencies": {
     "@types/mailparser": "^3.4.6",
     "@types/node": "^20",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "autoprefixer": "^10.4.21",

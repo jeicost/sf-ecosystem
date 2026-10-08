@@ -239,3 +239,26 @@ export async function listImapInboxes(db: SupabaseClient): Promise<ImapInboxRow[
   if (error) throw error
   return (data || []) as unknown as ImapInboxRow[]
 }
+
+/**
+ * Deja una copia de un correo ENVIADO en la carpeta de enviados del buzón, para
+ * que la respuesta hecha desde MIRA aparezca en Outlook/webmail como cualquier
+ * otra. Busca la carpeta por su uso especial (\\Sent) y, si el servidor no lo
+ * declara, por los nombres habituales. Lanza si no hay carpeta o falla el APPEND.
+ */
+export async function appendToSent(c: ImapCredentials, raw: Buffer): Promise<string> {
+  const cli = client(c)
+  try {
+    await cli.connect()
+    const boxes = await cli.list()
+    const bySpecial = boxes.find((b) => (b.specialUse || '').toLowerCase() === '\\sent')
+    const byName = boxes.find((b) => /^(inbox[./])?(sent( items| messages)?|enviados|elementos enviados)$/i.test(b.path))
+    const target = bySpecial || byName
+    if (!target) throw new Error('No Sent folder found in the mailbox')
+    await cli.append(target.path, raw, ['\\Seen'])
+    return target.path
+  } finally {
+    try { await cli.logout() } catch { /* ya cerrada */ }
+  }
+}
+
