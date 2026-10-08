@@ -17,6 +17,13 @@ export interface MicrosoftConfig {
   clientId: string
   clientSecret: string
   redirectUri: string
+  /**
+   * Inquilino en el que está REGISTRADA la app cuando es de inquilino único
+   * (registrada dentro del Microsoft 365 del cliente). Sin él, la app es
+   * multiinquilino (registrada en el directorio de Startup Factory) y se usa
+   * el endpoint `organizations`. Ver docs/microsoft-365.md, opción A / B.
+   */
+  tenantId?: string
 }
 
 export function microsoftConfig(): MicrosoftConfig | null {
@@ -24,7 +31,8 @@ export function microsoftConfig(): MicrosoftConfig | null {
   const clientSecret = process.env.MS_OAUTH_CLIENT_SECRET
   const redirectUri = process.env.MS_REDIRECT_URI
   if (!clientId || !clientSecret || !redirectUri) return null
-  return { clientId, clientSecret, redirectUri }
+  const tenantId = (process.env.MS_TENANT_ID || '').trim()
+  return { clientId, clientSecret, redirectUri, ...(tenantId ? { tenantId } : {}) }
 }
 
 export function isMicrosoftConfigured(): boolean {
@@ -32,10 +40,12 @@ export function isMicrosoftConfigured(): boolean {
 }
 
 // `organizations`: cualquier inquilino de Microsoft 365 (cuentas de trabajo),
-// nunca cuentas personales de Outlook.com. La app está registrada como
-// multiinquilino en el directorio de Startup Factory; el consentimiento lo da
-// cada cliente en el suyo.
-const AUTHORITY = 'https://login.microsoftonline.com/organizations'
+// nunca cuentas personales de Outlook.com. Es el endpoint de una app
+// multiinquilino; una app de inquilino único NO lo admite (AADSTS50194) y
+// hay que hablar con su propio inquilino.
+export function authority(config: Pick<MicrosoftConfig, 'tenantId'>): string {
+  return `https://login.microsoftonline.com/${config.tenantId || 'organizations'}`
+}
 export const GRAPH = 'https://graph.microsoft.com/v1.0'
 
 /** Para qué se pide el consentimiento. Determina los permisos que se solicitan. */
@@ -67,7 +77,7 @@ export function authorizeUrl(opts: {
   scopes: string[]
   loginHint?: string
 }): string {
-  const url = new URL(`${AUTHORITY}/oauth2/v2.0/authorize`)
+  const url = new URL(`${authority(opts.config)}/oauth2/v2.0/authorize`)
   url.searchParams.set('client_id', opts.config.clientId)
   url.searchParams.set('response_type', 'code')
   url.searchParams.set('redirect_uri', opts.config.redirectUri)
@@ -91,7 +101,7 @@ export function authorizeUrl(opts: {
  * consientan por sí mismos, no hace falta.
  */
 export function adminConsentUrl(config: MicrosoftConfig, scopes: string[], state: string): string {
-  const url = new URL(`${AUTHORITY}/v2.0/adminconsent`)
+  const url = new URL(`${authority(config)}/v2.0/adminconsent`)
   url.searchParams.set('client_id', config.clientId)
   url.searchParams.set('redirect_uri', config.redirectUri)
   url.searchParams.set('scope', scopes.filter((s) => !['openid', 'profile', 'email', 'offline_access'].includes(s)).map((s) => `https://graph.microsoft.com/${s}`).join(' '))
@@ -111,7 +121,7 @@ export type TokenResult = { ok: true; tokens: TokenSet } | { ok: false; error: s
 
 async function tokenRequest(config: MicrosoftConfig, params: Record<string, string>): Promise<TokenResult> {
   try {
-    const res = await fetch(`${AUTHORITY}/oauth2/v2.0/token`, {
+    const res = await fetch(`${authority(config)}/oauth2/v2.0/token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({ client_id: config.clientId, client_secret: config.clientSecret, ...params }).toString(),

@@ -43,6 +43,8 @@ check('hasScopesFor falta', !hasScopesFor(['Files.Read.All'], 'mail'))
 const cfg = { clientId: 'app', clientSecret: 's', redirectUri: 'https://mira.startupsfactory.es/api/integrations/microsoft/callback' }
 const auth = new URL(authorizeUrl({ config: cfg, state: 'st', codeChallenge: 'ch', scopes: scopesFor('files') }))
 check('authorizeUrl usa organizations + PKCE S256', auth.pathname.startsWith('/organizations/') && auth.searchParams.get('code_challenge_method') === 'S256' && auth.searchParams.get('state') === 'st')
+const single = new URL(authorizeUrl({ config: { ...cfg, tenantId: 'tenant-albasanz' }, state: 'st', codeChallenge: 'ch', scopes: scopesFor('mail') }))
+check('authorizeUrl con MS_TENANT_ID habla con el inquilino del cliente', single.pathname.startsWith('/tenant-albasanz/oauth2/v2.0/authorize'))
 const consent = new URL(adminConsentUrl(cfg, scopesFor('mail'), 'st'))
 check('adminConsentUrl lleva scope con prefijo y sin openid', consent.searchParams.get('scope')!.includes('https://graph.microsoft.com/Mail.Read') && !consent.searchParams.get('scope')!.includes('openid'))
 
