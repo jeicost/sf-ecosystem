@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink, Reply, Copy, Eye } from 'lucide-react'
+import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink, Reply, Copy, Eye, ChevronDown } from 'lucide-react'
 import { t, type Locale } from '@/lib/i18n'
 import QuoteFromTicketButton from '@/components/cotizador/QuoteFromTicketButton'
 import type { FieldDef, FieldValue } from '@/lib/email-ops/schema'
@@ -104,6 +104,7 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
   const revisar = new Map(camposARevisar(ticket, schema).map((c) => [c.key, c]))
   // Respuesta al remitente: borrador desde los datos del parte, sin modelo, en el cliente de correo de la persona.
   const borrador = borradorRespuesta({ ticket, messages, schema, firma: `${t('emailops.reply.signature', locale)}${brandName ? ` · ${brandName}` : ''}` })
+  const [replyMenu, setReplyMenu] = useState(false)
   const copiarRespuesta = async () => {
     try { await navigator.clipboard.writeText(`Para: ${borrador.to}\nAsunto: ${borrador.subject}\n\n${borrador.body}`); flash(t('emailops.toast.copied', locale)) } catch { flash(t('emailops.toast.error', locale)) }
   }
@@ -128,16 +129,25 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          {/* Responder: abre el correo en el cliente de la persona con el borrador; «Copiar» para quien usa webmail. */}
+          {/* Responder: el botón abre el programa de correo del PC (mailto) y el
+              desplegable ofrece Outlook web, Gmail y copiar. El 8-oct en GLS el
+              mailto abría el «nuevo Outlook», que no arrancaba: sin alternativa
+              la persona se quedaba sin poder contestar. */}
           {borrador.to && (
-            <>
-              <a href={borrador.mailto} className="inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-white" style={{ background: brand }} title={`${t('emailops.action.reply', locale)} · ${borrador.to}`}>
+            <div className="relative inline-flex rounded-lg text-white" style={{ background: brand }}>
+              <a href={borrador.mailto} className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium" title={`${t('emailops.action.reply', locale)} · ${borrador.to}`}>
                 <Reply size={12} /> {t('emailops.action.reply', locale)}
               </a>
-              <button onClick={copiarRespuesta} className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-2 text-xs text-ink-secondary hover:text-ink" title={borrador.subject}>
-                <Copy size={12} /> {t('emailops.action.copy-reply', locale)}
-              </button>
-            </>
+              <button onClick={() => setReplyMenu((v) => !v)} aria-label={t('emailops.reply.more', locale)} className="border-l border-white/25 px-2 py-2 text-xs"><ChevronDown size={12} /></button>
+              {replyMenu && (
+                <div className="absolute right-0 top-full z-20 mt-1 w-64 overflow-hidden rounded-xl border border-line bg-card p-1 text-xs text-ink shadow-xl" onMouseLeave={() => setReplyMenu(false)}>
+                  <a href={borrador.outlookWeb} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-surface"><ExternalLink size={12} /> {t('emailops.reply.outlook-web', locale)}</a>
+                  <a href={borrador.gmail} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 rounded-lg px-3 py-2 hover:bg-surface"><ExternalLink size={12} /> {t('emailops.reply.gmail', locale)}</a>
+                  <button onClick={() => { setReplyMenu(false); copiarRespuesta() }} className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-surface"><Copy size={12} /> {t('emailops.action.copy-reply', locale)}</button>
+                  <p className="px-3 py-2 text-[10px] leading-snug text-ink-tertiary">{t('emailops.reply.hint', locale)}</p>
+                </div>
+              )}
+            </div>
           )}
           {ticket.status !== 'closed' && !isOther && (
             <button onClick={() => patch({ status: 'closed' }, 'close')} disabled={!!busy}

@@ -5,6 +5,7 @@ import { Save, Loader2, Check, AlertCircle, Upload } from 'lucide-react'
 import { useActiveClient } from '@/lib/client-context'
 import BrandBrainSuggestions from './BrandBrainSuggestions'
 import DriveFoldersPanel from './DriveFoldersPanel'
+import MicrosoftFoldersPanel from './MicrosoftFoldersPanel'
 import BrandBrainIndexView from './BrandBrainIndexView'
 import LinesField from './ui/LinesField'
 import RowsField, { type Row } from './ui/RowsField'
@@ -1728,6 +1729,7 @@ export default function BrandBrainEditor() {
             </div>
 
             {activeClient?.id && <DriveFoldersPanel clientId={activeClient.id} />}
+            {activeClient?.id && <MicrosoftFoldersPanel clientId={activeClient.id} returnTo="/brand-brain?tab=documents" />}
 
             <label className="block text-sm font-medium text-ink">Upload Brand Documents</label>
             <p className="text-xs text-ink-secondary">Upload brand books, handbooks, pitch decks, or strategy docs. Our AI will analyze and suggest updates to your Brand Brain fields.</p>

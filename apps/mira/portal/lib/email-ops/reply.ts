@@ -9,7 +9,7 @@ import { camposARevisar } from './review'
 // escribe a sus clientes. Los datos que MIRA dedujo se piden confirmar en el
 // propio texto, así la revisión la hace también el cliente.
 
-export interface Borrador { to: string; subject: string; body: string; mailto: string }
+export interface Borrador { to: string; subject: string; body: string; mailto: string; outlookWeb: string; gmail: string }
 
 const EMAIL_RE = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i
 
@@ -72,6 +72,21 @@ export function mailtoRespuesta(to: string, subject: string, body: string): stri
   return `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
 }
 
+/**
+ * Redactar en Outlook web (Microsoft 365) con el borrador puesto. Para quien
+ * trabaja con el buzón en el navegador, o cuando el programa de correo del PC
+ * no se abre desde un enlace mailto (visto el 8-oct en GLS: el «nuevo Outlook»
+ * asociado a mailto no arrancaba).
+ */
+export function outlookWebRespuesta(to: string, subject: string, body: string): string {
+  return `https://outlook.office.com/mail/deeplink/compose?to=${encodeURIComponent(to)}&subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
+/** Redactar en Gmail con el borrador puesto. */
+export function gmailRespuesta(to: string, subject: string, body: string): string {
+  return `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(to)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`
+}
+
 export function borradorRespuesta(opts: {
   ticket: Parameters<typeof cuerpoRespuesta>[0]['ticket'] & { original_sender?: string | null; from_address?: string | null; subject?: string | null }
   messages?: Array<{ from_address: string | null; received_at: string }>
@@ -81,5 +96,5 @@ export function borradorRespuesta(opts: {
   const to = destinatarioRespuesta(opts.ticket, opts.messages)
   const subject = asuntoRespuesta(opts.ticket.subject)
   const body = cuerpoRespuesta({ ticket: opts.ticket, schema: opts.schema, firma: opts.firma })
-  return { to, subject, body, mailto: mailtoRespuesta(to, subject, body) }
+  return { to, subject, body, mailto: mailtoRespuesta(to, subject, body), outlookWeb: outlookWebRespuesta(to, subject, body), gmail: gmailRespuesta(to, subject, body) }
 }

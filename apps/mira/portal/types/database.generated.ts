@@ -1992,6 +1992,8 @@ export type Database = {
           imap_password: string | null
           imap_port: number
           imap_user: string | null
+          ms_connection_id: string | null
+          ms_delta_link: string | null
           source: string
         }
         Insert: {
@@ -2010,6 +2012,8 @@ export type Database = {
           imap_password?: string | null
           imap_port?: number
           imap_user?: string | null
+          ms_connection_id?: string | null
+          ms_delta_link?: string | null
           source?: string
         }
         Update: {
@@ -2028,6 +2032,8 @@ export type Database = {
           imap_password?: string | null
           imap_port?: number
           imap_user?: string | null
+          ms_connection_id?: string | null
+          ms_delta_link?: string | null
           source?: string
         }
         Relationships: [
@@ -2036,6 +2042,13 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "email_inboxes_ms_connection_id_fkey"
+            columns: ["ms_connection_id"]
+            isOneToOne: false
+            referencedRelation: "microsoft_connections"
             referencedColumns: ["id"]
           },
         ]
@@ -3016,6 +3029,240 @@ export type Database = {
           type?: string | null
         }
         Relationships: []
+      }
+      microsoft_connections: {
+        Row: {
+          access_token: string
+          account_email: string
+          account_name: string | null
+          client_id: string
+          created_at: string
+          granted_scopes: string[] | null
+          id: string
+          is_authorized: boolean
+          last_error: string | null
+          purposes: string[]
+          refresh_token: string | null
+          tenant_id: string | null
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          access_token: string
+          account_email: string
+          account_name?: string | null
+          client_id: string
+          created_at?: string
+          granted_scopes?: string[] | null
+          id?: string
+          is_authorized?: boolean
+          last_error?: string | null
+          purposes?: string[]
+          refresh_token?: string | null
+          tenant_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          access_token?: string
+          account_email?: string
+          account_name?: string | null
+          client_id?: string
+          created_at?: string
+          granted_scopes?: string[] | null
+          id?: string
+          is_authorized?: boolean
+          last_error?: string | null
+          purposes?: string[]
+          refresh_token?: string | null
+          tenant_id?: string | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "microsoft_connections_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      microsoft_folders: {
+        Row: {
+          auto_sync_enabled: boolean
+          client_id: string
+          connection_id: string
+          created_at: string
+          delta_link: string | null
+          drive_id: string
+          files_synced: number
+          files_total: number
+          folder_name: string | null
+          folder_path: string | null
+          id: string
+          inventory: Json | null
+          item_id: string
+          last_error: string | null
+          last_synced_at: string | null
+          project_id: string | null
+          purpose: string
+          sync_status: string
+          updated_at: string
+          web_url: string | null
+        }
+        Insert: {
+          auto_sync_enabled?: boolean
+          client_id: string
+          connection_id: string
+          created_at?: string
+          delta_link?: string | null
+          drive_id: string
+          files_synced?: number
+          files_total?: number
+          folder_name?: string | null
+          folder_path?: string | null
+          id?: string
+          inventory?: Json | null
+          item_id: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          project_id?: string | null
+          purpose?: string
+          sync_status?: string
+          updated_at?: string
+          web_url?: string | null
+        }
+        Update: {
+          auto_sync_enabled?: boolean
+          client_id?: string
+          connection_id?: string
+          created_at?: string
+          delta_link?: string | null
+          drive_id?: string
+          files_synced?: number
+          files_total?: number
+          folder_name?: string | null
+          folder_path?: string | null
+          id?: string
+          inventory?: Json | null
+          item_id?: string
+          last_error?: string | null
+          last_synced_at?: string | null
+          project_id?: string | null
+          purpose?: string
+          sync_status?: string
+          updated_at?: string
+          web_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "microsoft_folders_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "microsoft_folders_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "microsoft_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "microsoft_folders_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "mira_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      microsoft_items: {
+        Row: {
+          client_id: string
+          content_hash: string | null
+          created_at: string
+          document_id: string | null
+          drive_id: string
+          error: string | null
+          folder_row_id: string
+          id: string
+          ingested_at: string | null
+          item_id: string
+          mime_type: string | null
+          modified_at: string | null
+          name: string
+          path: string
+          readable: boolean
+          size: number | null
+          status: string
+          updated_at: string
+          web_url: string | null
+        }
+        Insert: {
+          client_id: string
+          content_hash?: string | null
+          created_at?: string
+          document_id?: string | null
+          drive_id: string
+          error?: string | null
+          folder_row_id: string
+          id?: string
+          ingested_at?: string | null
+          item_id: string
+          mime_type?: string | null
+          modified_at?: string | null
+          name: string
+          path: string
+          readable?: boolean
+          size?: number | null
+          status?: string
+          updated_at?: string
+          web_url?: string | null
+        }
+        Update: {
+          client_id?: string
+          content_hash?: string | null
+          created_at?: string
+          document_id?: string | null
+          drive_id?: string
+          error?: string | null
+          folder_row_id?: string
+          id?: string
+          ingested_at?: string | null
+          item_id?: string
+          mime_type?: string | null
+          modified_at?: string | null
+          name?: string
+          path?: string
+          readable?: boolean
+          size?: number | null
+          status?: string
+          updated_at?: string
+          web_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "microsoft_items_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "microsoft_items_folder_row_id_fkey"
+            columns: ["folder_row_id"]
+            isOneToOne: false
+            referencedRelation: "microsoft_folders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       mira_activity: {
         Row: {

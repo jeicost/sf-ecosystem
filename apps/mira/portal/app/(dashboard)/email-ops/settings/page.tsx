@@ -7,6 +7,7 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import InboxSetupPanel from '@/components/email-ops/InboxSetupPanel'
 import ImapConnectPanel from '@/components/email-ops/ImapConnectPanel'
+import MicrosoftMailboxPanel from '@/components/email-ops/MicrosoftMailboxPanel'
 import RulesPanel from '@/components/email-ops/RulesPanel'
 
 export default function EmailOpsSettingsPage() {
@@ -25,6 +26,7 @@ export default function EmailOpsSettingsPage() {
       </div>
       <div className="space-y-6">
         <InboxSetupPanel clientId={activeClient.id} locale={locale} brand={brand} refreshKey={refreshKey} />
+        <MicrosoftMailboxPanel clientId={activeClient.id} locale={locale} brand={brand} onSaved={() => setRefreshKey((n) => n + 1)} />
         <ImapConnectPanel clientId={activeClient.id} locale={locale} brand={brand} onSaved={() => setRefreshKey((n) => n + 1)} />
         <RulesPanel clientId={activeClient.id} locale={locale} brand={brand} />
       </div>

@@ -8,7 +8,7 @@ import { writable } from '@/lib/db-json'
 // "reenvía a esta dirección"); alta/baja solo agencia en fase 1.
 
 // OJO: imap_password NO entra aquí jamás.
-const COLS = 'id,client_id,department,address,display_name,active,created_at,source,imap_host,imap_user,imap_last_checked_at,imap_last_error'
+const COLS = 'id,client_id,department,address,display_name,active,created_at,source,imap_host,imap_user,imap_last_checked_at,imap_last_error,ms_connection_id'
 
 export async function GET(req: NextRequest) {
   try {

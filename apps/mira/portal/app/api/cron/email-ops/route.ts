@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { processPending } from '@/lib/email-ops/pipeline'
 import { pollAllImapInboxes } from '@/lib/email-ops/imap-poll'
+import { pollAllGraphInboxes } from '@/lib/microsoft/mail-poll'
 import { recomputeOpenPriorities } from '@/lib/email-ops/priority'
 
 // Red de seguridad de Email Ops: reintenta mensajes pendientes/fallidos (el
@@ -28,6 +29,14 @@ export async function GET(req: NextRequest) {
     console.error('[cron/email-ops] imap poll failed', err)
   }
 
+  // 1b) Buzones de Microsoft 365 leídos por Graph (OAuth, sin contraseña).
+  let graph: Awaited<ReturnType<typeof pollAllGraphInboxes>> = []
+  try {
+    graph = await pollAllGraphInboxes()
+  } catch (err) {
+    console.error('[cron/email-ops] graph poll failed', err)
+  }
+
   const results = await processPending({ limit: MAX_MESSAGES_PER_RUN })
   let repriced = 0
   try {
@@ -37,6 +46,7 @@ export async function GET(req: NextRequest) {
   }
   return NextResponse.json({
     imap: imap.map((r) => ({ address: r.address, fetched: r.fetched, processed: r.processed, error: r.error })),
+    microsoft: graph.map((r) => ({ address: r.address, fetched: r.fetched, processed: r.processed, error: r.error })),
     processed: results.filter((r) => r.ok).length,
     failed: results.filter((r) => !r.ok && !r.skipped).length,
     skipped: results.filter((r) => r.skipped).length,

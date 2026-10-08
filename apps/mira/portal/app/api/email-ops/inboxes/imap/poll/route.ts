@@ -3,6 +3,7 @@ import { adminClient } from '@/lib/supabase'
 import { requireEmailOps, errorMessage } from '@/lib/email-ops/auth'
 import { pollImapInbox } from '@/lib/email-ops/imap-poll'
 import type { ImapInboxRow } from '@/lib/email-ops/imap'
+import { pollGraphInbox, type GraphInboxRow } from '@/lib/microsoft/mail-poll'
 
 // "Leer ahora": fuerza la lectura de UN buzón IMAP sin esperar al cron.
 //
@@ -28,15 +29,18 @@ export async function POST(req: NextRequest) {
     // ajeno bastaría para hacer leer el buzón de otro cliente.
     const { data, error } = await db
       .from('email_inboxes')
-      .select('id,client_id,address,department,imap_host,imap_port,imap_user,imap_password,imap_last_uid')
+      .select('id,client_id,address,department,source,imap_host,imap_port,imap_user,imap_password,imap_last_uid,ms_connection_id,ms_delta_link')
       .eq('id', body.id)
       .eq('client_id', access.clientId)
-      .eq('source', 'imap')
+      .in('source', ['imap', 'microsoft'])
       .maybeSingle()
     if (error) throw error
-    if (!data) return NextResponse.json({ error: 'IMAP mailbox not found' }, { status: 404 })
+    if (!data) return NextResponse.json({ error: 'Mailbox not found' }, { status: 404 })
 
-    const result = await pollImapInbox(data as unknown as ImapInboxRow)
+    // Misma pantalla y mismo botón para los dos tipos de buzón leído.
+    const result = data.source === 'microsoft'
+      ? await pollGraphInbox(data as unknown as GraphInboxRow)
+      : await pollImapInbox(data as unknown as ImapInboxRow)
     return NextResponse.json({ ok: !result.error, fetched: result.fetched, processed: result.processed, error: result.error })
   } catch (error) {
     console.error('email-ops/inboxes/imap/poll error:', error)

@@ -17,7 +17,7 @@ export interface EmailInbox {
   // Presentes solo en los buzones leídos por IMAP (source = 'imap'). La API los
   // devolvía ya; faltaban aquí, así que la interfaz no podía enseñar si la
   // última lectura había fallado — y un buzón que deja de leerse se queda mudo.
-  source?: 'resend' | 'imap' | null
+  source?: 'resend' | 'imap' | 'microsoft' | null
   imap_host?: string | null
   imap_user?: string | null
   imap_last_checked_at?: string | null

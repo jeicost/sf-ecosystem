@@ -20,6 +20,9 @@ import { computePriority } from './priority'
 import type { Extraction, MessageRow, StoredAttachment, TicketRow } from './types'
 import { toJson } from '@/lib/db-json'
 import { parseImapMessageId, fetchOneByUid, type ImapFetched, type ImapInboxRow } from './imap'
+import type { AttachmentFetcher, ProcessOptions } from './pipeline-types'
+// Correo de Microsoft 365 por Graph: misma inyección que IMAP, releído por id en los reintentos.
+import { parseGraphMessageId, graphOptionsFor } from '@/lib/microsoft/mail'
 
 export const MAX_ATTEMPTS = 3
 const MAX_ATTACHMENTS = 5
@@ -316,17 +319,7 @@ export function autoReplyReason(from: string, subject: string): string | null {
   return null
 }
 
-export type AttachmentFetcher = (
-  resendEmailId: string,
-  attachmentId: string
-) => Promise<{ buffer: Buffer; filename?: string; contentType?: string }>
-
-export interface ProcessOptions {
-  /** Inyección para tests/semillas/IMAP: sustituye la llamada a Resend por un correo ya leído. */
-  fetchReceived?: (resendEmailId: string) => Promise<ReceivedEmail>
-  /** Ídem para los adjuntos. */
-  fetchAttachment?: AttachmentFetcher
-}
+export type { AttachmentFetcher, ProcessOptions } from './pipeline-types'
 
 /** Un correo IMAP ya descargado, con la forma que espera el pipeline. */
 export function imapProcessOptions(f: ImapFetched): ProcessOptions {
@@ -375,8 +368,11 @@ export async function processMessage(messageId: string, opts: ProcessOptions = {
     // 1. Cuerpo y cabeceras. Si el mensaje vino por IMAP y nadie inyectó el
     // contenido (reintento del cron), se relee del buzón.
     const imapRef = parseImapMessageId(msg.resend_email_id)
+    const graphRef = parseGraphMessageId(msg.resend_email_id)
     const options: ProcessOptions =
-      imapRef && !opts.fetchReceived ? await imapOptionsFor(db, imapRef.inboxId, imapRef.uid) : opts
+      imapRef && !opts.fetchReceived ? await imapOptionsFor(db, imapRef.inboxId, imapRef.uid)
+      : graphRef && !opts.fetchReceived ? await graphOptionsFor(db, graphRef.inboxId, graphRef.messageId)
+      : opts
     const received = await (options.fetchReceived ?? fetchReceivedEmail)(msg.resend_email_id)
     const text = received.text?.trim() ? received.text : htmlToText(received.html || '')
     const inReplyTo = received.headers['in-reply-to'] || null

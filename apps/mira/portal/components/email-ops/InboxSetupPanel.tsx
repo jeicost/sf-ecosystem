@@ -92,7 +92,7 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact, refr
       {/* El aviso del dominio de reenvío solo importa si este cliente va a usar
           reenvío. Con un buzón leído por IMAP, salía un aviso ámbar que parecía
           una avería y no lo era. */}
-      {!domain && !loading && !inboxes.some((ib) => ib.source === 'imap') && (
+      {!domain && !loading && !inboxes.some((ib) => ib.source === 'imap' || ib.source === 'microsoft') && (
         <p className="mb-3 rounded-lg bg-amber-500/10 px-3 py-2 text-xs text-amber-400">{t('emailops.setup.no-domain', locale)}</p>
       )}
 
@@ -101,7 +101,10 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact, refr
       ) : (
         <div className="space-y-1.5">
           {inboxes.map((ib) => {
-            const isImap = ib.source === 'imap'
+            // Leído directamente: por IMAP o por Microsoft 365 (Graph). Misma
+            // fila, mismo botón de «leer ahora»; solo cambia la etiqueta.
+            const isImap = ib.source === 'imap' || ib.source === 'microsoft'
+            const srcKey = ib.source === 'microsoft' ? 'emailops.setup.src-microsoft' : isImap ? 'emailops.setup.src-imap' : 'emailops.setup.src-forward'
             return (
             <div key={ib.id} className={clsx('rounded-xl border border-line-subtle px-3 py-2', !ib.active && 'opacity-50')}>
               <div className="flex flex-wrap items-center gap-2">
@@ -112,7 +115,7 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact, refr
                 <span className={clsx('inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px]',
                   isImap ? 'bg-emerald-500/10 text-emerald-400' : 'bg-surface text-ink-tertiary')}>
                   {isImap ? <Plug size={10} /> : <Mail size={10} />}
-                  {t(isImap ? 'emailops.setup.src-imap' : 'emailops.setup.src-forward', locale)}
+                  {t(srcKey, locale)}
                 </span>
                 {isImap ? (
                   canManage && (

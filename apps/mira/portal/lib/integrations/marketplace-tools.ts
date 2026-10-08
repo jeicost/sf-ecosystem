@@ -212,6 +212,23 @@ export const MARKETPLACE_TOOLS: MarketplaceTool[] = [
     status: 'coming_soon',
     authType: 'oauth',
   },
+  // Microsoft 365 (8-oct-2026): OAuth propio por marca (lib/microsoft). Como
+  // Drive, su estado se calcula por marca en /integrations: conectado cuando
+  // la marca tiene al menos una cuenta de Microsoft autorizada.
+  {
+    id: 'microsoft-365',
+    name: 'Microsoft 365',
+    emoji: '🪟',
+    category: 'Productivity',
+    description: 'OneDrive & SharePoint folders for knowledge and proposals, plus Outlook mailboxes for Email Ops',
+    pricing: 'free',
+    setupUrl: 'https://www.microsoft365.com',
+    agentsUnlocked: ['onboard', 'midas', 'quant', 'zoe'],
+    departments: ['admin', 'sales', 'operations', 'strategy'],
+    isCritical: false,
+    status: 'disconnected',
+    authType: 'oauth',
+  },
   {
     id: 'google-drive',
     name: 'Google Drive',

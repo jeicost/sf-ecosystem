@@ -26,6 +26,8 @@ export default function IntegrationsPage() {
   // con URL de incrustación. No es un estado global del producto.
   const [powerBiConnected, setPowerBiConnected] = useState(false)
   const [driveNeedsReauth, setDriveNeedsReauth] = useState(false)
+  // Microsoft 365: conectado cuando la marca tiene al menos una cuenta autorizada.
+  const [microsoftConnected, setMicrosoftConnected] = useState(false)
 
   useEffect(() => {
     setMounted(true)
@@ -46,6 +48,20 @@ export default function IntegrationsPage() {
       setErrorMessage(t('integrations.connection-failed', locale).replace('{error}', error))
       window.history.replaceState({}, '', '/integrations')
       setTimeout(() => setErrorMessage(null), 5000)
+    }
+    const microsoft = params.get('microsoft')
+    if (microsoft === 'connected') {
+      setSuccessMessage(t('integrations.microsoft-connected', locale))
+      window.history.replaceState({}, '', '/integrations')
+      setTimeout(() => setSuccessMessage(null), 8000)
+    } else if (microsoft === 'admin_consent') {
+      setSuccessMessage(t('integrations.microsoft-admin-consent', locale))
+      window.history.replaceState({}, '', '/integrations')
+      setTimeout(() => setSuccessMessage(null), 8000)
+    } else if (microsoft === 'error') {
+      setErrorMessage(`Microsoft 365: ${params.get('reason') || t('integrations.microsoft-error-reason', locale)}`)
+      window.history.replaceState({}, '', '/integrations')
+      setTimeout(() => setErrorMessage(null), 8000)
     }
     if (drive === 'connected') {
       setSuccessMessage(t('integrations.drive-connected', locale))
@@ -70,6 +86,15 @@ export default function IntegrationsPage() {
         setDriveConnected(!!j?.connected)
         setDriveNeedsReauth(!!j?.needsReauth)
       })
+      .catch(() => {})
+  }, [clientId])
+
+  // Estado real de Microsoft 365 para esta marca.
+  useEffect(() => {
+    if (!clientId) return
+    fetch(`/api/integrations/microsoft/connections?clientId=${clientId}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => setMicrosoftConnected(((j?.connections as Array<{ is_authorized: boolean }>) || []).some((c) => c.is_authorized)))
       .catch(() => {})
   }, [clientId])
 
@@ -113,6 +138,24 @@ export default function IntegrationsPage() {
         setErrorMessage(
           e instanceof Error ? e.message : t('integrations.drive-start-error', locale)
         )
+      }
+      return
+    }
+    // Microsoft 365: OAuth propio por marca (lib/microsoft). Vuelve aquí.
+    if (toolId === 'microsoft-365') {
+      if (!clientId) return
+      try {
+        const res = await fetch('/api/integrations/microsoft/authorize', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ clientId, purpose: 'files', returnTo: '/integrations' }),
+        })
+        const json = await res.json()
+        if (res.status === 503) throw new Error(t('integrations.microsoft-not-configured', locale))
+        if (!res.ok || !json.authUrl) throw new Error(json.error || t('integrations.microsoft-start-error', locale))
+        window.location.href = json.authUrl
+      } catch (e) {
+        setErrorMessage(e instanceof Error ? e.message : t('integrations.microsoft-start-error', locale))
       }
       return
     }
@@ -166,6 +209,12 @@ export default function IntegrationsPage() {
     // real, decimos la verdad en vez de fingir que se desconectó.
     if (toolId === 'google-drive') {
       setErrorMessage(t('integrations.drive-disconnect-unavailable', locale))
+      return
+    }
+    // Microsoft 365 puede tener varias cuentas: se desconectan una a una desde
+    // Brand Brain → Documents (panel de carpetas), donde se ve cuál es cuál.
+    if (toolId === 'microsoft-365') {
+      window.location.href = '/brand-brain?tab=documents'
       return
     }
     try {
@@ -227,6 +276,7 @@ export default function IntegrationsPage() {
           connectedTools={[
             ...connectedTools,
             ...(driveConnected ? ['google-drive'] : []),
+            ...(microsoftConnected ? ['microsoft-365'] : []),
             ...(powerBiConnected ? ['powerbi'] : []),
           ]}
           platformTools={platformTools}

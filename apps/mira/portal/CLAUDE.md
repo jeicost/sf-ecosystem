@@ -99,3 +99,20 @@ real de producción. Esto lo evita.
   listas, tablas con barras, `[FALTA: …]` resaltado). Sin LibreOffice ni Word
   en la máquina: comprobar con `evals/_scratch/word-hoja.ts` (XML estricto +
   mammoth) y, para paginación, un render con LibreOffice portable.
+
+## Microsoft 365 (8-oct-2026)
+
+- Conector en `lib/microsoft/` (graph.ts HTTP puro · connections.ts tokens
+  cifrados y refresco ROTADO · sync.ts carpetas → `agent_documents` por
+  tandas con cola `microsoft_items` e inventario · mail.ts/mail-poll.ts
+  buzones por Graph para Email Ops, `source='microsoft'`). Rutas en
+  `app/api/integrations/microsoft/*`; cron `/api/cron/microsoft-sync` cada 30
+  min. Variables: `MS_OAUTH_CLIENT_ID`, `MS_OAUTH_CLIENT_SECRET`,
+  `MS_REDIRECT_URI` (sin ellas, 503 y aviso en la interfaz). Registro de la app
+  y texto para el administrador del cliente: `docs/microsoft-365.md`.
+- Lector único de ficheros (buffer → texto) en `lib/extract-text.ts`; lo usan
+  Drive y Microsoft. Pruebas puras: `npx tsx evals/microsoft/pure.ts`.
+- Email Ops: cada buzón vive en SU marca (el de GTD en GTD, el de Albasanz en
+  Albasanz). El botón Responder abre mailto y, en el desplegable, Outlook web,
+  Gmail y copiar (en GLS el mailto abría un «nuevo Outlook» que no arrancaba).
+

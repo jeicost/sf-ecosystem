@@ -15,11 +15,10 @@ import { createMessageForClient } from '@/lib/anthropic-client'
 import { adminClient } from '@/lib/supabase'
 import { decryptSecret, encryptSecret } from '@/lib/crypto'
 import { synthesizeDriveKnowledge, type DriveSynthesisDocument } from '@/lib/brain-tools/drive-synthesis'
-import { extractPdfText } from '@/lib/pdf-extract'
-// DOCX y PPTX se extraen con los mismos helpers que los adjuntos de usuario
-// (lib/attachments.ts): un único lector por formato para todo el portal.
-import { extractDocxText, extractPptxText, DOCX_MIME, PPTX_MIME } from '@/lib/attachments'
-import { describeImage, isVisionReadableImage } from '@/lib/vision'
+// Un único lector por formato para todo el portal (lib/extract-text.ts): lo
+// comparten los adjuntos de usuario, este sync y el de Microsoft 365.
+import { DOCX_MIME, PPTX_MIME } from '@/lib/attachments'
+import { extractTextFromBuffer, isTabularText, IMAGE_MIME_TYPES, XLSX_MIME } from '@/lib/extract-text'
 import type { Database } from '@/types/database.generated'
 import { toJson } from '@/lib/db-json'
 import { FAST_MODEL, primerTexto } from '@/lib/ai/models'
@@ -97,14 +96,10 @@ export function hasDriveWriteScope(
 const GOOGLE_DOC_MIME = 'application/vnd.google-apps.document'
 const GOOGLE_SHEET_MIME = 'application/vnd.google-apps.spreadsheet'
 const GOOGLE_SLIDES_MIME = 'application/vnd.google-apps.presentation'
-const XLSX_MIME = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-
-// Imágenes que la API de Anthropic sabe leer por visión. Hasta el 2026-08-06
-// las imágenes del Drive solo se CONTABAN ("204 archivos no textuales") y su
-// contenido era invisible para todos los agentes — en la carpeta de Salsa eso
-// son 204 de 213 ficheros, incluidas las fotos de producto sobre las que se le
-// pide trabajar a los agentes.
-const IMAGE_MIME_TYPES = ['image/png', 'image/jpeg', 'image/gif', 'image/webp']
+// Imágenes que la API de Anthropic sabe leer por visión (IMAGE_MIME_TYPES, en
+// lib/extract-text.ts). Hasta el 2026-08-06 las imágenes del Drive solo se
+// CONTABAN ("204 archivos no textuales") y su contenido era invisible para
+// todos los agentes — en la carpeta de Salsa eso son 204 de 213 ficheros.
 
 // Tope propio para las imágenes, separado de MAX_DOCS_PER_SYNC: una carpeta con
 // cientos de fotos no debe monopolizar el sync ni disparar el coste de golpe.
@@ -140,14 +135,6 @@ const EXTRACTABLE_MIME_TYPES = [
   PPTX_MIME,
   ...IMAGE_MIME_TYPES,
 ]
-
-// Tope de filas por hoja al convertir a texto. Una hoja de 10.000 filas
-// llenaría ella sola el presupuesto de contexto de todos los prompts; con las
-// primeras 300 se captura la estructura y los datos representativos (que es
-// para lo que sirve en una base de conocimiento de marca), y se deja constancia
-// explícita de cuántas filas se omitieron para que el modelo no dé por hecho
-// que está viendo el fichero entero.
-const MAX_SPREADSHEET_ROWS = 300
 
 
 // ─── Folder link parsing ─────────────────────────────────────────
@@ -502,121 +489,6 @@ async function walkFolderTree(
   return { files, tree }
 }
 
-// ─── Spreadsheet extraction ──────────────────────────────────────
-
-/**
- * Parser de CSV mínimo pero correcto: respeta campos entrecomillados con
- * comas o saltos de línea dentro, y comillas escapadas (""). Un `split(',')`
- * ingenuo parte un precio como "1,290 THB" en dos columnas y desalinea toda
- * la fila, que es justo el dato que interesa de un menú.
- */
-function parseCsv(input: string): string[][] {
-  const rows: string[][] = []
-  let row: string[] = []
-  let field = ''
-  let inQuotes = false
-
-  for (let i = 0; i < input.length; i++) {
-    const char = input[i]
-
-    if (inQuotes) {
-      if (char === '"') {
-        if (input[i + 1] === '"') { field += '"'; i++ }
-        else inQuotes = false
-      } else field += char
-      continue
-    }
-
-    if (char === '"') { inQuotes = true }
-    else if (char === ',') { row.push(field); field = '' }
-    else if (char === '\n' || char === '\r') {
-      // \r\n cuenta como un solo salto
-      if (char === '\r' && input[i + 1] === '\n') i++
-      row.push(field); field = ''
-      rows.push(row); row = []
-    } else field += char
-  }
-  if (field.length > 0 || row.length > 0) { row.push(field); rows.push(row) }
-
-  return rows.filter((r) => r.some((cell) => cell.trim().length > 0))
-}
-
-/** Filas de una hoja → texto etiquetado por cabecera, con tope de filas. */
-function rowsToLabelledText(rows: string[][], sheetName?: string): string {
-  if (rows.length === 0) return ''
-
-  const header = rows[0].map((h) => h.trim())
-  const body = rows.slice(1, 1 + MAX_SPREADSHEET_ROWS)
-  const omitted = Math.max(0, rows.length - 1 - body.length)
-
-  const lines = body.map((cells) =>
-    cells
-      .map((cell, i) => {
-        const value = cell.trim()
-        if (!value) return null
-        const label = header[i]?.trim()
-        return label ? `${label}: ${value}` : value
-      })
-      .filter(Boolean)
-      .join(' | ')
-  ).filter(Boolean)
-
-  const parts: string[] = []
-  if (sheetName) parts.push(`## Sheet: ${sheetName}`)
-  parts.push(`Columns: ${header.filter(Boolean).join(', ')}`)
-  parts.push(`Rows: ${rows.length - 1}${omitted > 0 ? ` (showing the first ${body.length}; ${omitted} not shown)` : ''}`)
-  parts.push('', ...lines)
-  return parts.join('\n')
-}
-
-function formatCsvForPrompt(raw: string): string {
-  return rowsToLabelledText(parseCsv(raw))
-}
-
-/**
- * Lee un .xlsx real con exceljs. Se eligió exceljs sobre SheetJS (`xlsx` en
- * npm) a propósito: la edición community de SheetJS publicada en npm arrastra
- * avisos de prototype pollution y ReDoS sin parchear, y este repo ya ha tenido
- * que limpiar prototype pollution dos veces (DEBT ss y uu) -- no tiene sentido
- * reintroducir esa familia de fallo para leer una tabla.
- */
-async function extractXlsxText(buffer: Buffer): Promise<string> {
-  const ExcelJS = (await import('exceljs')).default
-  const workbook = new ExcelJS.Workbook()
-  await workbook.xlsx.load(buffer as unknown as ArrayBuffer)
-
-  const sheets: string[] = []
-  workbook.eachSheet((worksheet) => {
-    const rows: string[][] = []
-    worksheet.eachRow({ includeEmpty: false }, (row) => {
-      const values = row.values as unknown[]
-      // exceljs indexa las columnas desde 1: values[0] siempre es undefined
-      rows.push(values.slice(1).map((v) => cellToString(v)))
-    })
-    const text = rowsToLabelledText(rows, worksheet.name)
-    if (text) sheets.push(text)
-  })
-
-  return sheets.join('\n\n')
-}
-
-/** Una celda de exceljs puede ser fecha, fórmula, texto enriquecido o hipervínculo. */
-function cellToString(value: unknown): string {
-  if (value == null) return ''
-  if (value instanceof Date) return value.toISOString().slice(0, 10)
-  if (typeof value === 'object') {
-    const v = value as Record<string, unknown>
-    if (typeof v.text === 'string') return v.text
-    if ('result' in v) return String(v.result ?? '')
-    if (Array.isArray(v.richText)) {
-      return v.richText.map((r) => String((r as { text?: string }).text ?? '')).join('')
-    }
-    if (typeof v.hyperlink === 'string') return v.hyperlink
-    return ''
-  }
-  return String(value)
-}
-
 // ─── Text extraction (pattern from ingest route) ─────────────────
 
 async function downloadAndExtractText(
@@ -631,19 +503,22 @@ async function downloadAndExtractText(
 ): Promise<{ success: boolean; text?: string; error?: string }> {
   try {
     let downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&supportsAllDrives=true`
+    // Lo que el lector único (lib/extract-text.ts) recibe: los nativos de
+    // Google no se descargan, se EXPORTAN a texto o CSV, y a partir de ahí son
+    // un fichero de texto más.
+    let effectiveMime = mimeType
     if (mimeType === GOOGLE_DOC_MIME || mimeType === GOOGLE_SLIDES_MIME) {
       // Google Slides exporta a text/plain igual que Docs: el texto de todas
       // las slides seguido, sin marcar dónde acaba una y empieza la siguiente
-      // -- es lo que da el export de Drive, no una decisión del código. Si
-      // algún día hace falta la estructura por slide, la alternativa es
-      // exportar a .pptx y pasar por extractPptxText.
+      // -- es lo que da el export de Drive, no una decisión del código.
       downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=text/plain`
+      effectiveMime = 'text/plain'
     } else if (mimeType === GOOGLE_SHEET_MIME) {
       // Los ficheros nativos de Google no se pueden descargar con alt=media,
       // hay que exportarlos. CSV exporta solo la PRIMERA hoja -- limitación
-      // real de la API de Drive, no del código; para varias hojas haría falta
-      // la API de Sheets con otro scope.
+      // real de la API de Drive, no del código.
       downloadUrl = `https://www.googleapis.com/drive/v3/files/${fileId}/export?mimeType=text/csv`
+      effectiveMime = 'text/csv'
     }
 
     const response = await fetch(downloadUrl, {
@@ -654,61 +529,17 @@ async function downloadAndExtractText(
       return { success: false, error: `Failed to download file: ${response.statusText}` }
     }
 
-    let text = ''
-
-    if (mimeType === 'application/pdf') {
-      const buffer = Buffer.from(await response.arrayBuffer())
-      text = await extractPdfText(buffer)
-    } else if (
-      mimeType === 'text/plain' ||
-      mimeType === 'text/markdown' ||
-      mimeType === GOOGLE_DOC_MIME ||
-      mimeType === GOOGLE_SLIDES_MIME
-    ) {
-      text = await response.text()
-    } else if (mimeType === 'text/csv' || mimeType === GOOGLE_SHEET_MIME) {
-      // Un CSV crudo ya es texto, pero se pasa por el mismo formateador que
-      // el resto de hojas para que el modelo reciba filas etiquetadas con su
-      // cabecera ("Producto: Wagyu Burger | Precio: 390") en vez de una
-      // pared de comas, que es donde los LLM pierden la correspondencia
-      // columna→valor en tablas anchas.
-      text = formatCsvForPrompt(await response.text())
-    } else if (mimeType === XLSX_MIME) {
-      const buffer = Buffer.from(await response.arrayBuffer())
-      text = await extractXlsxText(buffer)
-    } else if (mimeType === DOCX_MIME) {
-      const buffer = Buffer.from(await response.arrayBuffer())
-      text = await extractDocxText(buffer)
-    } else if (mimeType === PPTX_MIME) {
-      // Un .pptx subido a mano a Drive (no un Google Slides): se lee como zip,
-      // slide a slide, con el mismo extractor que los adjuntos del editor.
-      const buffer = Buffer.from(await response.arrayBuffer())
-      text = await extractPptxText(buffer)
-    } else if (IMAGE_MIME_TYPES.includes(mimeType) && isVisionReadableImage(mimeType, fileName)) {
-      // Una imagen no tiene texto que extraer: se convierte en texto
-      // describiéndola por visión, y a partir de ahí entra en agent_documents
-      // y en el índice de conocimiento exactamente igual que un PDF.
-      if (!clientId) return { success: false, error: 'Missing clientId for image description' }
-      const buffer = Buffer.from(await response.arrayBuffer())
-      const description = await describeImage({
-        clientId,
-        buffer,
-        mimeType,
-        fileName,
-        context: filePath ? `Google Drive, path "${filePath}"` : undefined,
-        route: 'drive-sync:image',
-      })
-      if (!description) return { success: false, error: 'Could not describe image' }
-      text = `[IMAGE] ${fileName}\n\n${description}`
-    } else {
-      return { success: false, error: `Unsupported MIME type for extraction: ${mimeType}` }
-    }
-
-    if (text.trim().length === 0) {
-      return { success: false, error: 'No text content extracted from file' }
-    }
-
-    return { success: true, text: text.substring(0, 1000000) }
+    const buffer = Buffer.from(await response.arrayBuffer())
+    const result = await extractTextFromBuffer({
+      buffer,
+      mimeType: effectiveMime,
+      fileName,
+      clientId,
+      context: filePath ? `Google Drive, path "${filePath}"` : undefined,
+      route: 'drive-sync:image',
+    })
+    if (!result.success) return { success: false, error: result.error }
+    return { success: true, text: result.text }
   } catch (error) {
     console.error('Error downloading/extracting Drive file:', error)
     return {
@@ -728,7 +559,7 @@ async function summarizeDocument(clientId: string, fileName: string, text: strin
       messages: [
         {
           role: 'user',
-          content: text.startsWith('## Sheet:') || text.startsWith('Columns:')
+          content: isTabularText(text)
             ? // Una hoja de cálculo no se resume como prosa: lo que hace falta
               // es saber QUÉ hay dentro y con qué rangos, para que un agente
               // sepa que ahí están los precios antes de ir a buscarlos.
@@ -1000,7 +831,7 @@ export async function syncDriveFolder(
       // ni la mitad de los precios. Una tabla ya viene comprimida (una fila
       // = un hecho), así que el coste por carácter es mucho más rentable
       // que en prosa.
-      const isTabular = extraction.text.startsWith('## Sheet:') || extraction.text.startsWith('Columns:')
+      const isTabular = isTabularText(extraction.text)
       changedDocs.push({
         documentId,
         path: file.path,
