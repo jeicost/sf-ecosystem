@@ -30,6 +30,13 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
   const [draft, setDraft] = useState<Record<string, string>>({})
   const [busy, setBusy] = useState<string | null>(null)
   const [toast, setToast] = useState<string | null>(null)
+  // Responder desde el buzón. Estos hooks tienen que ir aquí, antes de los
+  // retornos tempranos de abajo: el 8-oct quedaron detrás del «if (loading)
+  // return» y setReplyInfo no existía cuando load() lo llamaba, así que la
+  // carga reventaba en silencio y el parte se quedaba en el spinner (9-oct).
+  const [replyMenu, setReplyMenu] = useState(false)
+  const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null)
+  const [composing, setComposing] = useState(false)
 
   const load = useCallback(async () => {
     const [tRes, sRes] = await Promise.all([
@@ -105,9 +112,6 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
   const revisar = new Map(camposARevisar(ticket, schema).map((c) => [c.key, c]))
   // Respuesta al remitente: borrador desde los datos del parte, sin modelo, en el cliente de correo de la persona.
   const borrador = borradorRespuesta({ ticket, messages, schema, firma: `${t('emailops.reply.signature', locale)}${brandName ? ` · ${brandName}` : ''}` })
-  const [replyMenu, setReplyMenu] = useState(false)
-  const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null)
-  const [composing, setComposing] = useState(false)
   const copiarRespuesta = async () => {
     try { await navigator.clipboard.writeText(`Para: ${borrador.to}\nAsunto: ${borrador.subject}\n\n${borrador.body}`); flash(t('emailops.toast.copied', locale)) } catch { flash(t('emailops.toast.error', locale)) }
   }
