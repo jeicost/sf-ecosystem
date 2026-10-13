@@ -192,3 +192,21 @@ real de producción. Esto lo evita.
   sección fija «Equipo humano» con el interlocutor/a + ATC; plan de contingencia
   lo escribe Rafa.
 
+## Email Ops → programa operativo: Direcline (13-oct-2026)
+
+- `lib/tms/direcline.ts`: SOAP .asmx «WsUtilidades» (doc v1.2 en el Escritorio
+  de Carlos). Sesión con ValidarUsuario (GUID; 1401 = sesión abierta →
+  Desconectar y reintentar); los métodos XML llevan el XML entero en `Valor`
+  (CDATA) con el GUID dentro; errores `<ERROR><CODIGO/><MENSAJE/>`. El
+  namespace sale del WSDL al probar. `partirDireccion` es heurístico: lo que
+  no reconoce va a «más datos» y la persona lo coloca en el formulario.
+- Los CÓDIGOS del programa (cliente, tipo de servicio por tipo de entrega o
+  vehículo, contenido de bulto, mensajero) los pone la agencia en Settings →
+  «Programa operativo»; sin ellos, «Grabar en Direcline» lista lo que falta.
+  Por defecto `forzar_pendiente_validar` = true. Idempotencia por hash del XML
+  (`email_tickets.tms_ref.xml_hash`); cada envío queda en `tms_dispatches`.
+- Pruebas puras: `npx tsx evals/tms/pure.ts` (27). Primera prueba real:
+  «Probar conexión» y «Ver estructura XML» desde Settings con las credenciales
+  del proveedor (no graban nada); después un parte de prueba con pendiente de
+  validar activado.
+
