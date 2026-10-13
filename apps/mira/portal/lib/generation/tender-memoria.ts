@@ -7,7 +7,7 @@ import { fetchBrandBrain, formatBrandBrainForPrompt } from '@/lib/brand-brain'
 import { getKnowledgeContext } from '@/lib/knowledge'
 import { getPlaybook } from '@/lib/generation/tender-oferta'
 import { GROUNDING_CONTRACT } from '@/lib/grounding/grounding-contract'
-import { loadBaseMemoria, loadTeaching, teachingBlockDetallado, bloqueSeccionesFijas, comprobarSeccionesFijas, insertarSeccionesFijas, REGLA_MEDIOS_MATERIALES, seccionesRequeridas, requeridasQueFaltan, bloqueSeccionesRequeridas, type BaseMemoria, type Teaching } from '@/lib/tenders/teaching'
+import { loadBaseMemoria, loadTeaching, teachingBlockDetallado, bloqueSeccionesFijas, comprobarSeccionesFijas, insertarSeccionesFijas, REGLA_MEDIOS_MATERIALES, seccionesRequeridas, requeridasQueFaltan, bloqueSeccionesRequeridas, type BaseMemoria, type Teaching, detectarLote, bloqueLote, lotesColados, ordenarActivos, REGLA_SIN_INVENTAR_SERVICIOS, REGLA_MEJORAS, REGLA_SIN_DUPLICAR } from '@/lib/tenders/teaching'
 import { CHEAP_MODEL } from '@/lib/ai/models'
 import type Anthropic from '@anthropic-ai/sdk'
 
@@ -71,8 +71,8 @@ export function pliegoTruncationGap(pliegoText: string): string | null {
 }
 
 /** Paso 1 — extrae la estructura de puntuación del pliego. */
-export async function extractTenderCriteria(clientId: string, pliegoText: string): Promise<TenderCriteria> {
-  const prompt = `You are a Spanish public-procurement analyst. From the tender documents in the system context (pliego: PCAP / PPT / criterios), extract the SCORING STRUCTURE exactly as written — do not invent points or criteria.
+export async function extractTenderCriteria(clientId: string, pliegoText: string, lote: number | null = null): Promise<TenderCriteria> {
+  const prompt = `You are a Spanish public-procurement analyst. From the tender documents in the system context (pliego: PCAP / PPT / criterios), extract the SCORING STRUCTURE exactly as written — do not invent points or criteria.${lote ? `\n${bloqueLote(lote)} Extract ONLY the criteria that apply to lot ${lote} (and those common to all lots); ignore the criteria, thresholds and deadlines that belong to other lots.` : ''}
 
 Return ONLY a JSON object with this shape:
 {
@@ -331,6 +331,8 @@ export function buildMemoriaPrompt(parts: {
   fijas?: string
   /** Bloque del esqueleto mínimo (bloqueSeccionesRequeridas), o vacío. */
   requeridas?: string
+  /** Lote objetivo detectado en el título o las instrucciones; null si el pliego no va por lotes. */
+  lote?: number | null
 }): string {
   const r = buildMemoriaRequest(parts)
   return `${r.system.map((b) => b.text).join('\n\n')}\n\n${r.user}`
@@ -344,7 +346,7 @@ export function buildMemoriaPrompt(parts: {
  * ajustar instrucciones paga el 10 % de la entrada grande.
  */
 export function buildMemoriaRequest(parts: Parameters<typeof buildMemoriaPrompt>[0]): { system: Anthropic.TextBlockParam[]; user: string } {
-  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas, fijas, requeridas } = parts
+  const { criteria, pliegoText, teaching, playbook, examplesText, brainBlock, knowledge, disenadas, fijas, requeridas, lote } = parts
   const corpus = [
     brainBlock,
     knowledge ? `CLIENT KNOWLEDGE (real corpus — certifications, prior memorias, document skeleton):\n${knowledge}` : '',
@@ -358,7 +360,7 @@ export function buildMemoriaRequest(parts: Parameters<typeof buildMemoriaPrompt>
 
 SCORING STRUCTURE (do NOT write the price offer):
 ${JSON.stringify(criteria.criteria.filter((c) => c.group !== 'precio'), null, 1)}
-
+${lote ? `\n${bloqueLote(lote)}\n` : ''}
 WHAT THE MEMORIA MUST CONTAIN — two kinds of sections:
 1. One section per scoring criterion above ('juicio_valor' or 'automatico_tecnico'), titled with the criterion, puntos_objetivo = its points. These are written to MAXIMISE the score.
 2. The sections the tender's technical specifications (PPT) require the bidder to describe even when they do not score. A technical proposal is still judged on whether it proves the service can be delivered: typically the service description and operating procedure, human and material resources assigned, start-up plan, quality and incident management, and contingency plan. Write them with the company's own skeleton (see the past memorias), personalised to this contract. puntos_objetivo = null for these.
@@ -388,6 +390,9 @@ HARD RULES: every factual claim (KPIs, certificaciones, flota, plazos, plantilla
 - They were written for OTHER contracting bodies. Their names appear masked as [ÓRGANO ANTERIOR]; never write any contracting body's name except the one in THIS tender.
 - If two knowledge sources give different figures for the same fact, use the most recent and add it to datos_a_confirmar.
 - ${REGLA_MEDIOS_MATERIALES}
+- ${REGLA_SIN_INVENTAR_SERVICIOS}
+- ${REGLA_MEJORAS}
+- ${REGLA_SIN_DUPLICAR}
 - The person in charge may have left INSTRUCTIONS, a WRITING GUIDE and LESSONS below. They rule over style, focus, structure and emphasis, and you MUST list in instrucciones_aplicadas each one you followed. If one cannot be met without inventing a company fact, do NOT invent: leave [FALTA: …] where the fact goes and list it in instrucciones_no_aplicadas with the reason. If there are none, return both arrays empty.
 
 ${fijas ? `${fijas}\n` : ''}
@@ -438,6 +443,7 @@ export function avisosDeInstrucciones(parsed: Record<string, unknown>, hayInstru
 export async function completarSeccionesRequeridas(opts: {
   clientId: string
   titulos: string[]
+  lote?: number | null
   pliegoText: string
   criteria: TenderCriteria
   brainBlock: string
@@ -448,6 +454,8 @@ export async function completarSeccionesRequeridas(opts: {
   const prompt = `Eres quien redacta las memorias técnicas de licitación de esta empresa. La memoria para el pliego de abajo ya tiene estas secciones: ${opts.existentes.map((t) => `«${t}»`).join(', ')}. FALTAN estas, que la empresa incluye SIEMPRE: ${opts.titulos.map((t) => `«${t}»`).join(', ')}.
 
 Escribe cada sección que falta, con el contenido real de la empresa (BRAND CONTEXT y CLIENT KNOWLEDGE) aplicado a ESTE contrato: operativa concreta, paso a paso, en la voz institucional. Si el pliego no dice nada del tema, describe la práctica habitual de la empresa. No repitas lo que ya cubren las secciones existentes. Nada de precios. Todo hecho que no esté en el material va como [FALTA: dato] y a datos_a_confirmar.
+${opts.lote ? `${bloqueLote(opts.lote)}\n` : ''}${REGLA_SIN_INVENTAR_SERVICIOS}
+${REGLA_MEJORAS}
 
 Devuelve SOLO este JSON:
 { "secciones": [ { "titulo": "título tal como se te ha dado", "contenido": "texto en párrafos, con saltos de línea", "datos_a_confirmar": ["…"] } ] }
@@ -494,6 +502,8 @@ export async function generateTenderMemoria(opts: {
   teaching?: Teaching | null
   /** Páginas con diseño propio de la marca; si no vienen, se cargan aquí. */
   disenadas?: Disenada[]
+  /** Título del expediente (para detectar el lote objetivo); si no viene y hay tenderId, se lee. */
+  title?: string | null
 }): Promise<Record<string, unknown>> {
   const { clientId, pliegoText, criteria } = opts
   // El brain va primero: su brandName es texto LEGÍTIMO para el enmascarado de
@@ -524,7 +534,15 @@ export async function generateTenderMemoria(opts: {
 
   const fijas = teaching.standardSections || []
   const requeridas = seccionesRequeridas(teaching.requiredSections || [], fijas)
-  const peticion = buildMemoriaRequest({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas), fijas: bloqueSeccionesFijas(fijas), requeridas: bloqueSeccionesRequeridas(requeridas) })
+  // Lote objetivo: del título del expediente o de las instrucciones. Sin él, la
+  // memoria de RTVE (9-oct) mezcló servicios de otros lotes.
+  let title = opts.title ?? null
+  if (!title && opts.tenderId) {
+    const { data: tRow } = await adminClient().from('tenders').select('title').eq('id', opts.tenderId).maybeSingle()
+    title = tRow?.title ?? null
+  }
+  const lote = detectarLote(title, opts.instructions)
+  const peticion = buildMemoriaRequest({ criteria, pliegoText, teaching: teachingText, playbook, examplesText, brainBlock, knowledge, disenadas: bloqueDisenadasPrompt(disenadas), fijas: bloqueSeccionesFijas(fijas), requeridas: bloqueSeccionesRequeridas(requeridas), lote })
 
   const msg = await createMessageForClient(clientId, 'tender/generate', {
     // 16.000: una memoria completa (criterios + secciones de servicio) no cabe
@@ -554,7 +572,7 @@ export async function generateTenderMemoria(opts: {
   // Esqueleto mínimo: lo que el redactor no haya incluido se redacta aparte (modelo barato) y se añade.
   const faltanReq = requeridasQueFaltan(parsed.secciones as Array<{ titulo?: string; contenido?: string }>, requeridas)
   if (faltanReq.length) {
-    const extra = await completarSeccionesRequeridas({ clientId, titulos: faltanReq, pliegoText, criteria, brainBlock, knowledge: knowledge ?? '', existentes: (parsed.secciones as Array<{ titulo: string }>).map((s) => s.titulo) })
+    const extra = await completarSeccionesRequeridas({ lote, clientId, titulos: faltanReq, pliegoText, criteria, brainBlock, knowledge: knowledge ?? '', existentes: (parsed.secciones as Array<{ titulo: string }>).map((s) => s.titulo) })
     if (extra.length) {
       parsed.secciones = [...(parsed.secciones as Array<Record<string, unknown>>), ...extra]
       gaps.push(`Secciones del esqueleto añadidas por completitud (el redactor las había omitido): ${extra.map((s) => `«${s.titulo}»`).join(', ')}. Quita las que no procedan.`)
@@ -577,6 +595,12 @@ export async function generateTenderMemoria(opts: {
   if (examples.baseRecortada) gaps.push(avisoBaseRecortada(examples.baseRecortada))
   gaps.push(...examples.avisos, ...recortesEnsenanza)
   // Solo las secciones: las listas de instrucciones aplicadas citan lecciones y guía, que pueden nombrar órganos pasados.
+  // «Equipo material» pegado a «Equipo humano» (los activos, juntos).
+  parsed.secciones = ordenarActivos(parsed.secciones as Array<{ titulo?: string }>)
+  // Contenido de OTROS lotes colado en la memoria: aviso, para que se revise antes de presentar.
+  const otrosLotes = lotesColados({ secciones: parsed.secciones }, lote)
+  if (otrosLotes.length) gaps.push(`La memoria menciona ${otrosLotes.map((n) => `el lote ${n}`).join(' y ')} siendo el objetivo el lote ${lote}: revisa que no se hayan colado servicios o plazos de otro lote.`)
+
   const colados = organosColados({ secciones: parsed.secciones }, organos, pliegoText)
   // El marcador de enmascarado nunca debe acabar en el TEXTO de la memoria.
   if (secciones.some((sec) => /ÓRGANO ANTERIOR/.test(`${sec.titulo} ${sec.contenido}`))) {

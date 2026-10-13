@@ -11,7 +11,7 @@ import {
   type TenderCriteria,
 } from '@/lib/generation/tender-memoria'
 import { sanearImportes, sanearPorcentajes } from '@/lib/generation/tender-libre'
-import { addLesson, loadTenderTeaching } from '@/lib/tenders/teaching'
+import { addLesson, loadTenderTeaching, detectarLote } from '@/lib/tenders/teaching'
 import { ajustesModelo, CACHE_1H } from '@/lib/ai/models'
 import { bloqueDisenadasPrompt, normalizarMarcadores, type Disenada } from '@/lib/tenders/disenadas'
 import {
@@ -123,6 +123,13 @@ export function sanearOferta(texto: string): { texto: string; importes: number; 
 const fechaCorta = () => new Date().toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short', timeZone: 'Europe/Madrid' })
 
 /** Ejecuta UNA herramienta. Nunca lanza: un fallo vuelve al modelo como error para que lo explique. */
+/** Lote objetivo del expediente asociado (por su título), o null. */
+async function loteDelExpediente(ctx: ChatContext): Promise<number | null> {
+  if (!ctx.tenderId) return null
+  const { data } = await ctx.db.from('tenders').select('title').eq('id', ctx.tenderId).eq('client_id', ctx.clientId).maybeSingle()
+  return detectarLote(data?.title)
+}
+
 export async function executeTool(ctx: ChatContext, name: string, rawInput: unknown): Promise<ToolOutcome> {
   const v = validateToolInput(name, rawInput)
   if (!v.ok) return fail(v.error, toolLabel(name))
@@ -207,7 +214,7 @@ async function run(ctx: ChatContext, t: ToolInput): Promise<ToolOutcome> {
     case 'extraer_criterios': {
       const { texto, faltan } = pliegoDeAdjuntos(ctx, t.adjunto_ids)
       if (faltan.length) return fail(`No existen los adjuntos ${faltan.join(', ')}.`, 'Extrayendo criterios')
-      const criteria = await ctx.deps.extractCriteria(clientId, texto)
+      const criteria = await ctx.deps.extractCriteria(clientId, texto, await loteDelExpediente(ctx))
       let guardado = false
       if (ctx.tenderId) {
         const { data } = await db.from('tenders').select('pliego_text,expediente').eq('id', ctx.tenderId).eq('client_id', clientId).maybeSingle()
@@ -340,7 +347,7 @@ async function run(ctx: ChatContext, t: ToolInput): Promise<ToolOutcome> {
         const c = data?.criteria as TenderCriteria | null | undefined
         if (data && data.pliego_text === texto && c && Array.isArray(c.criteria) && c.criteria.length) criteria = c
       }
-      if (!criteria) criteria = await ctx.deps.extractCriteria(clientId, texto)
+      if (!criteria) criteria = await ctx.deps.extractCriteria(clientId, texto, await loteDelExpediente(ctx))
       if (!criteria.criteria.length) return fail('El texto de esos adjuntos no contiene criterios de adjudicación: si es un borrador propio, trabájalo por secciones; si es una licitación, falta el PCAP.', 'Generando memoria')
       const memoria = await ctx.deps.generateMemoria({ clientId, pliegoText: texto, criteria, tenderId: ctx.tenderId, instructions, baseTenderId })
       const secciones = (Array.isArray(memoria.secciones) ? memoria.secciones as Array<Record<string, unknown>> : []).map((s) => ({
@@ -518,6 +525,11 @@ export const REGLAS_DESTILADAS: string[] = [
   'Las memorias se entregan lo más completas posible: todo el esqueleto habitual de la casa y SIEMPRE un plan de contingencia, aunque el pliego no lo puntúe; la persona quitará después lo que no necesite, no tú.',
   'Si hay SECCIONES FIJAS DE LA CASA en estas instrucciones (quiénes somos, equipo humano, qué ofrecemos…), toda memoria las lleva con su texto tal cual, adaptando solo la referencia al órgano; nunca las resumas ni las reescribas.',
   'Cuando la persona diga que un documento es la versión final, la presentada o la ganada, y que MIRA aprenda de él, usa guardar_version_final (deduce el estado de sus palabras —«la presentamos», «la ganamos»— y pregunta solo si no hay forma de saberlo). Así entra en las referencias de las memorias siguientes.',
+  // Feedback de Usoa sobre la memoria de RTVE (9-oct-2026): lote, servicios no pedidos, mejoras, repeticiones.
+  'Si el expediente va por lotes (lo dicen el título o las instrucciones), todo responde SOLO al lote objetivo y a las cláusulas comunes: los servicios, sedes, trayectos y plazos de otros lotes no existen para esta memoria, aunque la empresa pudiera prestarlos.',
+  'Las lecciones describen cómo trabaja la empresa cuando un servicio existe en el pliego; una lección (la valija, el 10H, una zona) nunca autoriza a añadir ese servicio o esa salvedad si este pliego no lo pide.',
+  'Las mejoras y los compromisos cuantificados (plazos reducidos, franjas extra, retrasos admitidos) los decide la responsable: no propongas ninguno concreto; describe la operativa y deja la cifra como [FALTA: mejora decidida por la responsable].',
+  'Un tema se cuenta una sola vez: lo que ya va como subapartado «## » de una sección no se repite como sección aparte ni en otra; y un solo término por concepto en toda la memoria («modalidades de servicio» o «tipología», no ambos).',
 ]
 
 export function buildSystemPrompt(parts: {
@@ -552,8 +564,9 @@ export function buildStatePrompt(ctx: Pick<ChatContext, 'tenderId' | 'attachment
   const adj = ctx.attachments.length
     ? ctx.attachments.map((a) => `- ${a.id}: «${a.filename}» (${a.chars.toLocaleString('es-ES')} caracteres${a.original_chars && a.original_chars > a.chars ? `, RECORTADO al subir: tenía ${a.original_chars.toLocaleString('es-ES')}` : ''})`).join('\n')
     : '- (ninguno)'
+  const lote = detectarLote(tenderTitle)
   return `ESTADO DE ESTA CONVERSACIÓN
-Expediente asociado: ${ctx.tenderId ? `«${tenderTitle || ''}» (${ctx.tenderId})` : 'ninguno (puedes asociar uno con asociar_expediente si la persona lo quiere)'}
+Expediente asociado: ${ctx.tenderId ? `«${tenderTitle || ''}» (${ctx.tenderId})` : 'ninguno (puedes asociar uno con asociar_expediente si la persona lo quiere)'}${lote ? `\nLote objetivo: LOTE ${lote} (solo este lote y las cláusulas comunes; nada de otros lotes).` : ''}
 Adjuntos:
 ${adj}${olvidados ? `\nNota: los ${olvidados} primeros intercambios de esta conversación ya no caben en tu memoria; los documentos guardados siguen disponibles con leer_documento.` : ''}
 Fecha de hoy: ${new Date().toLocaleDateString('es-ES', { timeZone: 'Europe/Madrid' })}.${bloqueDisenadas ? `\n\n${bloqueDisenadas}` : ''}`

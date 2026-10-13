@@ -167,3 +167,28 @@ real de producción. Esto lo evita.
   marcas de Aldea). Pruebas: `npx tsx evals/comercial/pure.ts` (28) y una
   pasada real sobre fixtures INVENTADOS: `evals/comercial/run.ts` (~0,05 $).
 
+## Licitaciones: lecciones del feedback de Usoa sobre RTVE lote 2 (9/13-oct-2026)
+
+- Las REPETICIONES no venían de páginas con diseño (GTD no tiene): el redactor
+  ponía «Circuito operativo», «Tipología», «Soluciones IT»… como subapartados
+  «## » del punto 4 y 7, `requeridasQueFaltan` no los veía y «completar» los
+  redactaba otra vez al final. Ahora un subapartado cuenta como cubierto
+  (`subtitulosDe`).
+- LOTE OBJETIVO: `detectarLote(título, instrucciones)` → `bloqueLote` en
+  extract, generate, completar y en el estado del chat; `lotesColados` avisa si
+  la memoria cita otro lote. Sin esto RTVE mezcló servicios de otros lotes
+  (una valija entre sedes que el lote 2 no pide).
+- Las LECCIONES describen cómo trabaja la empresa cuando el servicio existe en
+  el pliego: nunca autorizan a añadir un servicio o una salvedad. Reglas nuevas
+  `REGLA_SIN_INVENTAR_SERVICIOS`, `REGLA_MEJORAS` (las mejoras las decide la
+  responsable; cifra como [FALTA: …]) y `REGLA_SIN_DUPLICAR`; 31 reglas en el
+  chat. `LESSONS_CAP` 14.000 (GTD tiene 54 lecciones activas).
+- Word: las secciones «Qué te ofrecemos» / «Integración social» se maquetan
+  frase a frase con un icono al margen (`iconoParaFrase`, `filaIcono`), como
+  pidió Usoa. «Equipo material» va pegado a «Equipo humano» (`ordenarActivos`).
+- Pendiente de decisión de Usoa/Rafa (no de código): 10H a las 10:30 o lo que
+  pida el pliego; certificaciones en cuadro o con sus imágenes; si el ENS es
+  real (está en SU Brand Brain y en 2 documentos del corpus); reescribir la
+  sección fija «Equipo humano» con el interlocutor/a + ATC; plan de contingencia
+  lo escribe Rafa.
+

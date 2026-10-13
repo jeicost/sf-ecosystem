@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 import { trackRoute } from '@/lib/activity'
 import { requireTool } from '@/lib/tools/access'
 import { extractTenderCriteria } from '@/lib/generation/tender-memoria'
+import { detectarLote } from '@/lib/tenders/teaching'
+import { adminClient } from '@/lib/supabase'
 
 // Guarda de entitlement: hasta ahora estas rutas solo comprobaban que la persona
 // tuviera acceso al CLIENTE, no que el cliente tuviera contratada Licitaciones —
@@ -19,7 +21,13 @@ export async function POST(req: NextRequest) {
     const access = await requireTool('tenders', body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     done = trackRoute('tender/extract', access)
-    const criteria = await extractTenderCriteria(access.clientId, pliego)
+    // Lote objetivo (título del expediente o instrucciones): solo se extraen los criterios de ese lote.
+    let title: string | null = typeof body.title === 'string' ? body.title : null
+    if (!title && typeof body.tenderId === 'string') {
+      const { data } = await adminClient().from('tenders').select('title').eq('id', body.tenderId).eq('client_id', access.clientId).maybeSingle()
+      title = data?.title ?? null
+    }
+    const criteria = await extractTenderCriteria(access.clientId, pliego, detectarLote(title, typeof body.instructions === 'string' ? body.instructions : null))
     done({ criterios: criteria.criteria?.length, pliegoChars: pliego.length, avisos: criteria.data_gaps?.length }); return NextResponse.json(criteria)
   } catch (error) {
     done?.error(500, error instanceof Error ? error.message : 'Extraction failed')

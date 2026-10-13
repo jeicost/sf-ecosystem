@@ -4,7 +4,7 @@ import { jsonObject } from '@/lib/db-json'
 import { aplicarMembrete, leerMembrete, MARCA_CABECERA, MARCA_PIE, MAX_MEMBRETE_BYTES, type MargenesMembrete, type Membrete } from '@/lib/tenders/membrete'
 import { encajar, medirImagen, px, type LogoWord } from '@/lib/tenders/word-imagen'
 import { resolverReferencia, type DisenadaResuelta } from '@/lib/tenders/disenadas'
-import { paleta, contrasteSobre, luminancia, TIPO, ESPACIO, INTERLINEADO, iconoParaTitulo, iconoPng, ICONO_INDICE, ICONO_NOTAS, ICONO_ANEXOS } from '@/lib/tenders/word-estilo'
+import { paleta, contrasteSobre, luminancia, TIPO, ESPACIO, INTERLINEADO, iconoParaTitulo, iconoParaFrase, iconoPng, ICONO_INDICE, ICONO_NOTAS, ICONO_ANEXOS } from '@/lib/tenders/word-estilo'
 
 export { medirImagen, type LogoWord }
 export { contrasteSobre, paleta }
@@ -639,6 +639,40 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
     else partes.push({ tipo: 'sangre', d })
   }
 
+  /**
+   * Frase con su icono en el margen izquierdo (Usoa, 9-oct-2026: «esta literatura
+   * con un icono en el margen izdo de cada frase queda más profesional»). Tabla
+   * sin bordes de dos celdas: icono · texto.
+   */
+  const anchoIcono = 620
+  const filaIcono = (texto: string, color?: string): Hijo[] => {
+    const img = icono(iconoParaFrase(texto), 'oscuro', 13)
+    return [
+      new Table({
+        width: { size: anchoUtil, type: WidthType.DXA }, columnWidths: [anchoIcono, anchoUtil - anchoIcono], layout: TableLayoutType.FIXED, borders: sinBordesTabla,
+        rows: [new TableRow({ cantSplit: true, children: [
+          new TableCell({ borders: sinBordes, width: { size: anchoIcono, type: WidthType.DXA }, verticalAlign: VerticalAlignTable.TOP, margins: { top: 40, bottom: 40, left: 0, right: 80 },
+            children: [new Paragraph({ spacing: { before: 10, after: 0 }, children: img ? [img] : [] })] }),
+          new TableCell({ borders: sinBordes, width: { size: anchoUtil - anchoIcono, type: WidthType.DXA }, verticalAlign: VerticalAlignTable.TOP, margins: { top: 40, bottom: 40, left: 0, right: 0 },
+            children: [parrafo(texto.replace(/^\s*[-•·*–—]\s+/, ''), { color, justificar: false })] }),
+        ] })],
+      }),
+    ]
+  }
+  /** Secciones de «literatura» de la casa que se maquetan frase a frase con icono. */
+  const SECCIONES_CON_ICONOS = /qu[eé]\s+(te\s+)?ofrecemos|integraci[oó]n social|por qu[eé] (elegirnos|gtd)|nuestros? compromisos?/i
+  const renderTextoConIconos = (texto: string, numeroSeccion?: number) => {
+    let j = 0
+    for (const b of parseBloques(texto)) {
+      if (b.t === 'p') { for (const frase of b.texto.split(/(?<=[.!?])\s+(?=[A-ZÁÉÍÓÚÑ«"])/)) if (frase.trim()) add(...filaIcono(frase.trim())) }
+      else if (b.t === 'ul' || b.t === 'ol') { for (const x of b.items) add(...filaIcono(x)) }
+      else if (b.t === 'h') add(subtitulo(b.texto, typeof numeroSeccion === 'number' ? `${numeroSeccion}.${++j}` : undefined))
+      else if (b.t === 'tabla') add(...tablaDeTexto(b.filas))
+      else if (b.t === 'diseno') { const d = resolverReferencia(b.ref, disenadas) as DisenadaResuelta | null; if (d && d.imagenes.length) insertarDisenada(d) }
+    }
+    add(espacio({ after: ESPACIO.item }))
+  }
+
   /** El texto de una sección, maquetado. */
   const renderTexto = (texto: string, color?: string, numeroSeccion?: number) => {
     let j = 0
@@ -778,7 +812,8 @@ export async function construirWord(entrada: EntradaWord): Promise<Buffer> {
   secciones.forEach((s, i) => {
     const limpio = limpiarTituloSeccion(s.titulo || 'Sección')
     add(...banda({ titulo: limpio.titulo, numero: i + 1, puntos: puntosDe(s), icono: iconoParaTitulo(limpio.titulo) }))
-    renderTexto(s.contenido || '', undefined, i + 1)
+    if (SECCIONES_CON_ICONOS.test(limpio.titulo)) renderTextoConIconos(s.contenido || '', i + 1)
+    else renderTexto(s.contenido || '', undefined, i + 1)
     if (s.porConfirmar?.length) add(...porConfirmar(s.porConfirmar))
   })
 

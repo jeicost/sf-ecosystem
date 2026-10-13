@@ -28,7 +28,7 @@ export const GUIDE_STORE_CAP = 20000
  */
 export const INSTRUCTIONS_CAP = INSTRUCTIONS_STORE_CAP
 export const GUIDE_CAP = 8000
-export const LESSONS_CAP = 9000 // 6.000 dejaba fuera 2 de las 43 lecciones de GTD (7-oct)
+export const LESSONS_CAP = 14000 // 6.000 dejaba fuera 2 de las 43 lecciones de GTD (7-oct); con las 10 del feedback de Usoa (9-oct) GTD tiene 54 activas y 9.000 dejaba fuera las más antiguas
 export const LESSONS_MAX = 200
 /** Longitud de una lección, como el check de la tabla. */
 export const LESSON_MIN = 3
@@ -91,7 +91,88 @@ export function seccionesRequeridas(required: string[], fijas: StandardSection[]
 
 /** Títulos requeridos que la memoria no trae. Puro. */
 export function requeridasQueFaltan(secciones: SeccionGenerada[], requeridas: string[]): string[] {
-  return requeridas.filter((r) => !secciones.some((s) => tituloCoincide(s.titulo || '', r)))
+  // Un título del esqueleto cuenta como cubierto si es una sección O un
+  // subapartado («## Circuito operativo…») dentro de otra. Feedback de Usoa
+  // (9-oct-2026): el redactor puso «Circuito operativo», «Tipología de
+  // servicios», «Soluciones IT»… como subapartados del punto 4 y del 7, aquí
+  // no se reconocían, y «completar» los volvía a redactar como secciones al
+  // final: la misma memoria con cinco temas repetidos.
+  const titulos = secciones.flatMap((s) => [s.titulo || '', ...subtitulosDe(s.contenido || '')])
+  return requeridas.filter((r) => !titulos.some((t) => tituloCoincide(t, r)))
+}
+
+/** Subapartados de una sección: líneas «## Título» y rótulos cortos en mayúsculas. */
+export function subtitulosDe(contenido: string): string[] {
+  const out: string[] = []
+  for (const linea of contenido.split('\n')) {
+    const l = linea.trim()
+    const h = /^#{1,3}\s+(.+)$/.exec(l)
+    if (h) { out.push(h[1].trim()); continue }
+    if (l.length >= 6 && l.length <= 90 && l === l.toUpperCase() && /[A-ZÁÉÍÓÚÑ]{3}/.test(l) && !/[.:;]$/.test(l)) out.push(l)
+  }
+  return out
+}
+
+// ─── Lote objetivo, mejoras y servicios no pedidos (feedback de Usoa, 9-oct-2026) ───
+//
+// La memoria de RTVE mezcló servicios de otros lotes (una valija entre sedes
+// que el lote 2 no pide), aplicó lecciones de otros servicios y propuso una
+// «mejora» de plazos que la responsable no había decidido. El pliego de un
+// expediente suele cubrir varios lotes: hay que decir cuál es el objetivo y
+// cortar todo lo demás.
+
+/** Número de lote que piden el título o las instrucciones del expediente («Lote 2», «lote II»). */
+export function detectarLote(...textos: Array<string | null | undefined>): number | null {
+  const romanos: Record<string, number> = { i: 1, ii: 2, iii: 3, iv: 4, v: 5, vi: 6, vii: 7, viii: 8, ix: 9, x: 10 }
+  for (const t of textos) {
+    if (!t) continue
+    const m = /\blote\s*(?:n[ºo.]?\s*)?(\d{1,2}|[ivx]{1,4})\b/i.exec(t)
+    if (!m) continue
+    const v = m[1].toLowerCase()
+    const n = /^\d+$/.test(v) ? Number(v) : romanos[v]
+    if (n) return n
+  }
+  return null
+}
+
+/** Bloque del prompt: el lote objetivo manda sobre todo el pliego. */
+export function bloqueLote(lote: number): string {
+  return `LOTE OBJETIVO: LOTE ${lote}. El pliego puede cubrir varios lotes; esta memoria responde SOLO al lote ${lote} y a las cláusulas comunes a todos. Los servicios, rutas, sedes, trayectos, plazos y requisitos de otros lotes NO existen para esta memoria, aunque la empresa pudiera prestarlos: ni se describen ni se ofrecen. Cada plazo o requisito que cites tiene que ser el del lote ${lote} (indica la cláusula).`
+}
+
+export const REGLA_SIN_INVENTAR_SERVICIOS = 'Solo se describen los servicios, rutas, sedes y trayectos que el pliego del lote objetivo pide o describe. Una lección, una memoria anterior, el material de la marca o un ejemplo NO autorizan a añadir un servicio (una valija entre dos sedes, una recogida fuera de las sedes, una gestión documental) que ESTE pliego no pida.'
+
+export const REGLA_MEJORAS = 'Las MEJORAS y los compromisos cuantificados (plazos reducidos, franjas horarias extra, penalizaciones aceptadas, retrasos admitidos) los decide la responsable al elaborar la memoria: no propongas ninguno concreto ni lo des por hecho. Si un criterio exige una mejora, describe la operativa que la sostendría y deja la cifra como [FALTA: mejora decidida por la responsable]. Tampoco añadas salvedades que perjudiquen (p. ej. «puede retrasarse hasta las 14:00») si el pliego no las pide.'
+
+export const REGLA_SIN_DUPLICAR = 'Cada tema se trata UNA vez: si ya va como subapartado «## » dentro de una sección, no vuelve a aparecer como sección aparte ni se repite en otra (la red de agencias, el circuito, la herramienta IT se cuentan en un solo sitio). Usa un único término para cada concepto en toda la memoria («modalidades de servicio» o «tipología», no ambos).'
+
+/** Menciones de OTROS lotes en la memoria generada: señal de que se ha colado contenido ajeno al lote objetivo. */
+export function lotesColados(memoria: unknown, lote: number | null): number[] {
+  if (!lote) return []
+  const texto = JSON.stringify(memoria || '').toLowerCase()
+  const otros = new Set<number>()
+  for (const m of texto.matchAll(/\blote\s*(?:n[ºo.]?\s*)?(\d{1,2})\b/g)) {
+    const n = Number(m[1])
+    if (n && n !== lote) otros.add(n)
+  }
+  return [...otros].sort((a, b) => a - b)
+}
+
+/**
+ * «Equipo material» va justo después de «Equipo humano» (Usoa, 9-oct: «añadiría
+ * en este mismo apartado EQUIPO MATERIAL»): los activos de la empresa, juntos.
+ */
+export function ordenarActivos<T extends { titulo?: string }>(secciones: T[]): T[] {
+  const esHumano = (t: string) => /equipo humano|medios humanos|recursos humanos/i.test(t)
+  const esMaterial = (t: string) => /equipo material|medios materiales|medios t[eé]cnicos/i.test(t)
+  const iHumano = secciones.findIndex((x) => esHumano(x.titulo || ''))
+  const iMaterial = secciones.findIndex((x) => esMaterial(x.titulo || ''))
+  if (iHumano < 0 || iMaterial < 0 || iMaterial === iHumano + 1) return secciones
+  const out = secciones.slice()
+  const [mat] = out.splice(iMaterial, 1)
+  const destino = out.findIndex((x) => esHumano(x.titulo || '')) + 1
+  out.splice(destino, 0, mat)
+  return out
 }
 
 /** Bloque del prompt: el esqueleto mínimo. Puro. */
@@ -308,7 +389,7 @@ export function teachingBlockDetallado(input: TeachingInput): TeachingBlockDetal
       if (fuera === 0 && usado + linea.length + 1 <= LESSONS_CAP) { lineas.push(linea); usado += linea.length + 1 } else fuera++
     })
     partes.push(
-      'LECCIONES — cada línea es una regla obligatoria que la responsable ha enseñado; se aplican siempre, salvo que una instrucción del expediente diga otra cosa.\n'
+      'LECCIONES — cada línea es una regla obligatoria que la responsable ha enseñado; se aplican siempre, salvo que una instrucción del expediente diga otra cosa. Describen CÓMO trabaja la empresa cuando ese servicio o situación existe en ESTE pliego: una lección sobre la valija, el 10H, un partner o una zona NO autoriza a incluir ese servicio o esa salvedad si el pliego del lote objetivo no lo pide.\n'
       + lineas.join('\n')
       + (fuera > 0 ? `\n[… ${fuera} ${fuera === 1 ? 'lección más no cabe' : 'lecciones más no caben'} aquí: se aplican las ${lineas.length} anteriores]` : ''),
     )

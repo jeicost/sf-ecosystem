@@ -3,7 +3,7 @@
 //
 // Cada comprobación corresponde a un fallo real que existió (29-sep-2026).
 import { cortarPorAnclas, limpiarMaquetacion, rotulo, trocearPorPaginas } from '../../lib/tenders/secciones'
-import { pliegoTruncationGap, PLIEGO_WINDOW, avisosDeInstrucciones, maskOrganos, palabrasAEnmascarar, maskPalabras, recortarBase, avisoBaseRecortada, BASE_MEMORIA_CAP } from '../../lib/generation/tender-memoria'
+import { buildMemoriaPrompt, pliegoTruncationGap, PLIEGO_WINDOW, avisosDeInstrucciones, maskOrganos, palabrasAEnmascarar, maskPalabras, recortarBase, avisoBaseRecortada, BASE_MEMORIA_CAP } from '../../lib/generation/tender-memoria'
 import { teachingBlock, teachingBlockDetallado, baseMemoriaValida, isUuid, INSTRUCTIONS_CAP, INSTRUCTIONS_STORE_CAP, GUIDE_CAP, LESSONS_CAP, LESSON_MAX, avisoLeccionLarga } from '../../lib/tenders/teaching'
 import { sanearImportes, sanearPorcentajes } from '../../lib/generation/tender-libre'
 
@@ -75,7 +75,7 @@ check('las lecciones salen numeradas', conLecciones.includes('1. Nunca prometas 
 check('una lección de menos de 3 caracteres no cuenta', !conLecciones.includes('3. '))
 const muchas = teachingBlock({ lessons: Array.from({ length: 200 }, (_, i) => `Lección número ${i + 1} ${'z'.repeat(60)}`) })
 const cuerpoLecciones = muchas.slice(muchas.indexOf('LECCIONES'), muchas.indexOf('Nada de lo anterior'))
-check('el tope total de lecciones se respeta', cuerpoLecciones.length <= LESSONS_CAP + 400, cuerpoLecciones.length)
+check('el tope total de lecciones se respeta (cabecera de ≤ 700 chars aparte)', cuerpoLecciones.length <= LESSONS_CAP + 700, cuerpoLecciones.length)
 check('y se dice cuántas quedaron fuera', /\d+ lecciones más no caben/.test(muchas) && muchas.includes('1. Lección número 1') && !muchas.includes('200. Lección número 200'))
 const orden = teachingBlock({ instructions: 'INS', guide: 'GUIA', lessons: ['LECCION-UNO'] })
 check('precedencia: instrucciones → guía → lecciones', orden.indexOf('INSTRUCCIONES') < orden.indexOf('GUÍA DE REDACCIÓN') && orden.indexOf('GUÍA DE REDACCIÓN') < orden.indexOf('LECCIONES'))
@@ -331,6 +331,24 @@ check('requeridas = lista + Plan de contingencia, sin las que ya son fijas', req
 check('sin lista, al menos el plan de contingencia', seccionesRequeridas([]).join() === 'Plan de contingencia')
 check('faltan: detecta la que no está y acepta «1.8 Plan de contingencia»', requeridasQueFaltan([{ titulo: '1.8 PLAN DE CONTINGENCIA' }, { titulo: 'Servicio' }], reqs).join() === 'Puesta en marcha')
 check('bloque: lo más completa posible, con la lista', bloqueSeccionesRequeridas(reqs).includes('- Plan de contingencia') && /COMPLETA POSIBLE/.test(bloqueSeccionesRequeridas(reqs)) && bloqueSeccionesRequeridas([]) === '')
+
+// ── Feedback de Usoa, RTVE lote 2 (9-oct-2026): esqueleto por subapartados, lote objetivo, activos juntos ──
+import { subtitulosDe, detectarLote, bloqueLote, lotesColados, ordenarActivos, REGLA_MEJORAS, REGLA_SIN_INVENTAR_SERVICIOS, REGLA_SIN_DUPLICAR } from '../../lib/tenders/teaching'
+console.log('\nFeedback RTVE: subapartados cubren el esqueleto; lote objetivo; activos juntos')
+const cuerpo4 = { titulo: 'DESCRIPCIÓN GENERAL DEL SERVICIO', contenido: 'Intro.\n## Circuito operativo del servicio\nSolicitud…\n## Tipología de servicios\n…\nCONTROL DE ENTREGAS Y TRAZABILIDAD\nCada estado…' }
+check('subtitulosDe: «## » y rótulos en mayúsculas', JSON.stringify(subtitulosDe(cuerpo4.contenido)) === JSON.stringify(['Circuito operativo del servicio', 'Tipología de servicios', 'CONTROL DE ENTREGAS Y TRAZABILIDAD']))
+const reqRtve = ['Circuito operativo del servicio', 'Tipología de servicios', 'Control de entregas y trazabilidad', 'Integración social']
+check('requeridasQueFaltan: un subapartado cuenta como cubierto (no se duplica al completar)', requeridasQueFaltan([cuerpo4], reqRtve).join() === 'Integración social')
+check('detectarLote: título «Lote 2 – Paquetería»', detectarLote('RTVE S-01898-2021 Lote 2 – Paquetería nacional') === 2)
+check('detectarLote: romano y «lote nº 3» en instrucciones; sin lote → null', detectarLote(null, 'nos presentamos al LOTE II') === 2 && detectarLote('Lote nº 3') === 3 && detectarLote('UAM franqueo') === null)
+check('bloqueLote: manda sobre otros lotes', bloqueLote(2).includes('LOTE 2') && /otros lotes/.test(bloqueLote(2)))
+check('lotesColados: detecta el lote 1 colado y no el objetivo', JSON.stringify(lotesColados({ secciones: [{ contenido: 'La valija del lote 1 y las entregas del Lote 2' }] }, 2)) === '[1]' && lotesColados({ secciones: [] }, null).length === 0)
+const ordenActivos = ordenarActivos([{ titulo: 'QUIÉNES SOMOS' }, { titulo: 'EQUIPO HUMANO' }, { titulo: 'QUÉ TE OFRECEMOS' }, { titulo: 'SERVICIO' }, { titulo: 'EQUIPO MATERIAL' }])
+check('ordenarActivos: equipo material justo tras equipo humano', ordenActivos.map((x) => x.titulo).join(' | ') === 'QUIÉNES SOMOS | EQUIPO HUMANO | EQUIPO MATERIAL | QUÉ TE OFRECEMOS | SERVICIO')
+check('ordenarActivos: sin cambios si ya está o si falta uno', ordenarActivos([{ titulo: 'A' }, { titulo: 'Equipo material' }]).length === 2 && ordenarActivos([{ titulo: 'Equipo humano' }, { titulo: 'Equipo material' }])[1].titulo === 'Equipo material')
+const memoriaConLote = buildMemoriaPrompt({ criteria: { criteria: [] } as never, pliegoText: 'p', teaching: '', playbook: null, examplesText: '', brainBlock: 'b', knowledge: null, lote: 2 })
+check('prompt de la memoria: lote objetivo y las tres reglas nuevas', memoriaConLote.includes('LOTE OBJETIVO: LOTE 2') && memoriaConLote.includes(REGLA_MEJORAS) && memoriaConLote.includes(REGLA_SIN_INVENTAR_SERVICIOS) && memoriaConLote.includes(REGLA_SIN_DUPLICAR))
+check('prompt sin lote: no menciona lote objetivo', !buildMemoriaPrompt({ criteria: { criteria: [] } as never, pliegoText: 'p', teaching: '', playbook: null, examplesText: '', brainBlock: 'b', knowledge: null }).includes('LOTE OBJETIVO'))
 
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)

@@ -187,6 +187,34 @@ export function iconoParaTitulo(titulo: string): string {
   return 'file-text'
 }
 
+/**
+ * Icono para una FRASE (sección «Qué te ofrecemos» con un icono al margen de
+ * cada frase, como pidió Usoa el 9-oct-2026): mismas reglas que los títulos,
+ * más palabras habituales de las frases de oferta; si nada encaja, un «más».
+ */
+const REGLAS_ICONO_FRASE: [RegExp, string][] = [
+  [/\b(anos de experiencia|experiencia|trayectoria|desde 19|fundad)/, 'badge-check'],
+  [/\b(agencias?|red agencial|cobertura nacional|toda espana|territorio)/, 'map'],
+  [/\b(vehiculos?|flota|motos?|furgonetas?|furgon(es)?|camiones?)/, 'truck'],
+  [/\b(personas?|empleados?|plantilla|equipo|profesionales|mensajeros?)/, 'users'],
+  [/\b(24 ?h|horas?|plazos?|puntualidad|rapidez|inmediat\w*|urgen\w*)/, 'clock'],
+  [/\b(trazabilidad|seguimiento|tiempo real|localizacion|codigo de barras)/, 'scan-barcode'],
+  [/\b(atencion al cliente|interlocutor\w*|atencion personalizada|whatsapp|telefon\w*)/, 'messages-square'],
+  [/\b(herramienta|plataforma|aplicacion|app|web|online|digital\w*|tecnolog\w*|software)/, 'monitor-smartphone'],
+  [/\b(sostenib\w*|ecologic\w*|electric\w*|emisiones|medio ?ambiente)/, 'leaf'],
+  [/\b(seguridad|seguro|confidencial\w*|proteccion)/, 'shield-check'],
+  [/\b(calidad|certific\w*|iso ?\d|norma)/, 'badge-check'],
+  [/\b(incidencias?|resolucion|respuesta)/, 'life-buoy'],
+  [/\b(precio|tarifa|economic\w*|coste)/, 'euro'],
+  [/\b(paquet\w*|mercancia|bultos?|envios?|recogidas?|entregas?|distribucion)/, 'package'],
+]
+export function iconoParaFrase(frase: string): string {
+  const t = plano(frase)
+  for (const [re, nombre] of REGLAS_ICONO_FRASE) if (re.test(t)) return nombre
+  for (const [re, nombre] of REGLAS_ICONO) if (re.test(t)) return nombre
+  return 'circle-plus'
+}
+
 const cacheIconos = new Map<string, Buffer | null>()
 
 /** PNG 128×128 del icono en la variante pedida; null si no existe (el título sale sin icono, nunca falla). */
