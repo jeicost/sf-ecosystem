@@ -23,6 +23,18 @@ export default function ProjectsPage() {
   const { locale } = useLocaleContext()
   const brand = activeClient?.primaryColor || FALLBACK_BRAND
 
+  // Nada se pinta hasta que el cliente activo ha cargado (igual que la home):
+  // el servidor no conoce el idioma elegido (localStorage) y un título
+  // traducido en el primer render daba el error de hidratación #418 que ya
+  // tienen /projects/new y el detalle de proyecto.
+  if (clientLoading || loading) {
+    return (
+      <div className="flex items-center justify-center py-32">
+        <Loader2 size={18} className="animate-spin text-ink-muted" />
+      </div>
+    )
+  }
+
   return (
     <div className="mx-auto max-w-6xl px-8 py-10" style={{ ['--client-primary' as string]: brand }}>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
@@ -39,11 +51,7 @@ export default function ProjectsPage() {
         </Link>
       </div>
 
-      {clientLoading || loading ? (
-        <div className="flex items-center justify-center py-24">
-          <Loader2 size={18} className="animate-spin text-ink-muted" />
-        </div>
-      ) : error ? (
+      {error ? (
         <p className="text-sm text-red-400">{t('projects.loading-error', locale)}: {error}</p>
       ) : (
         <ProjectsGrid projects={projects} brand={brand} locale={locale} header={false} />
