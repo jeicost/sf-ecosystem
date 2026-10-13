@@ -2,7 +2,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import { clsx } from 'clsx'
-import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink, Reply, Copy, Eye, ChevronDown } from 'lucide-react'
+import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink, Reply, Copy, Eye, ChevronDown, Server } from 'lucide-react'
 import { t, type Locale } from '@/lib/i18n'
 import QuoteFromTicketButton from '@/components/cotizador/QuoteFromTicketButton'
 import type { FieldDef, FieldValue } from '@/lib/email-ops/schema'
@@ -12,6 +12,7 @@ import { confidenceColor, timeAgo } from '@/lib/email-ops/format'
 import { camposARevisar } from '@/lib/email-ops/review'
 import { borradorRespuesta } from '@/lib/email-ops/reply'
 import ReplyComposer, { type ReplyInfo } from './ReplyComposer'
+import TmsSendDialog from './TmsSendDialog'
 import { PriorityBadge, StatusPill, DeliveryPill, KindPill } from './Badges'
 
 // Detalle de un ticket: datos del parte (editables inline, con confianza y
@@ -37,6 +38,9 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
   const [replyMenu, setReplyMenu] = useState(false)
   const [replyInfo, setReplyInfo] = useState<ReplyInfo | null>(null)
   const [composing, setComposing] = useState(false)
+  // Programa operativo (Direcline): si la marca tiene conexión, el parte se puede grabar desde aquí.
+  const [tmsInfo, setTmsInfo] = useState<{ connected: boolean; provider: string | null; ok: boolean | null } | null>(null)
+  const [tmsOpen, setTmsOpen] = useState(false)
 
   const load = useCallback(async () => {
     const [tRes, sRes] = await Promise.all([
@@ -46,7 +50,7 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
     const tData = await tRes.json()
     const sData = await sRes.json()
     if (!tRes.ok) { setError(tData.error || 'Error'); setLoading(false); return }
-    setTicket(tData.ticket); if (tData.reply) setReplyInfo(tData.reply as ReplyInfo)
+    setTicket(tData.ticket); if (tData.reply) setReplyInfo(tData.reply as ReplyInfo); if (tData.tms) setTmsInfo(tData.tms)
     setMessages(tData.messages || [])
     if (sRes.ok) setSchema(sData.schema || [])
     setLoading(false)
@@ -161,6 +165,17 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
                 </div>
               )}
             </div>
+          )}
+          {tmsInfo?.connected && !isOther && (
+            (ticket as unknown as { tms_ref?: { expedicion?: string | null; via?: string | null } | null }).tms_ref?.expedicion ? (
+              <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs text-emerald-400" title={t('emailops.tms.chip-title', locale)}>
+                <Server size={12} /> Direcline · {(ticket as unknown as { tms_ref: { expedicion: string } }).tms_ref.expedicion}{(ticket as unknown as { tms_status?: string | null }).tms_status ? ` · ${(ticket as unknown as { tms_status: string }).tms_status}` : ''}
+              </span>
+            ) : (
+              <button onClick={() => setTmsOpen(true)} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-medium text-ink hover:bg-line" title={t('emailops.tms.send-title', locale)}>
+                <Server size={12} /> {t('emailops.tms.button', locale)}
+              </button>
+            )
           )}
           {ticket.status !== 'closed' && !isOther && (
             <button onClick={() => patch({ status: 'closed' }, 'close')} disabled={!!busy}
@@ -312,6 +327,10 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
           </div>
         </section>
       </div>
+      {tmsOpen && ticket && (
+        <TmsSendDialog ticketId={ticket.id} clientId={clientId} locale={locale} brand={brand} onClose={() => setTmsOpen(false)}
+          onSent={(ref) => { setTmsOpen(false); flash(t('emailops.tms.sent', locale).replace('{n}', ref.expedicion || '—')); load() }} />
+      )}
       {composing && replyInfo && ticket && (
         <ReplyComposer
           ticketId={ticket.id}

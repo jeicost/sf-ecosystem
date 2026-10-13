@@ -56,11 +56,12 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
       })),
     }))
     // Desde qué buzón se respondería (y si se puede), y si la marca está en modo prueba.
-    const [{ data: inboxRow }, { data: settingsRow }] = await Promise.all([
+    const [{ data: inboxRow }, { data: settingsRow }, { data: tmsRow }] = await Promise.all([
       ticket.inbox_id
         ? db.from('email_inboxes').select('id,address,display_name,source,imap_host,imap_user,imap_password,ms_connection_id').eq('id', ticket.inbox_id).maybeSingle()
         : Promise.resolve({ data: null }),
       db.from('email_ops_settings').select('reply_test_to,reply_signature').eq('client_id', access.clientId).maybeSingle(),
+      db.from('tms_connections').select('provider,last_test_ok').eq('client_id', access.clientId).eq('active', true).maybeSingle(),
     ])
     const can = puedeResponder(inboxRow)
     const reply = {
@@ -70,7 +71,8 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
       test_to: settingsRow?.reply_test_to || null,
       signature: settingsRow?.reply_signature || null,
     }
-    return NextResponse.json({ ticket, messages: withUrls, reply })
+    const tms = { connected: !!tmsRow, provider: tmsRow?.provider ?? null, ok: tmsRow?.last_test_ok ?? null }
+    return NextResponse.json({ ticket, messages: withUrls, reply, tms })
   } catch (error) {
     console.error('email-ops/tickets/[id] GET error:', error)
     return NextResponse.json({ error: errorMessage(error) }, { status: 500 })

@@ -2454,6 +2454,8 @@ export type Database = {
           subject: string | null
           summary: string | null
           thread_key: string
+          tms_ref: Json | null
+          tms_status: string | null
           updated_at: string
           urgency: number | null
         }
@@ -2483,6 +2485,8 @@ export type Database = {
           subject?: string | null
           summary?: string | null
           thread_key: string
+          tms_ref?: Json | null
+          tms_status?: string | null
           updated_at?: string
           urgency?: number | null
         }
@@ -2512,6 +2516,8 @@ export type Database = {
           subject?: string | null
           summary?: string | null
           thread_key?: string
+          tms_ref?: Json | null
+          tms_status?: string | null
           updated_at?: string
           urgency?: number | null
         }
@@ -4832,6 +4838,138 @@ export type Database = {
             columns: ["client_id"]
             isOneToOne: false
             referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tms_connections: {
+        Row: {
+          active: boolean
+          base_url: string
+          client_id: string
+          config: Json
+          created_at: string
+          created_by: string | null
+          culture: string
+          id: string
+          last_error: string | null
+          last_test_at: string | null
+          last_test_ok: boolean | null
+          namespace: string | null
+          password: string
+          provider: string
+          updated_at: string
+          username: string
+        }
+        Insert: {
+          active?: boolean
+          base_url: string
+          client_id: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          culture?: string
+          id?: string
+          last_error?: string | null
+          last_test_at?: string | null
+          last_test_ok?: boolean | null
+          namespace?: string | null
+          password: string
+          provider?: string
+          updated_at?: string
+          username: string
+        }
+        Update: {
+          active?: boolean
+          base_url?: string
+          client_id?: string
+          config?: Json
+          created_at?: string
+          created_by?: string | null
+          culture?: string
+          id?: string
+          last_error?: string | null
+          last_test_at?: string | null
+          last_test_ok?: boolean | null
+          namespace?: string | null
+          password?: string
+          provider?: string
+          updated_at?: string
+          username?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tms_connections_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tms_dispatches: {
+        Row: {
+          client_id: string
+          connection_id: string | null
+          created_at: string
+          error_code: string | null
+          error_message: string | null
+          id: string
+          method: string
+          ok: boolean
+          request_xml: string | null
+          response_xml: string | null
+          sent_by: string | null
+          ticket_id: string
+        }
+        Insert: {
+          client_id: string
+          connection_id?: string | null
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          method: string
+          ok?: boolean
+          request_xml?: string | null
+          response_xml?: string | null
+          sent_by?: string | null
+          ticket_id: string
+        }
+        Update: {
+          client_id?: string
+          connection_id?: string | null
+          created_at?: string
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          method?: string
+          ok?: boolean
+          request_xml?: string | null
+          response_xml?: string | null
+          sent_by?: string | null
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tms_dispatches_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_dispatches_connection_id_fkey"
+            columns: ["connection_id"]
+            isOneToOne: false
+            referencedRelation: "tms_connections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tms_dispatches_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "email_tickets"
             referencedColumns: ["id"]
           },
         ]

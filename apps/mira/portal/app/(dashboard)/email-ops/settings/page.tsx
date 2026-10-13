@@ -10,6 +10,7 @@ import ImapConnectPanel from '@/components/email-ops/ImapConnectPanel'
 import MicrosoftMailboxPanel from '@/components/email-ops/MicrosoftMailboxPanel'
 import RulesPanel from '@/components/email-ops/RulesPanel'
 import ReplySettingsPanel from '@/components/email-ops/ReplySettingsPanel'
+import TmsSettingsPanel from '@/components/email-ops/TmsSettingsPanel'
 
 export default function EmailOpsSettingsPage() {
   const { locale } = useLocaleContext()
@@ -30,6 +31,7 @@ export default function EmailOpsSettingsPage() {
         <MicrosoftMailboxPanel clientId={activeClient.id} locale={locale} brand={brand} onSaved={() => setRefreshKey((n) => n + 1)} />
         <ImapConnectPanel clientId={activeClient.id} locale={locale} brand={brand} onSaved={() => setRefreshKey((n) => n + 1)} />
         <ReplySettingsPanel clientId={activeClient.id} locale={locale} brand={brand} />
+        <TmsSettingsPanel clientId={activeClient.id} locale={locale} brand={brand} />
         <RulesPanel clientId={activeClient.id} locale={locale} brand={brand} />
       </div>
     </div>
