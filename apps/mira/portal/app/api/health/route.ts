@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 
 /**
  * Healthcheck — pings Supabase and reports env var presence. No auth (needs
@@ -14,7 +14,7 @@ export async function GET() {
 
   let dbOk = false
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     const { error } = await db.from('clients').select('id', { count: 'exact', head: true }).limit(1)
     dbOk = !error
   } catch {

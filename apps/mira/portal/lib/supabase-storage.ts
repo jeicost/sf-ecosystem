@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 
 const STORAGE_BUCKET = 'agent-documents'
 const SIGNED_URL_EXPIRATION = 3600 * 24 * 7 // 7 days
@@ -9,7 +9,7 @@ const SIGNED_URL_EXPIRATION = 3600 * 24 * 7 // 7 days
  */
 export async function initializeStorageBucket() {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
 
     // Check if bucket exists
     const { data: buckets } = await db.storage.listBuckets()
@@ -49,7 +49,7 @@ export async function uploadFileToStorage(
   file: File
 ): Promise<{ success: boolean; url?: string; error?: string }> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
 
     // Generate unique path
     const timestamp = Date.now()
@@ -93,7 +93,7 @@ export async function uploadFileToStorage(
  */
 export async function deleteFileFromStorage(filePath: string): Promise<boolean> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
 
     const { error } = await db.storage.from(STORAGE_BUCKET).remove([filePath])
 
@@ -114,7 +114,7 @@ export async function deleteFileFromStorage(filePath: string): Promise<boolean> 
  */
 export async function getSignedUrl(filePath: string): Promise<string | null> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
 
     const { data, error } = await db.storage
       .from(STORAGE_BUCKET)
@@ -137,7 +137,7 @@ export async function getSignedUrl(filePath: string): Promise<string | null> {
  */
 export async function listAgentFiles(clientId: string, agentRole: string): Promise<any[]> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
 
     const { data, error } = await db.storage
       .from(STORAGE_BUCKET)

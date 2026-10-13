@@ -4,7 +4,7 @@
 //   app/api/integrations/oauth/callback      →  token exchange + tool_connections upsert
 // Tokens are persisted in tool_connections.metadata: { access_token, refresh_token, expires_at }.
 
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { getOAuthConfig } from '@/lib/integrations/oauth-config'
 import { decryptSecret, encryptSecret } from '@/lib/crypto'
 
@@ -37,7 +37,7 @@ interface CanvaTokenMetadata {
  * token cannot be refreshed.
  */
 export async function getCanvaToken(clientId: string): Promise<string | null> {
-  const db = createServiceClient()
+  const db = adminClient()
   const { data: connection } = await db
     .from('tool_connections')
     .select('id, auth_token, metadata, status')

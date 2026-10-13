@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getOAuthConfig, getOAuthRedirectUri } from '@/lib/integrations/oauth-config'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { encryptSecret } from '@/lib/crypto'
 
 export async function GET(request: NextRequest) {
@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    const db = createServiceClient()
+    const db = adminClient()
 
     // Verify state token
     const { data: session, error: sessionError } = await db

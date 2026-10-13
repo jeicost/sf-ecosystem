@@ -1,6 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { fetchBrandBrain } from '@/lib/brand-brain'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { generateAndStoreImage, type ImageSize } from '@/lib/generation/openai-image'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { CHEAP_MODEL } from '@/lib/ai/models'
@@ -14,7 +14,7 @@ import { CHEAP_MODEL } from '@/lib/ai/models'
  */
 export async function getVisualReferencesBlock(clientId: string, limit = 4): Promise<{ block: string; count: number }> {
   try {
-    const admin = createServiceClient()
+    const admin = adminClient()
     const { data } = await admin
       .from('agent_documents')
       .select('title, extracted_text')
@@ -228,7 +228,7 @@ export async function generateStudioImage(opts: {
   // CHECK de tool_slug (la 0051 no incluía 'studio-visual', lo arregla la 0074)
   // y el catch mudo dejó la galería vacía un mes sin un solo error a la vista.
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     const { error } = await db.from('generation_queue').insert({
       client_id: opts.clientId,
       ...(opts.userId ? { user_id: opts.userId } : {}),

@@ -4,7 +4,7 @@ import {
   Kanban, Target, Zap, LucideIcon, Map, Lightbulb, TrendingUp,
   Search, MessageSquare, FileText,
   Home, Calendar, Brain, ClipboardList, Layers, Archive, Image,
-  Mail, Wrench, LayoutGrid, LifeBuoy, Calculator, BookMarked } from 'lucide-react'
+  Mail, Wrench, LayoutGrid, LifeBuoy, Calculator, BookMarked, FolderKanban } from 'lucide-react'
 import type { Entitlement } from './entitlements'
 import { canAccessSection, minPlanForSection, type UserPlan } from './plans'
 
@@ -180,6 +180,10 @@ export const IDEAL_SPACES: IdealSpace[] = [
     key: 'hoy', label: 'Today', labelKey: 'sidebar.space.today', icon: Home,
     items: [
       { href: '/home',      label: 'Overview',  labelKey: 'sidebar.item.overview',  icon: LayoutDashboard },
+      // Los proyectos son el contenedor de contexto, memoria y entregables, pero
+      // solo se veían desde la home (auditoría AS-IS de Alessandro, 16-sep).
+      // Desde el 13-oct tienen listado propio en /projects.
+      { href: '/projects',  label: 'Projects',  labelKey: 'sidebar.item.projects',  icon: FolderKanban },
       // «Inbox» no decía qué había dentro; el badge cuenta aprobaciones, así
       // que el item se llama como lo que es.
       { href: '/approvals', label: 'Approvals', labelKey: 'sidebar.item.approvals', icon: CheckSquare },

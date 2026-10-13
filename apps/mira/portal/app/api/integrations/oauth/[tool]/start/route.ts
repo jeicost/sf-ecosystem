@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createHash, randomBytes } from 'node:crypto'
 import { buildOAuthUrl, getOAuthConfig } from '@/lib/integrations/oauth-config'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 
 export async function GET(
@@ -64,7 +64,7 @@ export async function GET(
     }
 
     // Store state in a temporary session or cookie (simple approach: store in Supabase)
-    const db = createServiceClient()
+    const db = adminClient()
     const { error: sessionInsertError } = await db.from('oauth_sessions').insert({
       state,
       tool,

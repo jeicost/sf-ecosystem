@@ -44,6 +44,13 @@ type AdminClient = ReturnType<typeof adminClient>
  */
 export type DriveFolderRow = Database['public']['Tables']['drive_folders']['Row']
 
+/**
+ * Un fichero que no se pudo leer en la última pasada (drive_folders.file_errors,
+ * migración 0094). Tipo literal y no interface a propósito: así es asignable a
+ * la columna jsonb tipada como Json sin castear.
+ */
+export type FileSyncError = { file_id: string; name: string; path: string; reason: string; at: string }
+
 interface DriveFileEntry {
   id: string
   name: string
@@ -652,7 +659,9 @@ export async function syncDriveFolder(
     console.error(`Drive sync error (folder ${folderRow.id}): ${message}`)
     await admin
       .from('drive_folders')
-      .update({ sync_status: 'error' })
+      // El motivo se guarda: hasta el 13-oct solo quedaba en el log del servidor
+      // y el panel decía «last sync failed» sin más (auditoría AS-IS, 16-sep).
+      .update({ sync_status: 'error', last_error: message.slice(0, 500) })
       .eq('id', folderRow.id)
     return { error: message }
   }
@@ -697,6 +706,13 @@ export async function syncDriveFolder(
   const otherFilesCount = files.length - files.filter((f) => EXTRACTABLE_MIME_TYPES.includes(f.mimeType)).length
 
   let filesSynced = 0
+  // Fallos por fichero de ESTA pasada. Antes solo había un console.warn que
+  // nadie leía y la carpeta salía «completed» con el fichero fuera, así que
+  // «0 documentos fallidos» no significaba nada. Van a drive_folders.file_errors
+  // para que el panel enseñe nombre y motivo y ofrezca reintentar.
+  const fileErrors: FileSyncError[] = []
+  const anotarFallo = (file: DriveFileEntry, reason: string) =>
+    fileErrors.push({ file_id: file.id, name: file.name, path: file.path, reason: reason.slice(0, 300), at: new Date().toISOString() })
   // Contador de ficheros que ya estaban en agent_documents sin cambios y no
   // costaron ni una llamada a la IA. Se loguea al final para poder comprobar
   // que el dedup previo al gasto está funcionando de verdad.
@@ -745,6 +761,7 @@ export async function syncDriveFolder(
       const extraction = await downloadAndExtractText(token, file.id, file.mimeType, clientId, file.name, file.path)
       if (!extraction.success || !extraction.text) {
         console.warn(`Drive sync: could not extract "${file.path}": ${extraction.error}`)
+        anotarFallo(file, extraction.error || 'No text could be extracted from this file')
         continue
       }
 
@@ -806,6 +823,7 @@ export async function syncDriveFolder(
           .eq('id', documentId)
         if (updateError) {
           console.error(`Drive sync: failed to update document "${file.path}":`, updateError)
+          anotarFallo(file, `Could not update the stored document: ${updateError.message}`)
           continue
         }
       } else {
@@ -816,6 +834,7 @@ export async function syncDriveFolder(
           .single()
         if (insertError || !inserted) {
           console.error(`Drive sync: failed to insert document "${file.path}":`, insertError)
+          anotarFallo(file, `Could not store the document: ${insertError?.message ?? 'no row returned'}`)
           continue
         }
         documentId = inserted.id
@@ -841,6 +860,7 @@ export async function syncDriveFolder(
       })
     } catch (fileError) {
       console.error(`Drive sync: unexpected error processing "${file.path}":`, fileError)
+      anotarFallo(file, fileError instanceof Error ? fileError.message : String(fileError))
     }
   }
 
@@ -849,7 +869,7 @@ export async function syncDriveFolder(
   // sincronizada lo normal es que "skipped" sea casi el total; si sale 0 noche
   // tras noche, el dedup ha vuelto a romperse.
   console.log(
-    `Drive sync (folder ${folderRow.id}): ${extractableFiles.length} candidate files, ${skippedUnchanged} skipped as unchanged (no AI cost), ${changedDocs.length} new/updated`
+    `Drive sync (folder ${folderRow.id}): ${extractableFiles.length} candidate files, ${skippedUnchanged} skipped as unchanged (no AI cost), ${changedDocs.length} new/updated, ${fileErrors.length} failed`
   )
 
   // 5. Folder map → project_memory (insight, dedup by tags [drive_map, folderRow.id])
@@ -967,6 +987,8 @@ export async function syncDriveFolder(
       sync_status: 'completed',
       last_synced_at: new Date().toISOString(),
       files_synced: filesSynced,
+      last_error: null,
+      file_errors: fileErrors,
     })
     .eq('id', folderRow.id)
   if (statusUpdateError) {

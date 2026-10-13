@@ -24,10 +24,11 @@
 // Siempre paths del bucket, jamás signed URLs (caducan a los 7 días — el bug
 // que ya tenía with_covers en la bandeja).
 
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { createMessageForClient } from '@/lib/anthropic-client'
 import { getClientDriveAccessToken } from '@/lib/drive-sync'
 import { extractJson } from '@/lib/generation/extract-json'
+import type { Json } from '@/types/database.generated'
 import { FAST_MODEL } from '@/lib/ai/models'
 
 const BUCKET = 'generated-assets'
@@ -103,7 +104,7 @@ async function classifyReferences(
   pillars: Array<{ name: string; promise?: string }>,
   opts: { dryRun?: boolean }
 ): Promise<Map<string, string>> {
-  const admin = createServiceClient()
+  const admin = adminClient()
   const pillarNames = new Set(pillars.map((p) => p.name))
   const assigned = new Map<string, string>()
   const pending: ImageDoc[] = []
@@ -168,7 +169,7 @@ async function rehostThumb(
   doc: ImageDoc,
   driveToken: string
 ): Promise<string | null> {
-  const admin = createServiceClient()
+  const admin = adminClient()
   const cached = doc.source_metadata?.thumb_path
   if (typeof cached === 'string' && cached) return cached
 
@@ -212,7 +213,7 @@ export async function buildMonthlyVisuals(opts: {
   /** Re-generar hero covers aunque ya existan. */
   force?: boolean
 }): Promise<{ summary: VisualsSummary; visuals: MonthlyVisuals | null; mapping?: Record<string, number> }> {
-  const admin = createServiceClient()
+  const admin = adminClient()
   const skipped: string[] = []
 
   const { data: row, error } = await admin
@@ -239,7 +240,7 @@ export async function buildMonthlyVisuals(opts: {
     .order('created_at', { ascending: false })
     .limit(120)
 
-  const docs: ImageDoc[] = (docRows ?? []).filter(
+  const docs: ImageDoc[] = ((docRows ?? []) as ImageDoc[]).filter(
     (d: any) => !String(d.source_metadata?.path ?? '').toLowerCase().includes('logo')
   )
 
@@ -345,7 +346,7 @@ export async function buildMonthlyVisuals(opts: {
   const freshResult = (fresh?.result_data as Record<string, any>) ?? result
   const { error: upErr } = await admin
     .from('generation_queue')
-    .update({ result_data: { ...freshResult, visuals } })
+    .update({ result_data: { ...freshResult, visuals } as unknown as Json })
     .eq('id', opts.queueId)
   if (upErr) throw new Error(`No se pudo guardar visuals: ${upErr.message}`)
 

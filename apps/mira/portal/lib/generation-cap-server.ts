@@ -9,7 +9,7 @@
 // Lo limpio a medio plazo: que checkGenerationCap importe de este fichero.
 
 import { NextResponse } from 'next/server'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { GenerationCapExceededError, isGenerationCapExempt } from '@/lib/anthropic-client'
 import { GENERATION_CAP_ERROR_CODE, type GenerationCapStatus } from '@/lib/generation-cap'
 
@@ -31,7 +31,7 @@ export function startOfMonthUtc(now = new Date()): Date {
 
 /** Generaciones con key de plataforma del cliente en el mes en curso (lo que consume techo). */
 export async function countPlatformGenerationsThisMonth(clientId: string): Promise<number> {
-  const db = createServiceClient()
+  const db = adminClient()
   const { count, error } = await db
     .from('mira_usage_log')
     .select('id', { count: 'exact', head: true })

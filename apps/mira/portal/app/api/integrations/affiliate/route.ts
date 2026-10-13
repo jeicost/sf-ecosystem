@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'No access to this client' }, { status: 403 })
     }
 
-    const db = createServiceClient()
+    const db = adminClient()
 
     const { error } = await db.from('affiliate_tracking').insert({
       client_id: clientId,

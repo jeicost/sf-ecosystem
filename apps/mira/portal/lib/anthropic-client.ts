@@ -11,7 +11,7 @@
 
 import Anthropic from '@anthropic-ai/sdk'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { comprobarPresupuesto } from '@/lib/ai/budget'
 import { prepararParams } from '@/lib/ai/models'
 
@@ -63,7 +63,7 @@ async function checkGenerationCap(clientId: string, usedClientKey: boolean): Pro
   startOfMonth.setUTCHours(0, 0, 0, 0)
 
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     const { count, error } = await db
       .from('mira_usage_log')
       .select('id', { count: 'exact', head: true })
@@ -125,7 +125,7 @@ export async function logUsage(params: {
   const { clientId, route, model, usage, usedClientKey } = params
   if (!clientId || !usage) return
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     const { error } = await db.from('mira_usage_log').insert({
       client_id: clientId,
       route,

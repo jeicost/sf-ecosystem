@@ -9,7 +9,7 @@
 // TOPE: lo incluido por el plan de la MARCA (clients.plan → lib/billing/plans.ts)
 // más los packs de 100 comprados ese mismo mes (tabla image_packs, 0073).
 
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { billingPlan } from '@/lib/billing/plans'
 import { isGenerationCapExempt } from '@/lib/anthropic-client'
 import { startOfMonthUtc } from '@/lib/generation-cap-server'
@@ -28,7 +28,7 @@ export class ImageQuotaExceededError extends Error {
 
 /** Imágenes generadas por esta marca en el mes en curso. */
 export async function countImagesThisMonth(clientId: string): Promise<number> {
-  const db = createServiceClient()
+  const db = adminClient()
   const { count, error } = await db
     .from('mira_usage_log')
     .select('id', { count: 'exact', head: true })
@@ -41,7 +41,7 @@ export async function countImagesThisMonth(clientId: string): Promise<number> {
 
 /** Imágenes compradas en packs este mes. Los packs no se acumulan de un mes al siguiente. */
 export async function countPackImagesThisMonth(clientId: string): Promise<number> {
-  const db = createServiceClient()
+  const db = adminClient()
   const { data, error } = await db
     .from('image_packs')
     .select('images')
@@ -53,7 +53,7 @@ export async function countPackImagesThisMonth(clientId: string): Promise<number
 
 export async function getImageQuotaStatus(clientId: string): Promise<ImageQuotaStatus> {
   const month = startOfMonthUtc().toISOString().slice(0, 7)
-  const db = createServiceClient()
+  const db = adminClient()
   const { data: client, error: clientError } = await db
     .from('clients')
     .select('plan, onboarding_mode, stripe_subscription_id')

@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { NextRequest, NextResponse } from 'next/server'
 import { encryptSecret } from '@/lib/crypto'
 import { resolveRequestClient, getSessionUser } from '@/lib/resolve-client'
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
-    const db = createServiceClient()
+    const db = adminClient()
 
     // Get all tool connections for client
     const { data: connections, error: connectError } = await db
@@ -92,7 +92,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
-    const db = createServiceClient()
+    const db = adminClient()
 
     // Check if tool already connected
     const { data: existing } = await db
@@ -187,7 +187,7 @@ export async function DELETE(request: NextRequest) {
       return NextResponse.json({ error: access.error }, { status: access.status })
     }
 
-    const db = createServiceClient()
+    const db = adminClient()
 
     const { error: deleteError } = await db
       .from('tool_connections')

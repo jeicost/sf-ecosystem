@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { resolveRequestClient, getSessionUser } from '@/lib/resolve-client'
 import { TENDER_CLIENTS, EMAIL_OPS_CLIENTS } from '@/lib/entitlements'
 import { ENTITLEMENT_TO_TOOL_ID, STANDARD_TOOLS } from './catalog'
@@ -29,7 +29,7 @@ function seededTools(clientId: string): Set<string> {
 /** Ids de módulos de operativa habilitados para esta marca. */
 export async function getEnabledTools(clientId: string): Promise<Set<string>> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     const { data, error } = await db
       .from('client_tools')
       .select('tool_id')

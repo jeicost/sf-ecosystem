@@ -23,6 +23,8 @@ interface ClientOverview {
   usage_tokens: number
   usage_cost_usd: number
   own_key: boolean
+  pending_proposals: number
+  oldest_proposal_days: number
   ai_budget_usd: number | null
   ai_budget_effective: number
   platform_cost_usd: number
@@ -30,7 +32,7 @@ interface ClientOverview {
 
 interface Overview {
   clients: ClientOverview[]
-  totals: { clients: number; reports: number; documents: number; usage_cost_usd: number }
+  totals: { clients: number; reports: number; documents: number; usage_cost_usd: number; proposals_waiting: number; proposals_stale: number }
   budget?: { gastado: number; limite: number; pct: number; estado: 'ok' | 'aviso' | 'bloqueado'; porRuta: Record<string, number>; llamadas: number } | null
 }
 
@@ -127,11 +129,18 @@ export default function SuperAdminPage() {
       </div>
 
       {/* StatCards */}
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
         <StatCard value={String(data.totals.clients)} label="Active clients" accent />
         <StatCard value={String(data.totals.reports)} label="Reports generated" />
         <StatCard value={String(data.totals.documents)} label="Documents" />
         <StatCard value={`$${data.totals.usage_cost_usd.toFixed(2)}`} label="AI spend this month" />
+        {/* Propuestas del Brain sin revisar en toda la agencia; «stale» = más de 14 días (ver chip por cliente). */}
+        <div className={`rounded-xl border p-5 ${data.totals.proposals_stale > 0 ? 'border-red-400/60 bg-red-500/5' : data.totals.proposals_waiting > 0 ? 'border-amber-400/60 bg-amber-500/5' : 'border-line bg-card'}`}>
+          <p className="text-3xl font-extrabold tracking-tight" style={{ color: data.totals.proposals_stale > 0 ? '#f87171' : data.totals.proposals_waiting > 0 ? '#fbbf24' : 'var(--text-primary)' }}>
+            {data.totals.proposals_waiting}
+          </p>
+          <p className="mt-1 font-mono text-[10px] uppercase tracking-[0.18em] text-ink-tertiary">Brain proposals waiting{data.totals.proposals_stale > 0 ? ` · ${data.totals.proposals_stale} stale` : ''}</p>
+        </div>
         {/* Freno de gasto diario (lib/ai/budget.ts): al 80 % avisa, al 100 % para todo menos Email Ops. */}
         {data.budget ? (
           <div className={`rounded-xl border p-5 ${data.budget.estado === 'bloqueado' ? 'border-red-400/60 bg-red-500/5' : data.budget.estado === 'aviso' ? 'border-amber-400/60 bg-amber-500/5' : 'border-line bg-card'}`}
@@ -206,6 +215,11 @@ export default function SuperAdminPage() {
                     {c.usage_cost_usd > 0 ? `$${c.usage_cost_usd.toFixed(2)} AI/month` : '—'}
                   </span>
                 </div>
+                {c.pending_proposals > 0 && (
+                  <p className={`mt-2 text-[10px] ${c.oldest_proposal_days >= 14 ? 'text-red-400' : 'text-amber-400'}`}>
+                    🧠 {c.pending_proposals} Brain proposal{c.pending_proposals === 1 ? '' : 's'} waiting · oldest {c.oldest_proposal_days} d
+                  </p>
+                )}
                 {/* Tope mensual de IA (lib/ai/budget.ts). Clic para cambiarlo: vacío = general, 0 = sin tope. */}
                 {c.ai_budget_effective > 0 && (
                   <div className="mt-2" onClick={(e) => { e.stopPropagation(); void editBudget(c) }} role="button" tabIndex={0}

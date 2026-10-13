@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
 
 // Informe de Valor mensual (Fase 2.2 del plan). La "factura emocional" que
@@ -30,7 +30,7 @@ function monthStart(): Date {
 }
 
 export async function getValueReport(clientId: string, locale: 'es' | 'en' = 'es'): Promise<ValueReport> {
-  const db = createServiceClient()
+  const db = adminClient()
   const since = monthStart().toISOString()
 
   const [reports, qa, approved, published, leads, usage, topRows] = await Promise.all([

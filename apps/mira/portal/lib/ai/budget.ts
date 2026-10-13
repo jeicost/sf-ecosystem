@@ -1,4 +1,5 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
+import type { Json } from '@/types/database.generated'
 import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
 
 // Freno de gasto de la clave de plataforma (Carlos, 6/7-oct-2026).
@@ -98,7 +99,7 @@ export function sumarGasto(filas: FilaUso[], desde: string): Gasto {
 
 async function gastoDesde(desde: Date, clientId?: string): Promise<Gasto | null> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     let q = db.from('mira_usage_log')
       .select('route,model,input_tokens,output_tokens,cache_creation_tokens,cache_read_tokens')
       .eq('used_client_key', false).gte('created_at', desde.toISOString()).limit(10000)
@@ -144,12 +145,12 @@ export async function estadoPresupuesto(): Promise<EstadoPresupuesto | null> {
 /** Una huella por periodo al pasar del 80 %: la lee el panel de la agencia. Nunca lanza. */
 async function dejarAviso(route: 'ai-budget' | 'ai-budget-cliente', desde: Date, meta: Record<string, unknown>, clientId?: string): Promise<void> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     let q = db.from('mira_activity').select('id', { count: 'exact', head: true }).eq('route', route).gte('created_at', desde.toISOString())
     if (clientId) q = q.eq('client_id', clientId)
     const { count } = await q
     if ((count ?? 0) > 0) return
-    await db.from('mira_activity').insert({ kind: 'action', route, client_id: clientId ?? null, meta })
+    await db.from('mira_activity').insert({ kind: 'action', route, client_id: clientId ?? null, meta: meta as Json })
     console.warn(`[${route}] ${JSON.stringify(meta)}`)
   } catch { /* telemetría */ }
 }
@@ -169,7 +170,7 @@ export type EstadoPresupuestoCliente = EstadoPresupuesto & { mes: string; porDef
 /** Tope mensual de la marca: clients.ai_budget_usd si está, si no el general. 0 = sin tope (BYO o acuerdo). */
 export async function limiteMensualCliente(clientId: string): Promise<{ limite: number; porDefecto: boolean }> {
   try {
-    const db = createServiceClient()
+    const db = adminClient()
     const { data } = await db.from('clients').select('ai_budget_usd').eq('id', clientId).maybeSingle()
     const v = data?.ai_budget_usd
     if (typeof v === 'number' && Number.isFinite(v) && v >= 0) return { limite: v, porDefecto: false }

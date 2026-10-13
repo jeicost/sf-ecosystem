@@ -10,7 +10,7 @@ import { useLocaleContext } from '@/app/locale-provider'
 import { withBrandName } from '@/components/ui/BrandName'
 import { t } from '@/lib/i18n'
 
-type ItemStatus = 'pending_review' | 'approved' | 'rejected' | 'draft'
+type ItemStatus = 'pending_review' | 'approved' | 'rejected' | 'draft' | 'published'
 
 interface CalendarItem {
   key: string
@@ -29,6 +29,10 @@ const STATUS_STYLE: Record<ItemStatus, { dot: string; chip: string; labelKey: st
   approved: { dot: 'bg-emerald-400', chip: 'bg-emerald-500/15 text-emerald-400', labelKey: 'calendar.status.approved' },
   rejected: { dot: 'bg-red-400', chip: 'bg-red-500/15 text-red-400', labelKey: 'calendar.status.rejected' },
   draft: { dot: 'bg-ink-tertiary', chip: 'bg-surface-hover text-ink-secondary', labelKey: 'calendar.status.draft' },
+  // Un ítem marcado como publicado desde la cola (/api/approvals/decide con
+  // mark) se pintaba como «pendiente»: normalizeQueueStatus lo tiraba al valor
+  // por defecto. Lo señaló la auditoría AS-IS (vocabularios distintos por pantalla).
+  published: { dot: 'bg-sky-400', chip: 'bg-sky-500/15 text-sky-400', labelKey: 'calendar.status.published' },
 }
 
 function platformIcon(platform: string | null): string {
@@ -42,6 +46,7 @@ function platformIcon(platform: string | null): string {
 function normalizeQueueStatus(status: string): ItemStatus {
   if (status === 'approved' || status === 'approved_with_edits') return 'approved'
   if (status === 'rejected') return 'rejected'
+  if (status === 'published') return 'published'
   return 'pending_review'
 }
 

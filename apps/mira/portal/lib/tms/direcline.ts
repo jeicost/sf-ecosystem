@@ -286,7 +286,10 @@ const n = (tag: string, v: string | number | boolean) => `<${tag}>${xmlEscape(v)
  * el servicio. El GUID se añade al enviar (no se guarda en la auditoría).
  */
 export function construirXmlExpedicion(e: Expedicion, metodo: DireclineConfig['metodo'], guid = '{GUID}'): string {
-  const pais = e.recogida.cp ? 'ESPAÑA' : 'ESPAÑA'
+  // Direcline (13-oct-2026): el país acepta el nombre o el código de dos letras
+  // («ESPAÑA» y «ES» valen). Los envíos internacionales no pasan por aquí: el
+  // tipo de servicio no tiene mapeo y la persona los graba a mano.
+  const pais = 'ESPAÑA'
   const bulto = `<bulto>${n('numero', 1)}${n('alto', 0)}${n('ancho', 0)}${n('largo', 0)}${n('peso', e.pesoKg)}${n('codigoContenido', e.contenido)}${n('observacion', '')}${n('referencia', '')}</bulto>`
   const comunes = [
     n('remitente', e.remitente), n('recogidaReferencia', e.recogidaReferencia),
@@ -423,7 +426,12 @@ export async function leerWsdl(baseUrl: string): Promise<string> {
   return res.text()
 }
 
-/** Inicia sesión y devuelve el GUID. Si el usuario «ya tiene una sesión abierta» (1401), la cierra y reintenta. */
+/**
+ * Inicia sesión y devuelve el GUID. Direcline (13-oct-2026): si la sesión del
+ * usuario ya está abierta, ValidarUsuario devuelve su GUID, así que no hace
+ * falta desconectar tras cada operación. El 1401 («sesión abierta») se mantiene
+ * como red de seguridad: se cierra y se reintenta una vez.
+ */
 export async function validarUsuario(conn: ConexionDirecline): Promise<string> {
   const intento = async () => {
     const xml = conn.culture

@@ -5,7 +5,7 @@ import { decryptSecret } from '@/lib/crypto'
 import { toJson } from '@/lib/db-json'
 import {
   normalizarConfig, expedicionDesdeParte, faltanParaGrabar, construirXmlExpedicion, hashXml, METODO_SOAP,
-  validarUsuario, desconectarUsuario, llamarMetodoXml, parseGrabacion, obtenerExpedicionPorNumero, DireclineError,
+  validarUsuario, llamarMetodoXml, parseGrabacion, obtenerExpedicionPorNumero, DireclineError,
   type ConexionDirecline, type Expedicion, type TicketParaTms,
 } from '@/lib/tms/direcline'
 
@@ -56,10 +56,9 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     } catch (e) {
       const err = e instanceof DireclineError ? { code: e.codigo, message: e.message } : { code: 'ERR', message: errorMessage(e) }
       await db.from('tms_dispatches').insert({ client_id: access.clientId, ticket_id: id, connection_id: c.id, method: metodo, request_xml: xml, response_xml: null, ok: false, error_code: err.code, error_message: err.message.slice(0, 500), sent_by: access.userId })
-      await desconectarUsuario(c.conn)
       return NextResponse.json({ error: err.message, code: err.code }, { status: 502 })
     }
-    await desconectarUsuario(c.conn)
+    // La sesión se queda abierta a propósito (ver app/api/email-ops/tms/route.ts).
     const resultado = parseGrabacion(respuesta)
     const tmsRef = { provider: 'direcline', metodo, ...resultado, sent_at: new Date().toISOString(), sent_by: access.userId, xml_hash: hashXml(xml) }
     await db.from('tms_dispatches').insert({ client_id: access.clientId, ticket_id: id, connection_id: c.id, method: metodo, request_xml: xml, response_xml: respuesta.slice(0, 20000), ok: true, sent_by: access.userId })
@@ -84,11 +83,9 @@ export async function GET(req: NextRequest, ctx: { params: Promise<{ id: string 
     const c = await conexionDe(access.clientId)
     if (!c) return NextResponse.json({ error: 'No operations program connected' }, { status: 400 })
     const guid = await validarUsuario(c.conn)
-    try {
-      const estado = await obtenerExpedicionPorNumero(c.conn, guid, ref.expedicion)
-      await db.from('email_tickets').update({ tms_status: estado.estado || ticket.tms_status, updated_at: new Date().toISOString() }).eq('id', id)
-      return NextResponse.json({ ok: true, estado })
-    } finally { await desconectarUsuario(c.conn) }
+    const estado = await obtenerExpedicionPorNumero(c.conn, guid, ref.expedicion)
+    await db.from('email_tickets').update({ tms_status: estado.estado || ticket.tms_status, updated_at: new Date().toISOString() }).eq('id', id)
+    return NextResponse.json({ ok: true, estado })
   } catch (error) {
     return NextResponse.json({ error: error instanceof DireclineError ? error.message : errorMessage(error) }, { status: 502 })
   }

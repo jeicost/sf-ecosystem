@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 
 export interface UnifiedGeneration {
   id: string
@@ -16,7 +16,7 @@ export async function getUnifiedHistory(
   clientId: string,
   limit: number = 10
 ): Promise<UnifiedGeneration[]> {
-  const db = createServiceClient()
+  const db = adminClient()
   const results: UnifiedGeneration[] = []
 
   try {

@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { decryptSecret } from '@/lib/crypto'
 
 /**
@@ -22,7 +22,7 @@ export async function getClientApiKey(
       return defaultKey || null
     }
 
-    const db = createServiceClient()
+    const db = adminClient()
 
     // Query tool_connections for the client's specific tool integration
     const { data: connection, error } = await db
@@ -51,10 +51,9 @@ export async function getClientApiKey(
     }
 
     // Try to extract API key from metadata first (encrypted or plaintext)
-    const apiKey =
-      connection.metadata?.api_key ||
-      connection.metadata?.apiKey ||
-      connection.auth_token
+    // metadata es jsonb sin forma declarada: aquí solo nos interesan dos claves.
+    const meta = (connection.metadata ?? null) as { api_key?: string; apiKey?: string } | null
+    const apiKey = meta?.api_key || meta?.apiKey || connection.auth_token
 
     if (!apiKey) {
       console.warn(

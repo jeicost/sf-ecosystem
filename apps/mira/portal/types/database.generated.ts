@@ -2087,10 +2087,12 @@ export type Database = {
           auto_sync_enabled: boolean
           client_id: string
           created_at: string | null
+          file_errors: Json
           files_synced: number | null
           folder_id: string
           folder_name: string | null
           id: string
+          last_error: string | null
           last_synced_at: string | null
           project_id: string | null
           purpose: string | null
@@ -2100,10 +2102,12 @@ export type Database = {
           auto_sync_enabled?: boolean
           client_id: string
           created_at?: string | null
+          file_errors?: Json
           files_synced?: number | null
           folder_id: string
           folder_name?: string | null
           id?: string
+          last_error?: string | null
           last_synced_at?: string | null
           project_id?: string | null
           purpose?: string | null
@@ -2113,10 +2117,12 @@ export type Database = {
           auto_sync_enabled?: boolean
           client_id?: string
           created_at?: string | null
+          file_errors?: Json
           files_synced?: number | null
           folder_id?: string
           folder_name?: string | null
           id?: string
+          last_error?: string | null
           last_synced_at?: string | null
           project_id?: string | null
           purpose?: string | null

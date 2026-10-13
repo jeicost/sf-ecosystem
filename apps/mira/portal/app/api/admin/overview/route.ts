@@ -5,6 +5,10 @@ import { estimateCostUsdWithCache } from '@/lib/anthropic-client'
 import { estadoPresupuesto, CLIENT_MONTHLY_BUDGET_USD, inicioDeMesMadrid } from '@/lib/ai/budget'
 
 // Panel Super Admin: visión agregada de todos los clientes.
+// Una propuesta del Brain pendiente más de esto cuenta como «atascada»: la
+// auditoría AS-IS (16-sep) encontró una de 33 días; el 13-oct había una de 61.
+const PROPOSAL_STALE_DAYS = 14
+
 export async function GET() {
   try {
     const user = await getSessionUser()
@@ -17,7 +21,7 @@ export async function GET() {
     monthStart.setDate(1)
     monthStart.setHours(0, 0, 0, 0)
 
-    const [clientsRes, queueRes, driveRes, usageRes] = await Promise.all([
+    const [clientsRes, queueRes, driveRes, usageRes, proposalsRes] = await Promise.all([
       admin.from('clients').select('id, name, slug, logo_url, primary_color, status, ai_budget_usd').order('name'),
       admin
         .from('generation_queue')
@@ -29,11 +33,20 @@ export async function GET() {
         .select('client_id, model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
         // Mes de Madrid, el mismo que aplica el freno (lib/ai/budget.ts): así la cifra del panel es la que corta.
         .gte('created_at', inicioDeMesMadrid().toISOString()),
+      // Propuestas del Brain sin revisar, por cliente: el resumen cross-cliente
+      // (lib/brain-proposals-sentinel.ts) existía desde julio y nadie lo pintaba.
+      admin
+        .from('brain_change_proposals')
+        .select('client_id, created_at')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: true }),
     ])
 
     const queue = queueRes.data || []
     const drive = driveRes.data || []
     const usage = usageRes.data || []
+    const proposals = proposalsRes.data || []
+    const ahora = Date.now()
 
     const clients = (clientsRes.data || []).map((c) => {
       const rows = queue.filter((q) => q.client_id === c.id)
@@ -45,6 +58,7 @@ export async function GET() {
         : null
       const driveRows = drive.filter((d) => d.client_id === c.id)
       const clientUsage = usage.filter((u) => u.client_id === c.id)
+      const clientProposals = proposals.filter((p) => p.client_id === c.id)
       const costUsd = clientUsage.reduce(
         (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0),
         0
@@ -64,6 +78,10 @@ export async function GET() {
         usage_tokens: clientUsage.reduce((s, u) => s + u.input_tokens + u.output_tokens, 0),
         usage_cost_usd: Math.round(costUsd * 100) / 100,
         own_key: clientUsage.some((u) => u.used_client_key),
+        pending_proposals: clientProposals.length,
+        oldest_proposal_days: clientProposals[0]?.created_at
+          ? Math.floor((ahora - new Date(clientProposals[0].created_at).getTime()) / 86_400_000)
+          : 0,
         // Tope mensual: el propio de la marca o el general; el gasto que cuenta es el de la clave de plataforma.
         ai_budget_usd: typeof c.ai_budget_usd === 'number' ? c.ai_budget_usd : null,
         ai_budget_effective: typeof c.ai_budget_usd === 'number' ? c.ai_budget_usd : CLIENT_MONTHLY_BUDGET_USD,
@@ -77,6 +95,8 @@ export async function GET() {
       reports: clients.reduce((s, c) => s + c.reports, 0),
       documents: clients.reduce((s, c) => s + c.documents, 0),
       usage_cost_usd: Math.round(clients.reduce((s, c) => s + c.usage_cost_usd, 0) * 100) / 100,
+      proposals_waiting: clients.reduce((s, c) => s + c.pending_proposals, 0),
+      proposals_stale: clients.filter((c) => c.oldest_proposal_days >= PROPOSAL_STALE_DAYS).length,
     }
 
     // Freno de gasto diario (lib/ai/budget.ts): lo gastado hoy con la clave de plataforma frente al tope.

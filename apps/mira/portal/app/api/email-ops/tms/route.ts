@@ -3,7 +3,7 @@ import { adminClient } from '@/lib/supabase'
 import { requireEmailOps, errorMessage } from '@/lib/email-ops/auth'
 import { encryptSecret, decryptSecret, isEncryptionConfigured } from '@/lib/crypto'
 import { toJson, writable } from '@/lib/db-json'
-import { normalizarConfig, leerWsdl, namespaceDeWsdl, validarUsuario, desconectarUsuario, obtenerEstructuraXml, DireclineError, type ConexionDirecline } from '@/lib/tms/direcline'
+import { normalizarConfig, leerWsdl, namespaceDeWsdl, validarUsuario, obtenerEstructuraXml, DireclineError, type ConexionDirecline } from '@/lib/tms/direcline'
 
 // Conexión de la marca con su programa operativo (Direcline). La contraseña se
 // escribe una vez, se prueba contra el servicio (ValidarUsuario) y se guarda
@@ -48,7 +48,10 @@ export async function PUT(req: NextRequest) {
     if (!/^https?:\/\/.+\.asmx$/i.test(baseUrl)) return NextResponse.json({ error: 'La URL debe ser la del servicio .asmx (…/WsUtilidades/ControladorUtilidades.asmx)' }, { status: 400 })
     if (!username || !password) return NextResponse.json({ error: 'Usuario y contraseña requeridos' }, { status: 400 })
 
-    // Prueba real: WSDL (namespace) + inicio y cierre de sesión. Nada se graba en el programa.
+    // Prueba real: WSDL (namespace) + inicio de sesión. Nada se graba en el programa.
+    // No se desconecta: Direcline (13-oct) confirma que ValidarUsuario devuelve el
+    // GUID de la sesión abierta si la hay, así que cerrar no hace falta y, con dos
+    // operaciones a la vez, una desconexión mataría la sesión de la otra.
     let namespace = existing?.namespace || null
     let testError: string | null = null
     let estructura: string | null = null
@@ -60,7 +63,6 @@ export async function PUT(req: NextRequest) {
         const metodo = body.metodo === 'GuardarExpedicion' ? 'GuardarExpedicion' : 'GrabarExpedicionSolicitud'
         estructura = await obtenerEstructuraXml(conn, guid, metodo)
       }
-      await desconectarUsuario(conn)
     } catch (e) {
       testError = e instanceof DireclineError ? e.message : errorMessage(e)
     }

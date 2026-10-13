@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { getSessionUser, userCanAccessClient } from '@/lib/resolve-client'
 import { NextRequest, NextResponse } from 'next/server'
 
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const supabase = createServiceClient()
+    const supabase = adminClient()
     const { data, error } = await supabase
       .from('agent_settings')
       .select('autonomy, tone_level')
@@ -83,7 +83,7 @@ export async function PUT(request: NextRequest) {
   }
 
   try {
-    const supabase = createServiceClient()
+    const supabase = adminClient()
 
     // Upsert: try delete first (if exists), then insert
     await supabase

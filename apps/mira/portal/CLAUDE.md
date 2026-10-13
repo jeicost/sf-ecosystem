@@ -209,4 +209,18 @@ real de producción. Esto lo evita.
   «Probar conexión» y «Ver estructura XML» desde Settings con las credenciales
   del proveedor (no graban nada); después un parte de prueba con pendiente de
   validar activado.
+- Respuestas de Direcline (13-oct-2026): la URL del servicio de GTD la tiene
+  Carlos (repo PÚBLICO: no va aquí; se pega en Settings → «Programa
+  operativo»). Sirve el WSDL, namespace `http://www.direcline.com/`, y expone
+  también `ConsultaPoblacion`, útil contra el error 900. El usuario del web service es
+  uno normal de DL-Trans sin caducidad, con todos los métodos. ValidarUsuario
+  devuelve el GUID de la sesión ya abierta: NO desconectamos tras cada
+  operación (el 1401 queda como red de seguridad). País: «ESPAÑA» o «ES».
+  Método: GuardarExpedicion si solo recoge GTD; GrabarExpedicionSolicitud si
+  puede haber solicitudes a una vía (el programa decide) → nuestro valor por
+  defecto. ⚠️ `forzar_pendiente_validar` NO impide la transmisión a la vía: el
+  envío se transmite siempre y, al no circular, la vía lo anula sola. Las
+  pruebas van contra un cliente interno de GTD avisando a operaciones. El
+  filtrado por IP (Vercel no tiene IP fija) lo decide la informática de GTD,
+  no Direcline.
 

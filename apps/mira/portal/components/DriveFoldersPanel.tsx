@@ -19,6 +19,10 @@ interface FolderRow {
   sync_status: string
   last_synced_at: string | null
   files_synced: number
+  /** Motivo del último fallo de carpeta (migración 0094); null si la última pasada fue bien. */
+  last_error?: string | null
+  /** Ficheros que no se pudieron leer en la última pasada, con su motivo. */
+  file_errors?: Array<{ name: string; path?: string; reason: string }>
 }
 
 export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
@@ -215,15 +219,27 @@ export default function DriveFoldersPanel({ clientId }: { clientId: string }) {
                     {f.last_synced_at
                       ? ` · ${f.files_synced} docs · synced ${new Date(f.last_synced_at).toLocaleString('en-US')}`
                       : ' · never synced'}
-                    {f.sync_status === 'error' && ' · ⚠️ last sync failed'}
+                    {f.sync_status === 'error' && ` · ⚠️ last sync failed${f.last_error ? `: ${f.last_error}` : ''}`}
+                    {f.sync_status !== 'error' && (f.file_errors?.length ?? 0) > 0 && ` · ⚠️ ${f.file_errors!.length} file${f.file_errors!.length === 1 ? '' : 's'} could not be read`}
                   </p>
+                  {/* Motivo por fichero: antes solo existía en el log del servidor y el panel decía «failed» a secas. */}
+                  {(f.file_errors?.length ?? 0) > 0 && (
+                    <details className="mt-1">
+                      <summary className="cursor-pointer text-[10px] text-amber-400">Which files and why</summary>
+                      <ul className="mt-1 space-y-0.5 text-[10px] text-ink-tertiary">
+                        {f.file_errors!.map((e, i) => (
+                          <li key={i}><span className="text-ink-secondary">{e.path || e.name}</span> — {e.reason}</li>
+                        ))}
+                      </ul>
+                    </details>
+                  )}
                 </div>
                 <button
                   onClick={() => handleSync(f.id)}
                   disabled={syncing !== null}
                   className="px-3 py-1.5 rounded text-[10px] font-medium bg-surface hover:bg-surface-hover disabled:opacity-40 text-ink transition"
                 >
-                  {syncing === f.id ? 'Syncing…' : '↻ Sync now'}
+                  {syncing === f.id ? 'Syncing…' : f.sync_status === 'error' || (f.file_errors?.length ?? 0) > 0 ? '↻ Retry' : '↻ Sync now'}
                 </button>
                 <button
                   onClick={() => handleDelete(f.id)}

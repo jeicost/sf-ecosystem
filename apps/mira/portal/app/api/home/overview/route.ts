@@ -35,7 +35,7 @@ export async function GET(req: NextRequest) {
     monthStart.setDate(1)
     monthStart.setHours(0, 0, 0, 0)
 
-    const [clientRes, queueRes, approvalsRes, usageRes, projectsRes, queueCountRes] = await Promise.all([
+    const [clientRes, queueRes, approvalsRes, usageRes, projectsRes, queueCountRes, proposalsRes] = await Promise.all([
       // NB: sin 'settings' — la columna no existe aún en prod (migración 0035 pendiente)
       admin
         .from('clients')
@@ -74,6 +74,16 @@ export async function GET(req: NextRequest) {
         .select('id', { count: 'exact', head: true })
         .eq('client_id', clientId)
         .eq('status', 'completed'),
+      // Propuestas del Brand Brain sin revisar. Existían en BD (y un resumen
+      // cross-cliente en lib/brain-proposals-sentinel.ts) pero ninguna pantalla
+      // las contaba: el 13-oct la más vieja llevaba 61 días. Cuenta + edad.
+      admin
+        .from('brain_change_proposals')
+        .select('created_at', { count: 'exact' })
+        .eq('client_id', clientId)
+        .eq('status', 'pending')
+        .order('created_at', { ascending: true })
+        .limit(1),
     ])
 
     if (clientRes.error || !clientRes.data) {
@@ -115,6 +125,10 @@ export async function GET(req: NextRequest) {
         reports_month: reports.filter((r) => (r.created_at ?? '') >= monthIso).length,
         documents_total: documents.length,
         pending_approvals: approvalsRes.count ?? 0,
+        pending_proposals: proposalsRes.count ?? 0,
+        oldest_proposal_days: proposalsRes.data?.[0]?.created_at
+          ? Math.floor((Date.now() - new Date(proposalsRes.data[0].created_at).getTime()) / 86_400_000)
+          : null,
         usage_cost_usd: Math.round(usageCost * 100) / 100,
       },
       // Tope mensual de IA de la marca (lib/ai/budget.ts): lo gastado este mes

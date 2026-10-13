@@ -8,18 +8,18 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Syne } from 'next/font/google'
-import { Loader2, ArrowRight, Plus, ChevronRight, Pin, Lock, X } from 'lucide-react'
+import { Loader2, ArrowRight, Plus, ChevronRight, Lock, X } from 'lucide-react'
 import { getUser, isSuperAdmin } from '@/lib/auth'
 import { useActiveClient } from '@/lib/client-context'
-import { useActiveProject } from '@/lib/project-context'
 import { useLocaleContext } from '@/app/locale-provider'
 import { t } from '@/lib/i18n'
 import { TOOLKIT_TOOLS } from '@/lib/toolkit-tools'
 import { DEPARTMENT_METADATA } from '@/lib/department-meta'
-import { minPlanForSection } from '@/lib/plans'
+import { canAccessSection, minPlanForSection, planLabel } from '@/lib/plans'
 import { safeLookup } from '@/lib/safe-lookup'
 import OnboardingModal from '@/components/onboarding-modal'
 import WeeklyReportCard from '@/components/WeeklyReportCard'
+import ProjectsGrid from '@/components/ProjectsGrid'
 import { isIdealUI } from '@/lib/sections'
 
 const syne = Syne({ subsets: ['latin'], weight: ['600', '700', '800'] })
@@ -46,6 +46,8 @@ interface Overview {
     reports_month: number
     documents_total: number
     pending_approvals: number
+    pending_proposals: number
+    oldest_proposal_days: number | null
     usage_cost_usd: number
   }
   ai_budget?: { gastado: number; limite: number; pct: number; estado: 'ok' | 'aviso' | 'bloqueado'; mes: string } | null
@@ -77,6 +79,10 @@ function toolMeta(slug: string, locale: 'es' | 'en') {
 function fmtDate(iso: string, locale: 'es' | 'en') {
   return new Date(iso).toLocaleDateString(locale === 'es' ? 'es-ES' : 'en-US', { day: 'numeric', month: 'short' })
 }
+
+// Una propuesta del Brain que lleva más de esto sin revisar pasa a rojo en la
+// tarjeta de la home: es el «¿quién revisa esto?» de la auditoría AS-IS.
+const PROPOSAL_STALE_DAYS = 14
 
 // ─── Carrusel horizontal de entregables ──────────────────────
 function Carousel({
@@ -245,11 +251,11 @@ function BudgetCard({ b, brand, locale }: { b: NonNullable<Overview['ai_budget']
 export default function HomePage() {
   const router = useRouter()
   const { activeClient, loading: clientLoading } = useActiveClient()
-  const { activeProject, setActiveProject } = useActiveProject()
   const { locale } = useLocaleContext()
   const [data, setData] = useState<Overview | null>(null)
   const [error, setError] = useState<string | null>(null)
   const superAdmin = isSuperAdmin(getUser())
+  const plan = getUser()?.plan
 
   useEffect(() => {
     // Esperar a que ClientProvider resuelva el cliente activo real (localStorage
@@ -368,7 +374,7 @@ export default function HomePage() {
       {isIdealUI() && <WeeklyReportCard clientId={data.client.id} brand={brand} />}
 
       {/* Analíticas clave */}
-      <div className="mb-10 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      <div className="mb-10 grid grid-cols-2 gap-3 lg:grid-cols-5">
         <StatCard value={String(data.stats.reports_total)} label={t('home.stat-deliverables', locale)}
           hint={data.stats.reports_month > 0 ? t('home.stat-month-hint', locale).replace('{count}', String(data.stats.reports_month)) : undefined}
           href="/toolkit" brand={brand} />
@@ -376,6 +382,14 @@ export default function HomePage() {
         <StatCard value={String(data.stats.pending_approvals)} label={t('home.stat-pending', locale)}
           hint={data.stats.pending_approvals > 0 ? t('home.stat-needs-review', locale) : t('home.stat-all-clear', locale)}
           href="/approvals" brand={brand} alert={data.stats.pending_approvals > 0} />
+        {/* Propuestas del Brand Brain sin revisar: ámbar si hay alguna, rojo si la más vieja pasa de PROPOSAL_STALE_DAYS. */}
+        <StatCard value={String(data.stats.pending_proposals)} label={t('home.stat-proposals', locale)}
+          hint={data.stats.pending_proposals > 0
+            ? t('home.stat-proposals-oldest', locale).replace('{days}', String(data.stats.oldest_proposal_days ?? 0))
+            : t('home.stat-all-clear', locale)}
+          href="/brand-brain" brand={brand}
+          alert={data.stats.pending_proposals > 0 && (data.stats.oldest_proposal_days ?? 0) < PROPOSAL_STALE_DAYS}
+          danger={data.stats.pending_proposals > 0 && (data.stats.oldest_proposal_days ?? 0) >= PROPOSAL_STALE_DAYS} />
         {/* Consumo de IA del mes frente al tope de la marca (30 $/mes por defecto): barra, aviso al 80 %, bloqueo al 100 %. */}
         {data.ai_budget && data.ai_budget.limite > 0 ? (
           <BudgetCard b={data.ai_budget} brand={brand} locale={locale} />
@@ -395,82 +409,9 @@ export default function HomePage() {
         emptyText={t('home.empty-documents', locale)} emptyCta={{ label: t('home.empty-documents-cta', locale), href: '/documents' }}
         brand={brand} />
 
-      {/* Proyectos */}
+      {/* Proyectos: la misma rejilla que /projects (components/ProjectsGrid) */}
       <div className="mb-10">
-        <div className="mb-3 flex items-center justify-between">
-          <p className="font-mono text-[10px] font-semibold uppercase tracking-[0.2em] text-ink-tertiary">
-            {t('home.projects-title', locale)}
-          </p>
-          <Link href="/projects/new"
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-medium transition-all hover:bg-surface-hover"
-            style={{ color: brand }}>
-            <Plus size={12} /> {t('home.new-project', locale)}
-          </Link>
-        </div>
-
-        {data.projects.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-line-subtle bg-surface py-8 text-center">
-            <p className="mb-1 text-xs text-ink-tertiary">{t('home.projects-empty-title', locale)}</p>
-            <p className="mb-3 text-[11px] text-ink-muted">{t('home.projects-empty-desc', locale)}</p>
-            <Link href="/projects/new" className="inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-medium"
-              style={{ background: `${brand}20`, color: brand, border: `1px solid ${brand}30` }}>
-              <Plus size={12} /> {t('home.projects-empty-cta', locale)}
-            </Link>
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {data.projects.map((p) => {
-              const isActive = activeProject?.id === p.id
-              const togglePin = () =>
-                setActiveProject(isActive ? null : { id: p.id, name: p.name, slug: p.slug, status: p.status })
-              return (
-                // El click en la card fija/desfija el proyecto activo; el link
-                // al detalle va aparte (abajo a la derecha) para no mezclar gestos.
-                <div key={p.id}
-                  role="button" tabIndex={0}
-                  onClick={togglePin}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePin() } }}
-                  title={isActive ? t('projects.unset-active', locale) : t('projects.set-active', locale)}
-                  className="group cursor-pointer rounded-2xl border p-4 transition-all hover:-translate-y-0.5"
-                  style={{
-                    background: isActive ? `${brand}0d` : 'var(--bg-surface)',
-                    borderColor: isActive ? `${brand}66` : 'var(--border)',
-                  }}
-                  onMouseEnter={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.borderColor = `${brand}45` }}
-                  onMouseLeave={(e) => { if (!isActive) (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)' }}>
-                  <div className="mb-2 flex items-start justify-between gap-2">
-                    <p className="text-sm font-semibold text-ink">{p.name}</p>
-                    {isActive ? (
-                      <span className="flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-medium"
-                        style={{ background: `${brand}22`, color: brand }}>
-                        <Pin size={9} /> {t('projects.active-badge', locale)}
-                      </span>
-                    ) : (
-                      <span className="shrink-0 rounded-full px-2 py-0.5 text-[9px] font-medium"
-                        style={p.status === 'paused'
-                          ? { background: 'rgba(245,158,11,0.12)', color: '#fbbf24' }
-                          : { background: 'rgba(34,197,94,0.1)', color: '#4ade80' }}>
-                        {t(`projects.status.${p.status}`, locale)}
-                      </span>
-                    )}
-                  </div>
-                  {p.description && (
-                    <p className="mb-3 line-clamp-2 text-[11px] text-ink-muted">{p.description}</p>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-ink-muted">{fmtDate(p.created_at, locale)}</span>
-                    <Link href={`/projects/${p.slug}`}
-                      onClick={(e) => e.stopPropagation()}
-                      className="flex items-center gap-1 text-[10px] font-medium transition-opacity hover:opacity-80"
-                      style={{ color: brand }}>
-                      {t('projects.view-detail', locale)} <ArrowRight size={11} />
-                    </Link>
-                  </div>
-                </div>
-              )
-            })}
-          </div>
-        )}
+        <ProjectsGrid projects={data.projects} brand={brand} locale={locale} />
       </div>
 
       {/* Equipos */}
@@ -479,9 +420,16 @@ export default function HomePage() {
           {t('home.your-teams', locale)}
         </p>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
-          {Object.values(DEPARTMENT_METADATA).map((dept) => (
+          {Object.values(DEPARTMENT_METADATA).map((dept) => {
+            // Mismo criterio que el menú: lo que el plan no incluye no se esconde
+            // (es upsell), pero lleva candado y el nombre del plan que lo trae. La
+            // auditoría AS-IS (16-sep) señaló que la home «prometía cinco equipos»
+            // y Finanzas no abría en Growth.
+            const locked = !canAccessSection(plan, dept.slug)
+            const requiredPlan = locked ? planLabel(minPlanForSection(dept.slug)) : ''
+            return (
             <Link key={dept.slug} href={dept.href}
-              className="group flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 transition-all duration-200"
+              className={`group flex items-center gap-3 rounded-2xl border border-line bg-surface p-4 transition-all duration-200${locked ? ' opacity-70' : ''}`}
               onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.borderColor = `${dept.color}40` }}
               onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.borderColor = 'var(--border)' }}>
               <div className="flex h-10 w-10 items-center justify-center rounded-xl text-lg"
@@ -490,13 +438,18 @@ export default function HomePage() {
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[13px] font-semibold text-ink">{locale === 'es' ? dept.nameEs : dept.name}</p>
-                <p className="text-[10px] text-ink-muted">
-                  {dept.count > 0 ? t('home.agents-count', locale).replace('{count}', String(dept.count)) : t('home.tools', locale)}
+                <p className="flex items-center gap-1 text-[10px] text-ink-muted">
+                  {locked
+                    ? <><Lock size={9} /> {t('home.team-locked', locale).replace('{plan}', requiredPlan)}</>
+                    : dept.count > 0 ? t('home.agents-count', locale).replace('{count}', String(dept.count)) : t('home.tools', locale)}
                 </p>
               </div>
-              <ArrowRight size={12} className="shrink-0 transition-transform group-hover:translate-x-1" style={{ color: dept.color }} />
+              {locked
+                ? <Lock size={12} className="shrink-0 text-ink-muted" />
+                : <ArrowRight size={12} className="shrink-0 transition-transform group-hover:translate-x-1" style={{ color: dept.color }} />}
             </Link>
-          ))}
+            )
+          })}
         </div>
       </div>
       </>

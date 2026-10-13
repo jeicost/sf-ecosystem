@@ -1,5 +1,5 @@
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 
 /**
  * ─── MAGNIFIC / FREEPIK — MEJORA Y ESCALADO DE IMÁGENES ──────────────────
@@ -88,7 +88,7 @@ export async function upscaleAndStoreImage(
     }
     const outputBuffer = Buffer.from(await res.arrayBuffer())
 
-    const db = createServiceClient()
+    const db = adminClient()
     const storagePath = `clients/${clientId}/upscaled/${actionId}/${Date.now()}.jpg`
     const { error: uploadError } = await db.storage
       .from(VISUAL_BUCKET)

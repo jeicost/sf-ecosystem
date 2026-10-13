@@ -1,4 +1,4 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { FINANZAS_DEPT_AGENTS, OPERACIONES_DEPT_AGENTS, STRATEGY_DEPT_AGENTS } from '@/lib/agent-meta'
 import { HOT_SCORE_THRESHOLD } from '@/lib/constants'
 
@@ -23,7 +23,7 @@ export interface DepartmentStats {
  * Get real stats for each department from Supabase
  */
 export async function getDepartmentStats(clientId: string): Promise<Record<string, DepartmentStats>> {
-  const db = createServiceClient()
+  const db = adminClient()
 
   // 9 independent counts ran sequentially before (one await per query, no
   // Promise.all) -- a fixed ~9x round-trip latency tax on every single
@@ -158,7 +158,7 @@ export async function getDepartmentStats(clientId: string): Promise<Record<strin
  * Get agent status from most recent activity
  */
 export async function getAgentStatus(clientId: string, agentRole: string): Promise<'active' | 'idle' | 'offline'> {
-  const db = createServiceClient()
+  const db = adminClient()
 
   try {
     const { data } = await db
@@ -170,7 +170,7 @@ export async function getAgentStatus(clientId: string, agentRole: string): Promi
       .limit(1)
       .single()
 
-    if (!data) return 'offline'
+    if (!data?.started_at) return 'offline'
 
     const lastActivityTime = new Date(data.started_at).getTime()
     const oneHourAgo = Date.now() - 3600000

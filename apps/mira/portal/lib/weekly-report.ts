@@ -1,4 +1,5 @@
-import { createServiceClient } from '@/lib/supabase-admin'
+import type { SupabaseClient } from '@supabase/supabase-js'
+import { adminClient } from '@/lib/supabase'
 
 // Parte Semanal (Fase 2 del plan del asesor, su prioridad nº2). Lee los datos
 // que el raíl —ya cerrado— captura: producido, pendiente de aprobar, aprobado
@@ -20,13 +21,17 @@ export interface WeeklyReport {
 const WEEK_MS = 7 * 24 * 60 * 60 * 1000
 
 export async function getWeeklyReport(clientId: string): Promise<WeeklyReport> {
-  const db = createServiceClient()
+  const db = adminClient()
+  // El contador recibe la tabla y la columna de fecha como cadenas: para el
+  // cliente tipado eso es un nombre de tabla desconocido, así que esta consulta
+  // genérica va sin tipar a propósito (el resto del fichero sí lo está).
+  const raw = db as unknown as SupabaseClient
   const since = new Date(Date.now() - WEEK_MS).toISOString()
 
   const countSince = async (
     table: string, dateCol: string, filter?: (q: any) => any
   ): Promise<number> => {
-    let q = db.from(table).select('id', { count: 'exact', head: true })
+    let q = raw.from(table).select('id', { count: 'exact', head: true })
       .eq('client_id', clientId).gte(dateCol, since)
     if (filter) q = filter(q)
     const { count } = await q

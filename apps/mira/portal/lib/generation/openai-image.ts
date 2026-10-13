@@ -1,7 +1,7 @@
 // OpenAI image generation for visual quick actions.
 // Generates an image from a prompt and stores it in the generated-assets bucket.
 
-import { createServiceClient } from '@/lib/supabase-admin'
+import { adminClient } from '@/lib/supabase'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 import { logUsage } from '@/lib/anthropic-client'
 import { hasImageQuota, ImageQuotaExceededError, getImageQuotaStatus } from '@/lib/image-quota-server'
@@ -122,7 +122,7 @@ export async function generateAndStoreImage(
     }
 
     const buffer = Buffer.from(b64, 'base64')
-    const db = createServiceClient()
+    const db = adminClient()
 
     // Ensure bucket exists (no-op if already created)
     const { data: buckets } = await db.storage.listBuckets()
