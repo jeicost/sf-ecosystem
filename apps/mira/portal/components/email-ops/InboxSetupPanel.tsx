@@ -1,5 +1,6 @@
 'use client'
 import { useCallback, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { Copy, Check, Plus, Mail, Loader2, Power, Plug, RefreshCw, AlertTriangle } from 'lucide-react'
 import { clsx } from 'clsx'
 import { t, type Locale } from '@/lib/i18n'
@@ -89,6 +90,13 @@ export default function InboxSetupPanel({ clientId, locale, brand, compact, refr
         {loading && <Loader2 size={14} className="animate-spin text-ink-muted" />}
       </div>
       {!compact && <p className="mb-4 text-xs text-ink-tertiary">{t('emailops.setup.desc', locale)}</p>}
+      {/* La conexión directa (Microsoft 365 / IMAP) vive en Settings; desde la
+          bandeja no se veía y la gente buscaba el botón aquí (Carlos, 13-oct). */}
+      {canManage && compact && (
+        <Link href="/email-ops/settings" className="mb-3 flex items-center gap-2 rounded-lg px-3 py-2 text-xs font-medium text-white" style={{ background: brand }}>
+          <Plug size={13} /> {t('emailops.setup.connect-direct', locale)}
+        </Link>
+      )}
       {/* El aviso del dominio de reenvío solo importa si este cliente va a usar
           reenvío. Con un buzón leído por IMAP, salía un aviso ámbar que parecía
           una avería y no lo era. */}

@@ -2328,7 +2328,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'emailops.detail.processing': 'Procesando…',
     'emailops.detail.failed': 'Fallo al procesar',
     'emailops.empty.title': 'Aún no ha llegado ningún correo',
-    'emailops.empty.desc': 'Reenvía (o crea una regla de reenvío automático) los correos de encargos a la dirección de tu departamento. En cuanto llegue el primero aparecerá aquí como ticket.',
+    'emailops.empty.desc': 'Conecta el buzón de operaciones (Microsoft 365 o IMAP) desde «Buzones y reglas», o reenvía los correos de encargos a la dirección de tu departamento. En cuanto llegue el primero aparecerá aquí como parte.',
     'emailops.empty.no-inbox': 'Todavía no hay direcciones de ingesta para esta empresa. La agencia las da de alta en Buzones y reglas.',
     'emailops.empty.category': 'Nada en esta pestaña.',
     'emailops.setup.title': 'Buzones de ingesta',
@@ -2341,7 +2341,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'emailops.setup.add': 'Añadir buzón',
     'emailops.setup.copy': 'Copiar',
     'emailops.setup.copied': 'Copiado',
-    'emailops.setup.no-domain': 'Falta configurar EMAIL_OPS_INBOUND_DOMAIN en el servidor.',
+    'emailops.setup.no-domain': 'El reenvío a una dirección de MIRA no está disponible en este servidor: conecta el buzón directamente (Microsoft 365 o IMAP) desde «Buzones y reglas».',
     'emailops.setup.src-imap': 'Lectura directa',
     'emailops.setup.src-forward': 'Reenvío',
     'emailops.setup.last-read': 'Última lectura: {when}',
@@ -2546,6 +2546,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'fichas.comparables.n': '{n} cifras',
     'fichas.comparables.last': 'Última: {importe} ({cliente}, {fecha})',
     'fichas.open-doc': 'Abrir documento',
+    'emailops.setup.connect-direct': 'Conectar un buzón directamente (Microsoft 365 o IMAP)',
   },
 
   en: {
@@ -4872,7 +4873,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'emailops.detail.processing': 'Processing…',
     'emailops.detail.failed': 'Processing failed',
     'emailops.empty.title': 'No emails have arrived yet',
-    'emailops.empty.desc': 'Forward (or set an auto-forward rule for) the shipping request emails to your department address. The first one will show up here as a ticket.',
+    'emailops.empty.desc': 'Connect the operations mailbox (Microsoft 365 or IMAP) from "Inboxes & rules", or forward shipping request emails to your department address. As soon as the first one arrives it will show up here as a ticket.',
     'emailops.empty.no-inbox': 'There are no ingest addresses for this company yet. The agency creates them under Inboxes & rules.',
     'emailops.empty.category': 'Nothing in this tab.',
     'emailops.setup.title': 'Ingest inboxes',
@@ -4885,7 +4886,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'emailops.setup.add': 'Add inbox',
     'emailops.setup.copy': 'Copy',
     'emailops.setup.copied': 'Copied',
-    'emailops.setup.no-domain': 'EMAIL_OPS_INBOUND_DOMAIN is not configured on the server.',
+    'emailops.setup.no-domain': 'Forwarding to a MIRA address is not available on this server: connect the mailbox directly (Microsoft 365 or IMAP) from "Inboxes & rules".',
     'emailops.setup.src-imap': 'Direct read',
     'emailops.setup.src-forward': 'Forwarding',
     'emailops.setup.last-read': 'Last read: {when}',
@@ -5090,6 +5091,7 @@ const translations: Record<Locale, Record<string, string>> = {
     'fichas.comparables.n': '{n} figures',
     'fichas.comparables.last': 'Latest: {importe} ({cliente}, {fecha})',
     'fichas.open-doc': 'Open document',
+    'emailops.setup.connect-direct': 'Connect a mailbox directly (Microsoft 365 or IMAP)',
   },
 }
 
