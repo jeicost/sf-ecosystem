@@ -223,4 +223,10 @@ real de producción. Esto lo evita.
   pruebas van contra un cliente interno de GTD avisando a operaciones. El
   filtrado por IP (Vercel no tiene IP fija) lo decide la informática de GTD,
   no Direcline.
+- «Copiar para DL-Trans» (`lib/tms/texto.ts`, acción `copy` de la ruta del
+  parte): el mismo mapeo en texto plano, en el orden de la pantalla de alta,
+  SIN exigir conexión. Existe porque GTD dudó de pagar la cuota del web
+  service (125 €/mes, 13-oct): cada copia cuenta en `mira_activity`
+  (ruta `email-ops/tms/copy`) y el parte queda «Copiado a DL-Trans» en
+  `tms_status` hasta que se grabe de verdad.
 

@@ -1,6 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
-import { Loader2, Send, X, AlertTriangle, Server, FileCode2 } from 'lucide-react'
+import { Loader2, Send, X, AlertTriangle, Server, FileCode2, Copy } from 'lucide-react'
 import { t, type Locale } from '@/lib/i18n'
 import type { Expedicion } from '@/lib/tms/direcline'
 
@@ -22,6 +22,20 @@ export default function TmsSendDialog({ ticketId, clientId, locale, brand, onClo
   const [showXml, setShowXml] = useState(false)
   const [busy, setBusy] = useState<'preview' | 'send' | null>('preview')
   const [error, setError] = useState<string | null>(null)
+  const [texto, setTexto] = useState<string | null>(null)
+  const [copiado, setCopiado] = useState(false)
+
+  // Copia los valores TAL COMO están en el formulario (con las correcciones de la persona).
+  const copiar = async () => {
+    if (!exp) return
+    setError(null)
+    try {
+      const res = await fetch(`/api/email-ops/tickets/${ticketId}/tms`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, action: 'copy', overrides: exp, locale }) })
+      const d = await res.json()
+      if (!res.ok) { setError(d.error || 'Error'); return }
+      try { await navigator.clipboard.writeText(d.texto); setCopiado(true); setTimeout(() => setCopiado(false), 2000) } catch { setTexto(d.texto) }
+    } catch { setError('Network error') }
+  }
 
   const preview = async (overrides?: Partial<Expedicion>) => {
     setBusy('preview'); setError(null)
@@ -131,8 +145,12 @@ export default function TmsSendDialog({ ticketId, clientId, locale, brand, onClo
                 {busy === 'send' ? <Loader2 size={12} className="animate-spin" /> : <Send size={12} />} {t('emailops.tms.send', locale)}
               </button>
               <button onClick={() => preview(exp)} disabled={busy !== null} className="rounded-lg bg-surface px-3 py-2 text-xs text-ink-secondary hover:text-ink disabled:opacity-50">{t('emailops.tms.recheck', locale)}</button>
+              <button onClick={copiar} disabled={busy !== null} className="inline-flex items-center gap-1.5 rounded-lg bg-surface px-3 py-2 text-xs text-ink-secondary hover:text-ink disabled:opacity-50" title={t('emailops.tms.copy-title', locale)}>
+                <Copy size={12} /> {copiado ? t('emailops.tms.copied-chip', locale) : t('emailops.tms.copy', locale)}
+              </button>
               <button onClick={() => setShowXml((v) => !v)} className="ml-auto inline-flex items-center gap-1 text-[11px] text-ink-tertiary hover:text-ink"><FileCode2 size={11} /> XML</button>
             </div>
+            {texto && <pre className="max-h-64 overflow-auto whitespace-pre-wrap rounded-lg bg-surface p-3 text-[11px] leading-snug text-ink-secondary">{texto}</pre>}
             {showXml && <pre className="max-h-64 overflow-auto rounded-lg bg-surface p-3 text-[10px] leading-snug text-ink-secondary">{xml.replace(/></g, '>\n<')}</pre>}
           </div>
         )}

@@ -8,10 +8,12 @@ import {
   validarUsuario, llamarMetodoXml, parseGrabacion, obtenerExpedicionPorNumero, DireclineError,
   type ConexionDirecline, type Expedicion, type TicketParaTms,
 } from '@/lib/tms/direcline'
+import { textoParaDlTrans } from '@/lib/tms/texto'
 
 // Grabar un parte en el programa operativo (Direcline) y consultar su estado.
 //   POST { clientId, action: 'preview' }            → expedición mapeada + XML + lo que falta (sin tocar el programa)
 //   POST { clientId, action: 'send', overrides }    → graba (una persona lo pulsa tras ver el preview)
+//   POST { clientId, action: 'copy', overrides? }   → texto para pegar a mano en DL-Trans (no exige conexión)
 //   GET  ?clientId=                                  → refresca el estado de la expedición ya grabada
 
 export const maxDuration = 60
@@ -27,13 +29,25 @@ async function conexionDe(clientId: string): Promise<{ conn: ConexionDirecline; 
 export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await ctx.params
-    const body = (await req.json().catch(() => ({}))) as { clientId?: string; action?: 'preview' | 'send'; overrides?: Partial<Expedicion> }
+    const body = (await req.json().catch(() => ({}))) as { clientId?: string; action?: 'preview' | 'send' | 'copy'; overrides?: Partial<Expedicion>; locale?: string }
     const access = await requireEmailOps(body.clientId ?? null)
     if (!access.ok) return NextResponse.json({ error: access.error }, { status: access.status })
     const db = adminClient()
     const { data: ticket } = await db.from('email_tickets').select('*').eq('id', id).eq('client_id', access.clientId).maybeSingle()
     if (!ticket) return NextResponse.json({ error: 'Not found' }, { status: 404 })
     const c = await conexionDe(access.clientId)
+    // «Copiar para DL-Trans» no necesita el programa conectado: es el mismo
+    // mapeo del parte, en texto, para pegarlo a mano mientras GTD decide si
+    // contrata el web service (13-oct). Cada copia cuenta en mira_activity.
+    if (body.action === 'copy') {
+      const config = c?.config ?? normalizarConfig({})
+      const expedicion = expedicionDesdeParte(ticket as unknown as TicketParaTms, config, body.overrides || {})
+      const faltan = faltanParaGrabar(expedicion)
+      const texto = textoParaDlTrans(expedicion, faltan, body.locale === 'en' ? 'en' : 'es')
+      await db.from('mira_activity').insert({ user_id: access.userId, client_id: access.clientId, kind: 'action', route: 'email-ops/tms/copy', meta: { ticketId: id, conexion: !!c } })
+      if (!ticket.tms_ref) await db.from('email_tickets').update({ tms_status: 'Copiado a DL-Trans', updated_at: new Date().toISOString() }).eq('id', id)
+      return NextResponse.json({ texto, faltan })
+    }
     if (!c) return NextResponse.json({ error: 'No operations program connected for this brand', reason: 'no-connection' }, { status: 400 })
 
     const expedicion = expedicionDesdeParte(ticket as unknown as TicketParaTms, c.config, body.overrides || {})

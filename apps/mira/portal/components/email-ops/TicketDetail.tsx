@@ -41,6 +41,9 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
   // Programa operativo (Direcline): si la marca tiene conexión, el parte se puede grabar desde aquí.
   const [tmsInfo, setTmsInfo] = useState<{ connected: boolean; provider: string | null; ok: boolean | null } | null>(null)
   const [tmsOpen, setTmsOpen] = useState(false)
+  // «Copiar para DL-Trans»: texto del parte en el orden de la pantalla de alta, sin exigir conexión.
+  const [copiando, setCopiando] = useState(false)
+  const [copiaManual, setCopiaManual] = useState<string | null>(null)
 
   const load = useCallback(async () => {
     const [tRes, sRes] = await Promise.all([
@@ -111,6 +114,20 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
   if (error || !ticket) return <p className="rounded-lg bg-red-500/10 px-3 py-2 text-sm text-red-400">{error || 'Not found'}</p>
 
   const isOther = ticket.kind === 'other'
+  const tmsDelParte = ticket as unknown as { tms_ref?: { expedicion?: string | null } | null; tms_status?: string | null }
+  const copiarParaDlTrans = async () => {
+    setCopiando(true)
+    try {
+      const res = await fetch(`/api/email-ops/tickets/${ticket.id}/tms`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ clientId, action: 'copy', locale }) })
+      const d = await res.json()
+      if (!res.ok) { flash(d.error || 'Error'); return }
+      try {
+        await navigator.clipboard.writeText(d.texto)
+        flash(t('emailops.tms.copied', locale).replace('{n}', String((d.faltan || []).length)))
+      } catch { setCopiaManual(d.texto) }
+      load()
+    } catch { flash('Network error') } finally { setCopiando(false) }
+  }
   const missing = new Set(ticket.missing_fields || [])
   // Lo que MIRA dedujo (no está escrito tal cual): se marca para revisión, campo a campo.
   const revisar = new Map(camposARevisar(ticket, schema).map((c) => [c.key, c]))
@@ -165,6 +182,14 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
                 </div>
               )}
             </div>
+          )}
+          {!isOther && (
+            <button onClick={copiarParaDlTrans} disabled={copiando} className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs font-medium text-ink hover:bg-line disabled:opacity-50" title={t('emailops.tms.copy-title', locale)}>
+              {copiando ? <Loader2 size={12} className="animate-spin" /> : <Copy size={12} />} {t('emailops.tms.copy', locale)}
+            </button>
+          )}
+          {!isOther && !tmsDelParte.tms_ref?.expedicion && tmsDelParte.tms_status === 'Copiado a DL-Trans' && (
+            <span className="inline-flex items-center gap-1.5 rounded-lg border border-line bg-surface px-3 py-2 text-xs text-ink-secondary"><Check size={12} /> {t('emailops.tms.copied-chip', locale)}</span>
           )}
           {tmsInfo?.connected && !isOther && (
             (ticket as unknown as { tms_ref?: { expedicion?: string | null; via?: string | null } | null }).tms_ref?.expedicion ? (
@@ -327,6 +352,15 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
           </div>
         </section>
       </div>
+      {copiaManual && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={() => setCopiaManual(null)}>
+          <div className="w-full max-w-lg rounded-2xl border border-line bg-card p-4" onClick={(e) => e.stopPropagation()}>
+            <p className="mb-2 text-xs text-ink-secondary">{t('emailops.tms.copy-fallback', locale)}</p>
+            <textarea readOnly value={copiaManual} rows={14} className="w-full rounded-lg border border-line bg-page p-2 font-mono text-xs text-ink" onFocus={(e) => e.currentTarget.select()} />
+            <button onClick={() => setCopiaManual(null)} className="mt-2 rounded-lg bg-surface px-3 py-2 text-xs text-ink">{t('common.close', locale)}</button>
+          </div>
+        </div>
+      )}
       {tmsOpen && ticket && (
         <TmsSendDialog ticketId={ticket.id} clientId={clientId} locale={locale} brand={brand} onClose={() => setTmsOpen(false)}
           onSent={(ref) => { setTmsOpen(false); flash(t('emailops.tms.sent', locale).replace('{n}', ref.expedicion || '—')); load() }} />

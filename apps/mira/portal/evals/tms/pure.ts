@@ -4,6 +4,7 @@
  *   npx tsx evals/tms/pure.ts
  */
 import { partirDireccion, expedicionDesdeParte, faltanParaGrabar, construirXmlExpedicion, extraerResultado, errorDe, parseGuid, parseGrabacion, parseEstado, namespaceDeWsdl, normalizarConfig, tipoServicioPara, hashXml } from '../../lib/tms/direcline'
+import { textoParaDlTrans } from '../../lib/tms/texto'
 
 let failures = 0
 function check(name: string, cond: boolean, detail?: unknown) {
@@ -67,6 +68,16 @@ check('parseGrabacion: orden, expedición y vía', grab.ordenServicio === '10012
 const est = parseEstado(`<ObtenerExpedicionPorNumero><EXPEDICION><NUMERO>1</NUMERO><ESTADO>En reparto</ESTADO><FECHA>13/10/2026</FECHA><HORA>10:02</HORA><FIRMA></FIRMA><DNI></DNI><CODIGOMENSAJERO>0010</CODIGOMENSAJERO><TEXTOINCIDENCIA></TEXTOINCIDENCIA></EXPEDICION></ObtenerExpedicionPorNumero>`)
 check('parseEstado', est.estado === 'En reparto' && est.mensajero === '0010' && est.hora === '10:02')
 check('namespaceDeWsdl', namespaceDeWsdl('<wsdl:definitions targetNamespace="http://direcline.com/ws" />') === 'http://direcline.com/ws' && namespaceDeWsdl('') === 'http://tempuri.org/')
+
+// ── texto para pegar en DL-Trans ─────────────────────────────────────────
+const texto = textoParaDlTrans(e, faltanParaGrabar(e), 'es')
+check('textoParaDlTrans: remitente, direcciones, CP, horario, bultos y peso', texto.includes('REMITENTE: Museo Thyssen') && texto.includes('c/ José Echegaray 12, Nave 2-3') && texto.includes('28100 Alcobendas') && texto.includes('08:30 - 18:30') && texto.includes('Bultos: 2') && texto.includes('1,4 kg') && texto.includes('Fecha: 08/10/2026'), texto)
+const faltanSin = faltanParaGrabar(sinCodigo)
+const textoSin = textoParaDlTrans(sinCodigo, faltanSin, 'es')
+const etiquetaTs = faltanSin.find((f) => f.campo === 'tipoServicio')!.etiqueta
+const etiquetaDir = faltanSin.find((f) => f.campo === 'entrega.direccion')!.etiqueta
+check('textoParaDlTrans: lista lo que falta del correo, no los códigos del programa', textoSin.includes('Sin dato en el correo') && textoSin.includes(etiquetaDir) && !textoSin.includes(etiquetaTs) && !textoSin.includes('Servicio:'), textoSin)
+check('textoParaDlTrans: en inglés', textoParaDlTrans(e, [], 'en').includes('SENDER: Museo Thyssen'))
 
 console.log(failures ? `\n❌ ${failures} fallos` : '\n✅ todo en verde')
 process.exit(failures ? 1 : 0)
