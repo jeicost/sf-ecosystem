@@ -10,6 +10,24 @@
 // (arrastra la service key), así que aquí no se toca: solo se espeja el
 // vocabulario para que la UI reconozca el error y avise antes de llegar.
 
+/**
+ * Rutas de las HERRAMIENTAS OPERATIVAS, que NO cuentan para el techo de
+ * generaciones ni lo sufren (14-oct-2026). El techo de 300 nació en agosto
+ * para el Toolkit (un informe = una generación). Desde entonces Email Ops hace
+ * una llamada por CORREO recibido y el chat de Licitaciones una por turno: en
+ * GTD, 208 correos + 63 turnos de chat agotaron las 300 el 14-oct y el techo
+ * cortó Email Ops y a Usoa a la vez, sin que nadie hubiera «generado» 300
+ * nada. Esas herramientas ya tienen su freno real en DÓLARES por marca
+ * (lib/ai/budget.ts, comprobarPresupuesto): no necesitan un segundo tope en
+ * unidades que no significan lo mismo. El prefijo se compara contra
+ * mira_usage_log.route, tanto al contar como al cortar.
+ */
+export const OPERATIONAL_ROUTE_PREFIXES = ['tender/', 'email-ops', 'comercial/', 'drive-sync', 'microsoft-sync', 'cotizador'] as const
+
+export function isOperationalRoute(route: string | null | undefined): boolean {
+  return !!route && OPERATIONAL_ROUTE_PREFIXES.some((p) => route.startsWith(p))
+}
+
 /** Código estable que las rutas devuelven junto al 429 (ver generationCapErrorResponse). */
 export const GENERATION_CAP_ERROR_CODE = 'generation_cap_exceeded'
 

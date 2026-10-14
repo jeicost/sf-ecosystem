@@ -11,7 +11,7 @@
 import { NextResponse } from 'next/server'
 import { adminClient } from '@/lib/supabase'
 import { GenerationCapExceededError, isGenerationCapExempt } from '@/lib/anthropic-client'
-import { GENERATION_CAP_ERROR_CODE, type GenerationCapStatus } from '@/lib/generation-cap'
+import { GENERATION_CAP_ERROR_CODE, OPERATIONAL_ROUTE_PREFIXES, type GenerationCapStatus } from '@/lib/generation-cap'
 
 /** MAX_MONTHLY_GENERATIONS parseado con las mismas reglas que checkGenerationCap; null = sin techo. */
 export function readMonthlyGenerationCap(): number | null {
@@ -32,12 +32,15 @@ export function startOfMonthUtc(now = new Date()): Date {
 /** Generaciones con key de plataforma del cliente en el mes en curso (lo que consume techo). */
 export async function countPlatformGenerationsThisMonth(clientId: string): Promise<number> {
   const db = adminClient()
-  const { count, error } = await db
+  let q = db
     .from('mira_usage_log')
     .select('id', { count: 'exact', head: true })
     .eq('client_id', clientId)
     .eq('used_client_key', false)
     .gte('created_at', startOfMonthUtc().toISOString())
+  // Las herramientas operativas no cuentan (mismo criterio que checkGenerationCap).
+  for (const prefijo of OPERATIONAL_ROUTE_PREFIXES) q = q.not('route', 'like', `${prefijo}%`)
+  const { count, error } = await q
   if (error) throw new Error(`usage_log count failed: ${error.message}`)
   return count ?? 0
 }

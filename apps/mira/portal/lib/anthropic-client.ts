@@ -10,6 +10,7 @@
  */
 
 import Anthropic from '@anthropic-ai/sdk'
+import { OPERATIONAL_ROUTE_PREFIXES, isOperationalRoute } from '@/lib/generation-cap'
 import { getClientApiKey } from '@/lib/integrations/getClientApiKey'
 import { adminClient } from '@/lib/supabase'
 import { comprobarPresupuesto } from '@/lib/ai/budget'
@@ -50,9 +51,11 @@ export function isGenerationCapExempt(clientId: string | null | undefined): bool
   return raw.split(',').map(s => s.trim()).filter(Boolean).includes(clientId)
 }
 
-async function checkGenerationCap(clientId: string, usedClientKey: boolean): Promise<void> {
+async function checkGenerationCap(clientId: string, usedClientKey: boolean, route?: string): Promise<void> {
   if (usedClientKey) return
   if (isGenerationCapExempt(clientId)) return
+  // Las herramientas operativas se rigen por el tope en dólares (ver OPERATIONAL_ROUTE_PREFIXES).
+  if (isOperationalRoute(route)) return
   const maxRaw = process.env.MAX_MONTHLY_GENERATIONS
   if (!maxRaw) return
   const max = Number(maxRaw)
@@ -64,12 +67,16 @@ async function checkGenerationCap(clientId: string, usedClientKey: boolean): Pro
 
   try {
     const db = adminClient()
-    const { count, error } = await db
+    let q = db
       .from('mira_usage_log')
       .select('id', { count: 'exact', head: true })
       .eq('client_id', clientId)
       .eq('used_client_key', false)
       .gte('created_at', startOfMonth.toISOString())
+    // Mismo criterio que countPlatformGenerationsThisMonth (lib/generation-cap-server.ts):
+    // los correos de Email Ops y los turnos de Licitaciones no son «generaciones».
+    for (const prefijo of OPERATIONAL_ROUTE_PREFIXES) q = q.not('route', 'like', `${prefijo}%`)
+    const { count, error } = await q
 
     if (error) return // never block a generation because telemetry failed to read
     if ((count ?? 0) >= max) throw new GenerationCapExceededError(max)
@@ -102,7 +109,7 @@ export async function getClaudeForClient(clientId: string | null | undefined, ro
   }
   const key = await getClientApiKey(clientId, 'anthropic', platformKey)
   const usedClientKey = !!key && key !== platformKey
-  await checkGenerationCap(clientId, usedClientKey)
+  await checkGenerationCap(clientId, usedClientKey, route)
   // Freno mensual de la marca (30 $/mes por defecto) y freno diario global.
   if (route) await comprobarPresupuesto(route, usedClientKey, clientId)
   return { client: new Anthropic({ apiKey: key || platformKey, timeout: SDK_TIMEOUT_MS }), usedClientKey }
