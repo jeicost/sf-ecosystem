@@ -144,9 +144,11 @@ import { parseBloques, trozosInline, esRotuloMayusculas, columnaNumerica, rutaFi
 import { pieConNumeracion, MARCA_CABECERA, MARCA_PIE } from '../../lib/tenders/membrete'
 import { normalizarMarcadores, resolverReferencia, anexosObligatorios, bloqueDisenadasPrompt, marcadoresEn, parseDisenada, marcador, type Disenada } from '../../lib/tenders/disenadas'
 import { sumarGasto, limiteParaRuta, inicioDeHoyMadrid, DAILY_BUDGET_USD, EMAIL_OPS_RESERVE, esErrorDePresupuesto, DailyBudgetExceededError } from '../../lib/ai/budget'
-import { estimateCostUsdWithCache, MODEL_PRICING } from '../../lib/anthropic-client'
+import { estimateCostUsdWithCache, MODEL_PRICING, cachea1h } from '../../lib/anthropic-client'
 import { techoSalida, ajustesModelo, modeloConPensamiento, TENDER_MODEL, CHEAP_MODEL } from '../../lib/ai/models'
 import { buildOutputSchema, EMAIL_OPS_MODEL } from '../../lib/email-ops/extract'
+import { conCacheAlFinal } from '../../lib/tenders/chat'
+import { buildMemoriaRequest } from '../../lib/generation/tender-memoria'
 import { COURIER_V1_FIELDS as DEFAULT_SCHEMA } from '../../lib/email-ops/schema'
 
 console.log('\nMaquetación del texto: lo que escribe el redactor se reconoce, lo que no, es párrafo')
@@ -219,6 +221,19 @@ console.log('\nFreno de gasto diario y precios')
 check('precio Opus 5.5 con caché: 1M entrada normal = 4 $, 1M lectura caché = 0,20 $', Math.abs(estimateCostUsdWithCache('claude-opus-5-5', 1_000_000, 0) - 4) < 1e-9 && Math.abs(estimateCostUsdWithCache('claude-opus-5-5', 0, 0, 0, 1_000_000) - 0.2) < 1e-9)
 check('precio Opus 4.8: lectura caché 0,50 $', Math.abs(estimateCostUsdWithCache('claude-opus-4-8', 0, 0, 0, 1_000_000) - 0.5) < 1e-9)
 check('modelo desconocido se tasa como Sonnet 4.6', Math.abs(estimateCostUsdWithCache('claude-x', 1_000_000, 1_000_000) - 18) < 1e-9)
+// 14-oct: la escritura de caché a 1 HORA cuesta 2× la entrada, no 1,25×. Sin
+// esto el freno veía 77,67 $ de 87,67 $ reales en 45 días (13 % menos).
+check('escritura de caché a 1 h = 2× la entrada en las rutas que la usan',
+  Math.abs(estimateCostUsdWithCache('claude-opus-5-5', 0, 0, 1_000_000, 0, 'tender/chat') - 8) < 1e-9 &&
+  Math.abs(estimateCostUsdWithCache('claude-sonnet-5-5', 0, 0, 1_000_000, 0, 'email-ops-extract') - 4) < 1e-9)
+check('escritura de caché a 5 min sigue a 1,25× (brain/chat, documents-guided)',
+  Math.abs(estimateCostUsdWithCache('claude-opus-5-5', 0, 0, 1_000_000, 0, 'brain/chat') - 5) < 1e-9 &&
+  Math.abs(estimateCostUsdWithCache('claude-opus-5-5', 0, 0, 1_000_000, 0) - 5) < 1e-9)
+check('cachea1h: reconoce los prefijos y no se pasa de largo',
+  cachea1h('tender/generate') && cachea1h('email-ops-extract') && cachea1h('comercial/fichas:batch') &&
+  !cachea1h('toolkit/generate') && !cachea1h('documents-guided') && !cachea1h(null))
+check('sumarGasto cobra la escritura de 1 h a 2×',
+  Math.abs(sumarGasto([{ route: 'tender/chat', model: 'claude-opus-5-5', input_tokens: 0, output_tokens: 0, cache_creation_tokens: 1_000_000, cache_read_tokens: 0 }], 'x').total - 8) < 1e-9)
 check('tabla de precios tiene los modelos en uso', [TENDER_MODEL, CHEAP_MODEL, EMAIL_OPS_MODEL].every((m) => !!MODEL_PRICING[m]))
 const g = sumarGasto([
   { route: 'tender/chat', model: 'claude-opus-5-5', input_tokens: 1_000_000, output_tokens: 0, cache_creation_tokens: 0, cache_read_tokens: 0 },
@@ -377,6 +392,37 @@ const salv = salvedadesColadas({ secciones: [{ contenido: 'En las zonas GLS 1 y 
 check('salvedadesColadas: la salvedad del 10H y la de las 14:00 sí; la zona de tarifa no', salv.length === 2 && salv[0].includes('10H') && salv[1].includes('14:00'), salv)
 const promptMapa = buildMemoriaPrompt({ criteria: { criteria: [] } as never, pliegoText: 'p', teaching: '', playbook: null, examplesText: '', brainBlock: 'b', knowledge: null, lote: 2, mapa })
 check('prompt de la memoria con mapa: lleva la numeración por lote', promptMapa.includes('NUMERACIÓN DEL PLIEGO') && promptMapa.includes('4.x (lote 3)'))
+
+console.log('\nDónde va la marca de caché: lo volátil, DETRÁS de lo estable')
+// 14-oct-2026. Los 137 tokens del bloque de estado iban en el `system`, o sea
+// por delante de la conversación, y la invalidaban entera: medido en producción,
+// dentro de un mismo mensaje la caché acertaba el 100 % y entre un mensaje y el
+// siguiente leía 3.200 tokens y reescribía 60.000, a 2× la entrada.
+const conv1: Parameters<typeof conCacheAlFinal>[0] = [
+  { role: 'user', content: [{ type: 'text', text: 'escribe la memoria' }] },
+]
+const m1 = conCacheAlFinal(conv1, 'ESTADO DE ESTA CONVERSACIÓN')
+const b1 = m1[0].content as Array<{ type: string; text?: string; cache_control?: unknown }>
+check('el estado va DESPUÉS del bloque marcado, no en el system', b1.length === 2 && !!b1[0].cache_control && b1[1].text === 'ESTADO DE ESTA CONVERSACIÓN' && !b1[1].cache_control, b1)
+check('sin estado, el comportamiento de antes: solo la marca', (conCacheAlFinal(conv1)[0].content as Array<{ cache_control?: unknown }>).length === 1)
+const conv2: Parameters<typeof conCacheAlFinal>[0] = [
+  { role: 'user', content: [{ type: 'text', text: 'hola' }] },
+  { role: 'assistant', content: [{ type: 'text', text: 'voy' }] },
+]
+const b2 = conCacheAlFinal(conv2, 'EST')[1].content as Array<{ type: string; text?: string }>
+check('tras una intervención del modelo NO se le cuela texto nuestro', b2.length === 1 && b2[0].text === 'voy', b2)
+const conv3: Parameters<typeof conCacheAlFinal>[0] = [
+  { role: 'user', content: [{ type: 'text', text: 'x' }, { type: 'thinking', thinking: 'mmm', signature: 's' } as never] },
+]
+const b3 = conCacheAlFinal(conv3, 'EST')[0].content as Array<{ type: string; cache_control?: unknown }>
+check('el pensamiento no admite marca: se marca el bloque anterior', !!b3[0].cache_control && !b3[1].cache_control)
+
+// El corpus de la marca es igual en todas sus licitaciones; el pliego cambia en
+// cada concurso. Si el pliego va delante, invalida el prefijo del corpus.
+const req = buildMemoriaRequest({ criteria: { criteria: [] } as never, pliegoText: 'PLIEGO', teaching: '', playbook: null, examplesText: '', brainBlock: 'BRAIN', knowledge: null })
+check('memoria: el corpus (estable) va DELANTE y cacheado; el pliego, detrás y plano',
+  req.system.length === 2 && req.system[0].text.includes('BRAIN') && !!(req.system[0] as { cache_control?: unknown }).cache_control &&
+  req.system[1].text.includes('PLIEGO') && !(req.system[1] as { cache_control?: unknown }).cache_control, req.system.map((b) => ({ ini: b.text.slice(0, 20), cache: !!(b as { cache_control?: unknown }).cache_control })))
 
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)

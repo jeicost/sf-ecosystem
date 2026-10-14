@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
     const admin = adminClient()
     const { data: rows } = await admin
       .from('mira_usage_log')
-      .select('model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
+      .select('route, model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
       .eq('client_id', clientId)
       .gte('created_at', monthStart.toISOString())
 
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
     const inputTokens = usage.reduce((s, u) => s + u.input_tokens, 0)
     const outputTokens = usage.reduce((s, u) => s + u.output_tokens, 0)
     const costUsd = usage.reduce(
-      (s, u) => s + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0),
+      (s, u) => s + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0, u.route),
       0
     )
 

@@ -56,7 +56,7 @@ export async function GET(req: NextRequest) {
         .eq('status', 'pending_review'),
       admin
         .from('mira_usage_log')
-        .select('model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens')
+        .select('route, model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens')
         .eq('client_id', clientId)
         .gte('created_at', monthStart.toISOString()),
       admin
@@ -97,7 +97,7 @@ export async function GET(req: NextRequest) {
 
     const usage = usageRes.data || []
     const usageCost = usage.reduce(
-      (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0),
+      (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0, u.route),
       0
     )
 

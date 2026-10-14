@@ -12,18 +12,26 @@ import { CHEAP_MODEL } from '@/lib/ai/models'
 import type Anthropic from '@anthropic-ai/sdk'
 
 /**
- * El pliego como bloque de `system` CACHEADO una hora, byte a byte igual en la
- * extracción de criterios y en la generación: así la segunda llamada (y cada
- * regeneración mientras la responsable ajusta instrucciones) lee los ~40.000
- * tokens del pliego de la caché a un 10 % del precio. Medido 7-oct: dos
- * generaciones seguidas mandaron 102.000 tokens idénticos sin caché.
- * El SDK 0.39 no tipa `ttl`; la API sí lo admite en estos modelos.
+ * El pliego como bloque de `system`, SIN marca de caché.
+ *
+ * La llevó hasta el 14-oct-2026, con la idea de que la extracción y la
+ * generación compartieran los ~60.000 tokens del pliego. No salía: la caché es
+ * POR MODELO y la extracción pasó a Sonnet mientras la generación sigue en Opus,
+ * así que la escritura no la leía nadie. Medido en producción (`tender/generate`,
+ * 12 llamadas): se leyó caché en el 16 % y el 14-oct en el 0 %, escribiendo
+ * 98.400 tokens por memoria. Una escritura a 1 h cuesta 2× la entrada y una
+ * lectura 0,1×, así que un bloque que se escribe y no se lee cuesta el DOBLE
+ * que mandarlo plano: ~0,25 $ por memoria tirados.
+ *
+ * Lo que sí se cachea es el CORPUS de la marca (brain + conocimiento + memorias
+ * pasadas), que es igual para todas sus licitaciones — y por eso va DELANTE del
+ * pliego en el `system`: un bloque volátil por delante de uno estable invalida
+ * el prefijo del estable (la misma lección que el bloque de estado del chat).
  */
 export function bloquePliego(pliegoText: string): Anthropic.TextBlockParam {
   return {
     type: 'text',
     text: `TENDER DOCUMENTS (PCAP / PPT / criterios), for reference — respond to its criteria, do not copy it verbatim:\n<pliego>\n${pliegoText.slice(0, PLIEGO_WINDOW)}\n</pliego>`,
-    cache_control: { type: 'ephemeral', ttl: '1h' } as unknown as Anthropic.CacheControlEphemeral,
   }
 }
 
@@ -354,10 +362,15 @@ export function buildMemoriaRequest(parts: Parameters<typeof buildMemoriaPrompt>
     knowledge ? `CLIENT KNOWLEDGE (real corpus — certifications, prior memorias, document skeleton):\n${knowledge}` : '',
     examplesText ? `PAST SUBMITTED MEMORIAS (STRUCTURE AND TONE ONLY — imita su esqueleto, su registro y el tipo de compromiso que asumen; NUNCA sus cifras ni sus nombres. Si hay una MEMORIA DE PARTIDA, su estructura manda sobre las demás):\n${examplesText}` : '',
   ].filter(Boolean).join('\n\n')
-  const system: Anthropic.TextBlockParam[] = [bloquePliego(pliegoText)]
-  // 1 hora, no 5 min: generar tarda 6-7 min, así que la caché de 5 min caducaba
-  // ANTES de que nadie pudiera regenerar y la escritura (1,25×) se tiraba siempre.
+  // ORDEN: primero lo ESTABLE y cacheado (el corpus de la marca, igual en todas
+  // sus licitaciones), después lo VOLÁTIL y plano (el pliego de este concurso).
+  // Al contrario —como estaba hasta el 14-oct— el pliego invalidaba el prefijo
+  // del corpus en cada concurso nuevo, así que la caché del corpus no se leía
+  // nunca y además se pagaba su escritura a 2×. 1 hora, no 5 min: generar tarda
+  // 6-7 min y con 5 min la caché caducaba antes de poder regenerar.
+  const system: Anthropic.TextBlockParam[] = []
   if (corpus) system.push({ type: 'text', text: corpus, cache_control: CACHE_1H })
+  system.push(bloquePliego(pliegoText))
   const user = `You are the technical-proposal writer for this company (D4 "Entrega"). Write the MEMORIA TÉCNICA that responds to the tender in the system context, section by section, MAXIMISING the score. Use the company's real document_system (skeleton, reusable blocks, tone) from the brand context, and its real certifications/facts from the client knowledge. Personalise to THIS tender (name the contracting body in each section).
 
 SCORING STRUCTURE (do NOT write the price offer):

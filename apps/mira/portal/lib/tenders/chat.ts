@@ -592,20 +592,33 @@ const TURN_DEADLINE_MS = 660_000 // la ruta muere a los 800 s (antes 300)
  * (pliegos leídos incluidos) a precio completo: el 5-oct, 930.000 tokens de entrada
  * sin caché en 50 llamadas. Con la marca, la vuelta siguiente lee ese prefijo de la
  * caché (~10 % del precio). Copia superficial: el historial guardado no se toca.
+ *
+ * `estado` se añade DESPUÉS de la marca, y eso es el punto del asunto. El orden
+ * del prompt es herramientas → system → mensajes, así que un bloque volátil
+ * colocado en el system queda DENTRO del prefijo que cubre la conversación: sus
+ * 137 tokens (expediente, adjuntos, fecha) invalidaban los ~60.000 tokens de
+ * conversación en cada mensaje nuevo, que se reescribían a 2× el precio de
+ * entrada (escritura de caché a 1 h) en vez de leerse a 0,1×. Medido el
+ * 14-oct-2026 en producción: dentro de un mismo mensaje la caché acertaba el
+ * 100 %, pero entre un mensaje y el siguiente leía 3.200 tokens y reescribía
+ * 60.000. Detrás de la marca, el prefijo de conversación es estable y se lee.
  */
-export function conCacheAlFinal(conv: Anthropic.MessageParam[]): Anthropic.MessageParam[] {
+export function conCacheAlFinal(conv: Anthropic.MessageParam[], estado?: string): Anthropic.MessageParam[] {
   if (!conv.length) return conv
   const out = conv.slice()
   const last = out[out.length - 1]
   const blocks: Anthropic.ContentBlockParam[] = typeof last.content === 'string'
     ? [{ type: 'text', text: last.content }]
     : last.content.slice()
-  const i = blocks.length - 1
+  if (!blocks.length) return conv
+  // Los bloques de pensamiento no admiten marca de caché: se marca el último que sí.
+  let i = blocks.length - 1
+  while (i >= 0 && (blocks[i].type === 'thinking' || blocks[i].type === 'redacted_thinking')) i--
   if (i < 0) return conv
-  const b = blocks[i] as Anthropic.ContentBlockParam & { cache_control?: unknown }
-  // Los bloques de pensamiento no admiten marca de caché.
-  if (b.type === 'thinking' || b.type === 'redacted_thinking') return conv
-  blocks[i] = { ...b, cache_control: CACHE_1H } as Anthropic.ContentBlockParam
+  blocks[i] = { ...blocks[i], cache_control: CACHE_1H } as Anthropic.ContentBlockParam
+  // Solo en un mensaje de la persona: detrás de un tool_use del modelo tiene que
+  // ir su tool_result, no texto nuestro.
+  if (estado && last.role === 'user') blocks.push({ type: 'text', text: estado })
   out[out.length - 1] = { ...last, content: blocks }
   return out
 }
@@ -629,13 +642,19 @@ export async function runTenderChat(opts: {
   }
 
   // Caché de 1 HORA: el system (brain + enseñanza + reglas) y las herramientas son
-  // iguales en las 8 vueltas de un mensaje Y entre mensajes; el bloque de estado
-  // cambia y va aparte. Con 5 min, cada pausa de Usoa para leer o escribir
-  // reescribía todo el prefijo (medido el 7-oct: 3 × 60k tokens en una mañana).
+  // iguales en las 8 vueltas de un mensaje Y entre mensajes. Con 5 min, cada pausa
+  // de Usoa para leer o escribir reescribía todo el prefijo (medido el 7-oct:
+  // 3 × 60k tokens en una mañana).
+  //
+  // El bloque de ESTADO ya NO va aquí: viaja al final de los mensajes
+  // (conCacheAlFinal), porque en el system quedaba por delante de la
+  // conversación y la invalidaba entera cada vez que cambiaba.
   const systemBlocks: Anthropic.TextBlockParam[] = [
     { type: 'text', text: system, cache_control: CACHE_1H },
-    { type: 'text', text: state },
   ]
+  /** Red: si la última no es una intervención de la persona, el estado se queda en el system. */
+  const estadoEnSystem = (conv: Anthropic.MessageParam[]): Anthropic.TextBlockParam[] =>
+    conv.length && conv[conv.length - 1].role === 'user' ? systemBlocks : [...systemBlocks, { type: 'text', text: state }]
   const toolDefs: Anthropic.Tool[] = TOOL_DEFS.map((t, n) => (n === TOOL_DEFS.length - 1 ? { ...t, cache_control: CACHE_1H } : t))
 
   try {
@@ -649,7 +668,7 @@ export async function runTenderChat(opts: {
       let first = true
       // output_config (esfuerzo del pensamiento) no está en los tipos del SDK 0.39; el cuerpo lo lleva igual.
       const stream = client.messages.stream({
-        model: CHAT_MODEL, max_tokens: MAX_TOKENS_TURN, system: systemBlocks, tools: toolDefs, messages: conCacheAlFinal(conversation),
+        model: CHAT_MODEL, max_tokens: MAX_TOKENS_TURN, system: estadoEnSystem(conversation), tools: toolDefs, messages: conCacheAlFinal(conversation, state),
         ...ajustesModelo(CHAT_MODEL),
       } as Anthropic.MessageStreamParams)
       stream.on('text', (t) => {

@@ -30,7 +30,7 @@ export async function GET() {
       admin.from('drive_folders').select('client_id, sync_status, files_synced'),
       admin
         .from('mira_usage_log')
-        .select('client_id, model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
+        .select('client_id, route, model, input_tokens, output_tokens, cache_creation_tokens, cache_read_tokens, used_client_key')
         // Mes de Madrid, el mismo que aplica el freno (lib/ai/budget.ts): así la cifra del panel es la que corta.
         .gte('created_at', inicioDeMesMadrid().toISOString()),
       // Propuestas del Brain sin revisar, por cliente: el resumen cross-cliente
@@ -60,7 +60,7 @@ export async function GET() {
       const clientUsage = usage.filter((u) => u.client_id === c.id)
       const clientProposals = proposals.filter((p) => p.client_id === c.id)
       const costUsd = clientUsage.reduce(
-        (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0),
+        (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0, u.route),
         0
       )
       return {
@@ -86,7 +86,7 @@ export async function GET() {
         ai_budget_usd: typeof c.ai_budget_usd === 'number' ? c.ai_budget_usd : null,
         ai_budget_effective: typeof c.ai_budget_usd === 'number' ? c.ai_budget_usd : CLIENT_MONTHLY_BUDGET_USD,
         platform_cost_usd: Math.round(clientUsage.filter((u) => !u.used_client_key).reduce(
-          (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0), 0) * 100) / 100,
+          (sum, u) => sum + estimateCostUsdWithCache(u.model, u.input_tokens, u.output_tokens, u.cache_creation_tokens ?? 0, u.cache_read_tokens ?? 0, u.route), 0) * 100) / 100,
       }
     })
 

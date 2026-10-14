@@ -209,15 +209,40 @@ export function estimateCostUsdWithCache(
   inputTokens: number,
   outputTokens: number,
   cacheWriteTokens = 0,
-  cacheReadTokens = 0
+  cacheReadTokens = 0,
+  route?: string | null
 ): number {
   const p = MODEL_PRICING[model] || PRECIO_DEFECTO
   return (
     (inputTokens / 1_000_000) * p.in +
-    (cacheWriteTokens / 1_000_000) * p.cacheWrite +
+    (cacheWriteTokens / 1_000_000) * precioEscrituraCache(model, route) +
     (cacheReadTokens / 1_000_000) * p.cacheRead +
     (outputTokens / 1_000_000) * p.out
   )
+}
+
+/**
+ * Rutas cuyo `cache_control` lleva `ttl: '1h'`. La lista de Anthropic cobra la
+ * escritura de caché a 1,25× la entrada con la ventana de 5 MINUTOS y a **2×**
+ * con la de 1 HORA; la lectura es 0,1× en las dos. `MODEL_PRICING.cacheWrite`
+ * es la tarifa de 5 min, así que sin esto el gasto de estas rutas se contaba
+ * por debajo de lo real —y lo que decide cuándo cortar es ese número—.
+ * Medido el 14-oct-2026 sobre 45 días: el freno veía 77,67 $ de 87,67 $ reales,
+ * un 13 % menos, y en las dos rutas que más gastan un 17 % y un 29 % menos.
+ *
+ * La ventana no se guarda en `mira_usage_log`, así que se deduce de la ruta.
+ * Si algún día se añade `cache_ttl` a la tabla, esta lista se puede tirar.
+ * Mantenerla al día con: grep -rn "CACHE_1H\|ttl: '1h'" lib app
+ */
+export const PREFIJOS_CACHE_1H = ['tender/', 'email-ops-extract', 'comercial/fichas', 'agent'] as const
+
+export const cachea1h = (route?: string | null): boolean =>
+  !!route && PREFIJOS_CACHE_1H.some((p) => route.startsWith(p))
+
+/** $/M de la escritura de caché: 2× la entrada en las rutas de 1 h, la tarifa de 5 min en el resto. */
+export function precioEscrituraCache(model: string, route?: string | null): number {
+  const p = MODEL_PRICING[model] || PRECIO_DEFECTO
+  return cachea1h(route) ? 2 * p.in : p.cacheWrite
 }
 
 export function estimateCostUsd(model: string, inputTokens: number, outputTokens: number): number {
