@@ -10,18 +10,24 @@ import { recomputeOpenPriorities } from '@/lib/email-ops/priority'
 // deja colgados) y recalcula la prioridad de los abiertos (la hora de recogida
 // se acerca sola). Invocado por el cron de Vercel con Bearer CRON_SECRET.
 
-export const maxDuration = 300
+// 800, no 300: lo que limita una pasada es el TIEMPO, no el número de correos.
+// Medido el 14-oct-2026 en producción con processed_at: **16 s por correo** de
+// mediana y hasta 25 s con adjuntos (el modelo más la descarga y lectura de los
+// albaranes). Con 300 s solo caben ~18 correos por pasada, así que subir el
+// número sin subir esto no sirve de nada: la función muere a medias. 800 es el
+// mismo techo que ya usan las rutas de licitaciones en este plan.
+export const maxDuration = 800
 /**
  * Cuántos correos procesa una pasada. Con el cron cada 10 minutos, 10 por
- * pasada son **60 correos a la hora para todas las marcas juntas** — y el
+ * pasada eran **60 correos a la hora para todas las marcas juntas** — y el
  * 14-oct-2026 entraron ~50/h entre GTD y Albasanz, con un pico de 143 en un
- * día. Es decir: el margen era del 20 % y una mañana cargada dejaba cola
- * para el resto del día (ese día, 107 correos de Albasanz sin tocar).
+ * día. El margen era del 20 % y una mañana cargada dejaba cola para el resto
+ * del día (ese día, 107 correos de Albasanz sin tocar).
  *
- * 40 da 240/h. El coste de la pasada es tiempo, no dinero: se procesan en
- * serie a ~3-5 s cada uno, así que 40 son ~200 s y la ruta muere a los 300.
- * Si alguna vez se acerca al límite, bajar esto antes que subir maxDuration.
- * El gasto lo frenan los topes en dólares (mensual por marca y diario global),
+ * 40 por pasada son ~640 s a 16 s cada uno: entra en los 800 con margen, y da
+ * 240 correos/hora. Si alguna vez se acerca al techo, lo que toca es procesar
+ * en paralelo (processPending los hace en serie), no subir más el tiempo.
+ * El gasto lo frenan los topes en DÓLARES (mensual por marca y diario global),
  * no un contador de correos: un correo cuesta ~0,02 $ y el tope de 30 $ da
  * para ~1.500 al mes.
  */
