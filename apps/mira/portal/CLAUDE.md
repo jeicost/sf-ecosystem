@@ -187,10 +187,15 @@ real de producción. Esto lo evita.
   frase a frase con un icono al margen (`iconoParaFrase`, `filaIcono`), como
   pidió Usoa. «Equipo material» va pegado a «Equipo humano» (`ordenarActivos`).
 - Pendiente de decisión de Usoa/Rafa (no de código): 10H a las 10:30 o lo que
-  pida el pliego; certificaciones en cuadro o con sus imágenes; si el ENS es
-  real (está en SU Brand Brain y en 2 documentos del corpus); reescribir la
+  pida el pliego; certificaciones en cuadro o con sus imágenes; reescribir la
   sección fija «Equipo humano» con el interlocutor/a + ATC; plan de contingencia
-  lo escribe Rafa.
+  lo escribe Rafa. El ENS (categoría BÁSICA, RD 311/2022) quedó CONFIRMADO por
+  Carlos el 14-oct-2026: la lección de certificaciones lo da por cierto y hay
+  una sección en el corpus de GTD que lo recoge; falta el PDF del certificado.
+- Rafael Luque (rafael.luque@gtdmensajeros.es) tiene cuenta desde el 14-oct,
+  calcada de la de Usoa (growth, admin en las 4 marcas de Aldea, GTD por
+  defecto). Expediente MC Mutual N202600484 cargado como presentada con la
+  oferta precargada (229 líneas sin precio): `evals/_scratch/cargar-mc-mutual.ts`.
 
 ## Email Ops → programa operativo: Direcline (13-oct-2026)
 
