@@ -65,7 +65,11 @@ async function loadExamples(clientId: string, excludeTenderId?: string | null): 
     .not('oferta', 'is', null)
     .order('updated_at', { ascending: false })
     .limit(5)
-  const rows = (data || []).filter((t) => t.id !== excludeTenderId)
+  // Una oferta sin ninguna línea con precio no enseña nada (p. ej. un expediente
+  // cargado con las hojas del pliego en blanco, como MC Mutual el 14-oct-2026):
+  // no puede ocupar uno de los tres huecos de ejemplo.
+  const conPrecios = (t: { oferta: unknown }) => ((t.oferta as TenderOferta | null)?.lineas || []).some((l) => l.precio_ofertado != null)
+  const rows = (data || []).filter((t) => t.id !== excludeTenderId && conPrecios(t))
   if (rows.length === 0) return ''
   // Ganadas primero: son la doctrina confirmada.
   rows.sort((a, b) => (a.status === 'ganada' ? -1 : 0) - (b.status === 'ganada' ? -1 : 0))
