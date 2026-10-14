@@ -183,6 +183,19 @@ real de producción. Esto lo evita.
   `REGLA_SIN_INVENTAR_SERVICIOS`, `REGLA_MEJORAS` (las mejoras las decide la
   responsable; cifra como [FALTA: …]) y `REGLA_SIN_DUPLICAR`; 31 reglas en el
   chat. `LESSONS_CAP` 14.000 (GTD tiene 54 lecciones activas).
+- 14-oct, segunda tanda de Usoa (memoria generada ese día a las 8:56): la
+  memoria citaba «apartado 4.4 del PPT» (condiciones obligatorias del LOTE 3)
+  como si fueran del lote 2, repetía «zonas GLS 1 y 2 / 10H afectado» desde el
+  corpus, metía medios humanos y hardware en Equipo material y repetía la red
+  en «Red de oficinas». Ahora `mapaDeLotes(pliego)` (lib/tenders/teaching.ts)
+  saca qué cláusula de primer nivel es de qué lote (RTVE: 2→lote 1, 3→lote 2,
+  4→lote 3), `bloqueLote(lote, mapa)` se lo dice al modelo, y tras generar TS
+  avisa con `clausulasDeOtroLote`, `lugaresDeOtroLote` (sedes que el pliego
+  solo nombra en otro lote) y `salvedadesColadas`. Reglas de Equipo material y
+  mejoras ampliadas; instrucciones del expediente RTVE lote 2 y lecciones de
+  GTD actualizadas. ⚠️ El PPT adjunto en la conversación de Usoa (S-01898-2021)
+  lista en 3.1.7 la ruta Sant Cugat–Prado del Rey; Carlos lee otra versión
+  donde el punto 7 son los servicios marítimos: confirmar qué pliego vale.
 - Word: las secciones «Qué te ofrecemos» / «Integración social» se maquetan
   frase a frase con un icono al margen (`iconoParaFrase`, `filaIcono`), como
   pidió Usoa. «Equipo material» va pegado a «Equipo humano» (`ordenarActivos`).

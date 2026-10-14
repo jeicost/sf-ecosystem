@@ -4,7 +4,7 @@
 // Cada comprobación corresponde a un fallo real que existió (29-sep-2026).
 import { cortarPorAnclas, limpiarMaquetacion, rotulo, trocearPorPaginas } from '../../lib/tenders/secciones'
 import { buildMemoriaPrompt, pliegoTruncationGap, PLIEGO_WINDOW, avisosDeInstrucciones, maskOrganos, palabrasAEnmascarar, maskPalabras, recortarBase, avisoBaseRecortada, BASE_MEMORIA_CAP } from '../../lib/generation/tender-memoria'
-import { teachingBlock, teachingBlockDetallado, baseMemoriaValida, isUuid, INSTRUCTIONS_CAP, INSTRUCTIONS_STORE_CAP, GUIDE_CAP, LESSONS_CAP, LESSON_MAX, avisoLeccionLarga } from '../../lib/tenders/teaching'
+import { teachingBlock, teachingBlockDetallado, baseMemoriaValida, isUuid, INSTRUCTIONS_CAP, INSTRUCTIONS_STORE_CAP, GUIDE_CAP, LESSONS_CAP, LESSON_MAX, avisoLeccionLarga, mapaDeLotes, clausulasDeOtroLote, lugaresDeOtroLote, salvedadesColadas } from '../../lib/tenders/teaching'
 import { sanearImportes, sanearPorcentajes } from '../../lib/generation/tender-libre'
 
 let pass = 0, fail = 0
@@ -349,6 +349,34 @@ check('ordenarActivos: sin cambios si ya está o si falta uno', ordenarActivos([
 const memoriaConLote = buildMemoriaPrompt({ criteria: { criteria: [] } as never, pliegoText: 'p', teaching: '', playbook: null, examplesText: '', brainBlock: 'b', knowledge: null, lote: 2 })
 check('prompt de la memoria: lote objetivo y las tres reglas nuevas', memoriaConLote.includes('LOTE OBJETIVO: LOTE 2') && memoriaConLote.includes(REGLA_MEJORAS) && memoriaConLote.includes(REGLA_SIN_INVENTAR_SERVICIOS) && memoriaConLote.includes(REGLA_SIN_DUPLICAR))
 check('prompt sin lote: no menciona lote objetivo', !buildMemoriaPrompt({ criteria: { criteria: [] } as never, pliegoText: 'p', teaching: '', playbook: null, examplesText: '', brainBlock: 'b', knowledge: null }).includes('LOTE OBJETIVO'))
+
+console.log('\nLotes (14-oct): la numeración del pliego por lote, cláusulas y sedes ajenas, salvedades')
+const PLIEGO_LOTES = [
+  '1. INTRODUCCIÓN', 'Texto común del pliego.',
+  '1. LOTE 1 – servicio postal: recogida, admisión y entrega en Madrid', '2. LOTE 2 – paquetería nacional dentro de España',
+  '2. \tSERVICIO POSTAL – LOTE 1', 'Recogida diaria en Torrespaña y en la estafeta.', '2.3 ENTREGA POSTAL', 'Entrega en Madrid.',
+  '3. \tSERVICIO PAQUETERIA NACIONAL – LOTE 2', '3.1. SERVICIOS SUJETOS AL CONTRATO', '7. Servicio ruta diaria Sant Cugat del Vallés y Prado del Rey (ida y vuelta)',
+  '4 \tSERVICIO PAQUETERIA INTERNACIONAL – LOTE 3', '4.4 CONDICIONES OBLIGATORIAS DEL SERVICIO', 'Material necesario para la documentación aduanera sin coste.',
+  '5. CONTENIDO DE LA OFERTA TÉCNICA', 'Común a todos los lotes: red de oficinas.',
+  'LOTE 2 - PAQUETERIA NACIONAL \t246.175,92 €',
+].join('\n')
+const mapa = mapaDeLotes(PLIEGO_LOTES)!
+check('mapaDeLotes: cláusula → lote (2→1, 3→2, 4→3) y la lista de la introducción no cuenta', JSON.stringify(mapa.clausulas) === '{"2":1,"3":2,"4":3}', mapa.clausulas)
+check('mapaDeLotes: cada tramo lleva su texto y lo común queda fuera', mapa.tramos[2].includes('Sant Cugat') && mapa.tramos[1].includes('Torrespaña') && !mapa.tramos[2].includes('aduanera') && mapa.comun.includes('Común a todos') && !mapa.comun.includes('Torrespaña'), Object.keys(mapa.tramos))
+check('mapaDeLotes: una fila de tabla con importe no abre tramo', !mapa.tramos[2].includes('246.175'))
+check('mapaDeLotes: sin lotes → null', mapaDeLotes('1. OBJETO\nTexto.') === null)
+const bloqueConMapa = bloqueLote(2, mapa)
+check('bloqueLote con mapa: dice cuáles son las cláusulas propias y cuáles de otro lote', bloqueConMapa.includes('las cláusulas del lote 2 son 3.x') && bloqueConMapa.includes('2.x (lote 1)') && bloqueConMapa.includes('4.x (lote 3)') && bloqueLote(2).startsWith('LOTE OBJETIVO: LOTE 2') && !bloqueLote(2).includes('NUMERACIÓN'))
+const memoriaRtve = { secciones: [{ titulo: 'Equipo material', contenido: 'GTD facilitará el material aduanero (apartado 4.4 del PPT) y atenderá la cláusula 3.1 y el punto 3.2 del PPT. Flota de más de 3.000 vehículos (apartados 3.2 y 4.4 del PPT). Según el epígrafe 2.3 se entrega en Madrid.' }] }
+const ajenas = clausulasDeOtroLote(memoriaRtve, mapa, 2)
+check('clausulasDeOtroLote: 4.4 (lote 3) y 2.3 (lote 1) sí; 3.1/3.2 no; «3.000 vehículos» no', JSON.stringify(ajenas) === '[{"cita":"4.4","lote":3},{"cita":"2.3","lote":1}]', ajenas)
+check('clausulasDeOtroLote: sin mapa o sin lote, nada', clausulasDeOtroLote(memoriaRtve, null, 2).length === 0 && clausulasDeOtroLote(memoriaRtve, mapa, null).length === 0)
+const lugares = lugaresDeOtroLote({ secciones: [{ contenido: 'Recogida en Torrespaña y ruta Sant Cugat del Vallés – Prado del Rey; el Departamento de Servicios Especiales lo cubre.' }] }, mapa, 2)
+check('lugaresDeOtroLote: Torrespaña (solo lote 1) sí; Sant Cugat (lote 2) y nombres propios de la empresa no', JSON.stringify(lugares) === '["Torrespaña"]', lugares)
+const salv = salvedadesColadas({ secciones: [{ contenido: 'En las zonas GLS 1 y 2, la modalidad 10H puede verse afectada por la distancia kilométrica. La tarifa distingue Zona 1 y Zona 2 para el internacional. El envío puede retrasarse hasta las 14:00 en caso de incidencia.' }] })
+check('salvedadesColadas: la salvedad del 10H y la de las 14:00 sí; la zona de tarifa no', salv.length === 2 && salv[0].includes('10H') && salv[1].includes('14:00'), salv)
+const promptMapa = buildMemoriaPrompt({ criteria: { criteria: [] } as never, pliegoText: 'p', teaching: '', playbook: null, examplesText: '', brainBlock: 'b', knowledge: null, lote: 2, mapa })
+check('prompt de la memoria con mapa: lleva la numeración por lote', promptMapa.includes('NUMERACIÓN DEL PLIEGO') && promptMapa.includes('4.x (lote 3)'))
 
 console.log(`\n${pass} pasan · ${fail} fallan\n`)
 process.exit(fail === 0 ? 0 : 1)

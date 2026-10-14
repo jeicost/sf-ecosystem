@@ -135,14 +135,141 @@ export function detectarLote(...textos: Array<string | null | undefined>): numbe
   return null
 }
 
-/** Bloque del prompt: el lote objetivo manda sobre todo el pliego. */
-export function bloqueLote(lote: number): string {
-  return `LOTE OBJETIVO: LOTE ${lote}. El pliego puede cubrir varios lotes; esta memoria responde SOLO al lote ${lote} y a las cláusulas comunes a todos. Los servicios, rutas, sedes, trayectos, plazos y requisitos de otros lotes NO existen para esta memoria, aunque la empresa pudiera prestarlos: ni se describen ni se ofrecen. Cada plazo o requisito que cites tiene que ser el del lote ${lote} (indica la cláusula).`
+/**
+ * Estructura por lotes de un pliego (PCAP + PPT concatenados): qué cláusula de
+ * primer nivel pertenece a cada lote y el texto de cada tramo. Nació el
+ * 14-oct-2026: la memoria de RTVE lote 2 citaba «el apartado 4.4 del PPT»
+ * (condiciones obligatorias del LOTE 3, internacional: material aduanero,
+ * hardware sin coste…) como si fueran del lote 2, que no las tiene. La regla
+ * de prompt no bastó; esto se comprueba en TS.
+ */
+export interface MapaLotes {
+  /** cláusula de primer nivel («3») → lote (2) */
+  clausulas: Record<string, number>
+  /** texto del tramo de cada lote */
+  tramos: Record<number, string>
+  /** lo que no cuelga de ningún lote (introducción, oferta técnica, medios…) */
+  comun: string
+}
+
+// «3. SERVICIO … – LOTE 2», «LOTE 2 – PAQUETERÍA NACIONAL», «LOTE 1: SERVICIO POSTAL»; no «TOTAL OFERTADO ANUAL LOTE 1» (fila de tabla).
+const CABECERA_LOTE = /^\s*(?:(\d{1,2})\.?\s+)?(?:LOTE\s*(\d{1,2})\s*[-–:]|.*[-–:]\s*LOTE\s*(\d{1,2})\b)/
+const CABECERA_NUMERADA = /^\s*(\d{1,2})\.?\s+[A-ZÁÉÍÓÚÑ]/
+/** Un rótulo: corto, en mayúsculas y sin importes (las filas de tabla del PCAP también dicen «LOTE 2», pero llevan €). */
+function esCabecera(s: string): boolean {
+  if (s.length < 6 || s.length > 90 || /€/.test(s)) return false
+  const letras = s.replace(/[^A-Za-zÁÉÍÓÚÑÜáéíóúñü]/g, '')
+  return letras.length >= 6 && letras === letras.toUpperCase()
+}
+
+export function mapaDeLotes(pliego: string): MapaLotes | null {
+  const clausulas: Record<string, number> = {}
+  const conflicto = new Set<string>()
+  const tramos: Record<number, string[]> = {}
+  const comun: string[] = []
+  let actual: number | null = null
+  let clausulaActual: string | null = null
+  // Un tramo de lote se cierra en la siguiente cláusula de primer nivel que no sea la suya, o en un
+  // ANEXO / CLÁUSULA / SOBRE: si no, la tabla de precios del lote 3 en el PCAP arrastraba detrás todo
+  // el texto legal del pliego y «Real Decreto» salía como sede del lote 3.
+  const CIERRE = /^(?:ANEXO\b|CL[ÁA]USULA\b|SOBRE\b|CAP[ÍI]TULO\b|T[ÍI]TULO\b)/
+  for (const linea of pliego.split('\n')) {
+    // El PPT separa número y título con tabulador («3. \tSERVICIO … – LOTE 2»).
+    const s = linea.replace(/\t+/g, ' ').trim()
+    if (esCabecera(s)) {
+      const m = CABECERA_LOTE.exec(s)
+      if (m) {
+        const lote = Number(m[2] ?? m[3])
+        actual = lote
+        clausulaActual = m[1] ?? null
+        ;(tramos[lote] ??= []).push(s)
+        if (m[1]) {
+          // PCAP y PPT van concatenados: si la misma cláusula apunta a dos lotes, no se fía de ella.
+          if (clausulas[m[1]] !== undefined && clausulas[m[1]] !== lote) conflicto.add(m[1])
+          else clausulas[m[1]] = lote
+        }
+        continue
+      }
+      const num = CABECERA_NUMERADA.exec(s)
+      if ((num && num[1] !== clausulaActual) || CIERRE.test(s)) { actual = null; clausulaActual = null }
+    }
+    ;(actual ? (tramos[actual] ??= []) : comun).push(s)
+  }
+  for (const c of conflicto) delete clausulas[c]
+  const lotes = Object.keys(tramos).map(Number)
+  if (!lotes.length) return null
+  return { clausulas, tramos: Object.fromEntries(lotes.map((n) => [n, tramos[n].join('\n')])), comun: comun.join('\n') }
+}
+
+/** Bloque del prompt: el lote objetivo manda sobre todo el pliego. Con el mapa, además, la numeración que puede citar. */
+export function bloqueLote(lote: number, mapa?: MapaLotes | null): string {
+  const base = `LOTE OBJETIVO: LOTE ${lote}. El pliego puede cubrir varios lotes; esta memoria responde SOLO al lote ${lote} y a las cláusulas comunes a todos. Los servicios, rutas, sedes, trayectos, plazos y requisitos de otros lotes NO existen para esta memoria, aunque la empresa pudiera prestarlos: ni se describen ni se ofrecen. Cada plazo o requisito que cites tiene que ser el del lote ${lote} (indica la cláusula).`
+  const pares = Object.entries(mapa?.clausulas ?? {})
+  if (!pares.length) return base
+  const propias = pares.filter(([, l]) => l === lote).map(([c]) => `${c}.x`)
+  const ajenas = pares.filter(([, l]) => l !== lote).map(([c, l]) => `${c}.x (lote ${l})`)
+  return `${base} NUMERACIÓN DEL PLIEGO: las cláusulas del lote ${lote} son ${propias.length ? propias.join(', ') : 'las que el pliego titula con este lote'}; ${ajenas.length ? `las ${ajenas.join(', ')} son de OTRO lote: no las cites ni apliques sus obligaciones, aunque se parezcan.` : ''} Si una obligación solo existe en la cláusula de otro lote, para este lote NO existe.`
+}
+
+/** Cláusulas citadas en la memoria («apartado 4.4 del PPT») que el mapa atribuye a otro lote. */
+export function clausulasDeOtroLote(memoria: unknown, mapa: MapaLotes | null, lote: number | null): Array<{ cita: string; lote: number }> {
+  if (!mapa || !lote || !Object.keys(mapa.clausulas).length) return []
+  const texto = JSON.stringify(memoria || '')
+  const vistas = new Map<string, number>()
+  for (const m of texto.matchAll(/\b(\d{1,2})\.(\d{1,2})(?:\.\d{1,2})?\b/g)) {
+    const antes = texto.slice(Math.max(0, (m.index ?? 0) - 24), m.index)
+    const despues = texto.slice((m.index ?? 0) + m[0].length, (m.index ?? 0) + m[0].length + 18)
+    const esCita = /(apartados?|cl[aá]usulas?|puntos?|ep[ií]grafes?)\s*(\d{1,2}(\.\d{1,2})*\s*(,|y)\s*)*$/i.test(antes) || /^\s*(del|de la|de el)\s+(PPT|PCAP|pliego)/i.test(despues)
+    if (!esCita) continue
+    const de = mapa.clausulas[m[1]]
+    if (de !== undefined && de !== lote) vistas.set(`${m[1]}.${m[2]}`, de)
+  }
+  return [...vistas].map(([cita, l]) => ({ cita, lote: l }))
+}
+
+const normalizar = (s: string) => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+
+/** Nombres propios (sedes, lugares) que la memoria cita y el pliego solo menciona en el tramo de OTRO lote. */
+export function lugaresDeOtroLote(memoria: unknown, mapa: MapaLotes | null, lote: number | null): string[] {
+  if (!mapa || !lote) return []
+  const texto = JSON.stringify(memoria || '').replace(/\\n/g, ' ')
+  const propio = normalizar(`${mapa.tramos[lote] || ''}\n${mapa.comun}`)
+  const ajenos = Object.entries(mapa.tramos).filter(([k]) => Number(k) !== lote).map(([, t]) => normalizar(t))
+  if (!ajenos.length) return []
+  const sinAcentos = (s: string) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+  const ajenosConMayusculas = Object.entries(mapa.tramos).filter(([k]) => Number(k) !== lote).map(([, t]) => sinAcentos(t))
+  const cands = new Map<string, boolean>() // nombre → ¿es de una sola palabra?
+  // Nombres de varias palabras («Sant Cugat del Vallés») y, además, una sola palabra tras preposición de
+  // lugar («en Torrespaña»): las sedes suelen ser una palabra. Las de una palabra tienen que aparecer
+  // también con mayúscula en el otro lote (nombre propio), no como palabra común de un texto legal.
+  for (const m of texto.matchAll(/\b([A-ZÁÉÍÓÚÑ][a-záéíóúñ]{2,}(?:(?:\s+(?:de|del|de la|de las|de los|la|las|los|el|y)\s+|\s+)[A-ZÁÉÍÓÚÑ][a-záéíóúñ]{2,}){1,3})\b/g)) cands.set(m[1], false)
+  for (const m of texto.matchAll(/(?<=\b(?:en|desde|hasta|hacia|a|de|del)\s)([A-ZÁÉÍÓÚÑ][a-záéíóúñ]{4,})\b/g)) if (!cands.has(m[1])) cands.set(m[1], true)
+  return [...cands].filter(([c, sola]) => {
+    const n = normalizar(c)
+    if (propio.includes(n)) return false
+    return sola ? ajenosConMayusculas.some((t) => t.includes(sinAcentos(c))) : ajenos.some((t) => t.includes(n))
+  }).map(([c]) => c).slice(0, 10)
+}
+
+/** Salvedades que perjudican la oferta y que nadie ha decidido (Usoa, 9 y 14-oct: «las zonas 1 y 2 siguen apareciendo»). */
+const SALVEDADES: Array<[RegExp, RegExp | null]> = [
+  [/zonas?\s*(?:GLS\s*)?[12]\s*(?:y|e|-|–)\s*[12]\b/i, /10H|afectad|retras|kilom|plazo/i],
+  [/puede(?:n)?\s+verse\s+afectad/i, null],
+  [/retrasos?\s+admitid/i, null],
+  [/hasta\s+las\s+14:00/i, /retras|demor|posterior/i],
+]
+export function salvedadesColadas(memoria: unknown): string[] {
+  const texto = JSON.stringify(memoria || '').replace(/\\n/g, ' ')
+  const out: string[] = []
+  for (const frase of texto.split(/(?<=[.!?])\s+/)) {
+    if (SALVEDADES.some(([a, b]) => a.test(frase) && (!b || b.test(frase)))) out.push(frase.replace(/^["\[\]{}]+|["\[\]{}]+$/g, '').trim().slice(0, 160))
+  }
+  return [...new Set(out)].slice(0, 6)
 }
 
 export const REGLA_SIN_INVENTAR_SERVICIOS = 'Solo se describen los servicios, rutas, sedes y trayectos que el pliego del lote objetivo pide o describe. Una lección, una memoria anterior, el material de la marca o un ejemplo NO autorizan a añadir un servicio (una valija entre dos sedes, una recogida fuera de las sedes, una gestión documental) que ESTE pliego no pida.'
 
-export const REGLA_MEJORAS = 'Las MEJORAS y los compromisos cuantificados (plazos reducidos, franjas horarias extra, penalizaciones aceptadas, retrasos admitidos) los decide la responsable al elaborar la memoria: no propongas ninguno concreto ni lo des por hecho. Si un criterio exige una mejora, describe la operativa que la sostendría y deja la cifra como [FALTA: mejora decidida por la responsable]. Tampoco añadas salvedades que perjudiquen (p. ej. «puede retrasarse hasta las 14:00») si el pliego no las pide.'
+export const REGLA_MEJORAS = 'Las MEJORAS y los compromisos cuantificados (plazos reducidos, franjas horarias extra, penalizaciones aceptadas, retrasos admitidos) los decide la responsable al elaborar la memoria: no propongas ninguno concreto ni lo des por hecho. Si un criterio exige una mejora, describe la operativa que la sostendría y deja la cifra como [FALTA: mejora decidida por la responsable]. Tampoco añadas salvedades que perjudiquen (p. ej. «puede retrasarse hasta las 14:00» o «en las zonas GLS 1 y 2 la modalidad 10H puede verse afectada») si el pliego no las pide: aunque una memoria anterior del corpus las diga, aquí NO van.'
 
 export const REGLA_SIN_DUPLICAR = 'Cada tema se trata UNA vez: si ya va como subapartado «## » dentro de una sección, no vuelve a aparecer como sección aparte ni se repite en otra (la red de agencias, el circuito, la herramienta IT se cuentan en un solo sitio). Usa un único término para cada concepto en toda la memoria («modalidades de servicio» o «tipología», no ambos).'
 
@@ -268,7 +395,7 @@ ${f.content}
 }
 
 /** Regla de la casa para los medios materiales (Carlos, 7-oct): se dimensionan al pliego, nunca una sección estándar. */
-export const REGLA_MEDIOS_MATERIALES = 'La sección de MEDIOS / EQUIPO MATERIAL se dimensiona a lo que pide ESTE pliego (tipos de vehículo, equipos, sistemas y materiales que el PPT exige o que la operativa descrita necesita): no es una sección estándar ni se copia de otra memoria. No ofrezcas medios, servicios, mejoras ni compromisos que el pliego no pida expresamente; si la empresa dispone de algo que no se pide, como mucho una mención breve sin convertirlo en oferta.'
+export const REGLA_MEDIOS_MATERIALES = 'La sección de MEDIOS / EQUIPO MATERIAL se dimensiona a lo que pide ESTE pliego (tipos de vehículo, equipos, sistemas y materiales que el PPT exige o que la operativa descrita necesita): no es una sección estándar ni se copia de otra memoria. Equipo material son vehículos, medios de carga y manipulación y materiales físicos: los medios humanos van en la sección de equipo humano y el hardware o software de la herramienta de solicitud y seguimiento en la sección del sistema informático, nunca aquí (Usoa, 14-oct). No ofrezcas medios, servicios, mejoras ni compromisos que el pliego no pida expresamente; si la empresa dispone de algo que no se pide, como mucho una mención breve sin convertirlo en oferta.'
 
 
 /** La guía de la marca y sus lecciones activas (más recientes primero). */
