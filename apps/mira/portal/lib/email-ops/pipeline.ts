@@ -30,6 +30,16 @@ const MAX_ATTACHMENT_BYTES = 8 * 1024 * 1024
 const ATTACHMENT_TEXT_CAP = 8000
 const ATTACHMENTS_TOTAL_TEXT_CAP = 24000
 const STALE_PROCESSING_MIN = 10
+/**
+ * Tope de correos analizados por marca y día. **0 lo desactiva**, y así está en
+ * producción desde el 14-oct-2026 por decisión de Carlos: estaba en 80 y dejó
+ * 107 peticiones de servicio de Albasanz sin tocar a mediodía (recogidas del
+ * Teatro Real, BPCE…), reencoladas con `last_error: 'daily cap reached'`.
+ * Contar CORREOS no protege de nada que no cubran ya los topes en dólares
+ * (mensual por marca, 30 $ ≈ 1.500 correos; diario global de 100 $): un correo
+ * cuesta ~0,02 $. Lo que sí hacía era frenar el trabajo de la agencia sin que
+ * nadie lo viera, porque los correos frenados no fallan, se quedan en la cola.
+ */
 const DAILY_CAP = Number(process.env.EMAIL_OPS_DAILY_CAP || 500)
 
 export interface ProcessResult {

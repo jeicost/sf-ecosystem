@@ -11,7 +11,21 @@ import { recomputeOpenPriorities } from '@/lib/email-ops/priority'
 // se acerca sola). Invocado por el cron de Vercel con Bearer CRON_SECRET.
 
 export const maxDuration = 300
-const MAX_MESSAGES_PER_RUN = 10
+/**
+ * Cuántos correos procesa una pasada. Con el cron cada 10 minutos, 10 por
+ * pasada son **60 correos a la hora para todas las marcas juntas** — y el
+ * 14-oct-2026 entraron ~50/h entre GTD y Albasanz, con un pico de 143 en un
+ * día. Es decir: el margen era del 20 % y una mañana cargada dejaba cola
+ * para el resto del día (ese día, 107 correos de Albasanz sin tocar).
+ *
+ * 40 da 240/h. El coste de la pasada es tiempo, no dinero: se procesan en
+ * serie a ~3-5 s cada uno, así que 40 son ~200 s y la ruta muere a los 300.
+ * Si alguna vez se acerca al límite, bajar esto antes que subir maxDuration.
+ * El gasto lo frenan los topes en dólares (mensual por marca y diario global),
+ * no un contador de correos: un correo cuesta ~0,02 $ y el tope de 30 $ da
+ * para ~1.500 al mes.
+ */
+const MAX_MESSAGES_PER_RUN = Number(process.env.EMAIL_OPS_MAX_PER_RUN || 40)
 
 export async function GET(req: NextRequest) {
   const secret = process.env.CRON_SECRET
