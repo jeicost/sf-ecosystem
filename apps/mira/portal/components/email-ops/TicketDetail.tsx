@@ -5,6 +5,11 @@ import { clsx } from 'clsx'
 import { ArrowLeft, Check, Loader2, Paperclip, Pencil, RefreshCw, RotateCcw, Trash2, X, AlertCircle, ExternalLink, Reply, Copy, Eye, ChevronDown, Server } from 'lucide-react'
 import { t, type Locale } from '@/lib/i18n'
 import QuoteFromTicketButton from '@/components/cotizador/QuoteFromTicketButton'
+import TeachBox from './TeachBox'
+
+// Carlos (15-oct-2026): «desactivar por el momento la función de cotizar». El
+// botón sigue existiendo; se enciende volviendo a poner true cuando lo pidan.
+const COTIZAR_EN_EMAIL_OPS = false
 import type { FieldDef, FieldValue } from '@/lib/email-ops/schema'
 import { fieldLabel } from '@/lib/email-ops/schema'
 import type { TicketRow, MessageRow } from '@/lib/email-ops/types'
@@ -231,7 +236,7 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
           </button>
           {/* Del encargo al precio. Solo para partes de envío: un correo que no
               es un encargo no tiene nada que cotizar. */}
-          {!isOther && <QuoteFromTicketButton clientId={clientId} ticketId={ticketId} locale={locale} />}
+          {COTIZAR_EN_EMAIL_OPS && !isOther && <QuoteFromTicketButton clientId={clientId} ticketId={ticketId} locale={locale} />}
         </div>
       </div>
 
@@ -243,6 +248,10 @@ export default function TicketDetail({ ticketId, clientId, locale, brand, brandN
           <span>{t('emailops.detail.review-banner', locale).replace('{n}', String(revisar.size))} <span className="text-amber-400/80">({[...revisar.keys()].map((k) => { const f = schema.find((x) => x.key === k); return f ? fieldLabel(f, locale) : k }).join(', ')})</span></span>
         </div>
       )}
+
+      {/* Enséñale a MIRA (Noel, 15-oct): la respuesta del operador a lo que la IA ha hecho con este correo. */}
+      <TeachBox ticketId={ticketId} clientId={clientId} locale={locale} brand={brand}
+        onSaved={(reanalizar) => { flash(t(reanalizar ? 'emailops.teach.saved-reanalyzing' : 'emailops.teach.saved', locale)); if (reanalizar) reprocess(); else load() }} />
 
       <div className="grid gap-6 lg:grid-cols-[1.35fr_1fr]">
         {/* Datos del parte */}

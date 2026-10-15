@@ -54,6 +54,14 @@ export const COURIER_V1_FIELDS: readonly FieldDef[] = [
     hint: 'Quién envía: empresa y/o persona de contacto, teléfono si aparece.' },
   { key: 'destinatario', type: 'text', required: true, labels: { es: 'Destinatario', en: 'Recipient' }, excelHeader: 'Destinatario',
     hint: 'Quién recibe: empresa y/o persona de contacto, teléfono si aparece.' },
+  // Noel (15-oct-2026): quién encarga, a nivel empresa y departamento, en el
+  // listado, el desglose y el Excel. Van al final para no mover las columnas
+  // del Excel que ya usan. Nos pasarán una lista de clientes: cuando llegue,
+  // un directorio normalizará estos nombres (y dará los códigos de DL-Trans).
+  { key: 'cliente', type: 'text', required: false, labels: { es: 'Cliente', en: 'Client' }, excelHeader: 'Cliente',
+    hint: 'EMPRESA u organismo cliente que encarga el servicio (por cuenta de quién se pide): el nombre de la entidad, no la persona. Sale de la firma, del membrete o del dominio del correo; si es un reenvío, es quien originó la petición. Vacío si no consta.' },
+  { key: 'departamento_cliente', type: 'text', required: false, labels: { es: 'Departamento del cliente', en: 'Client department' }, excelHeader: 'Departamento cliente',
+    hint: 'Departamento, servicio, unidad o centro del cliente que hace el encargo (p. ej. «Servicio de Clínica Médico Forense», «Mantenimiento», «Almacén central»), tal como aparece en la firma o el cuerpo. Vacío si no consta.' },
 ]
 
 // Variante GLS (departamento local): muchas órdenes son RECOGIDAS para la red

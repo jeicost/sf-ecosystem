@@ -26,6 +26,7 @@ export default function TicketTable({
             <th className={th}>{t('emailops.col.type', locale)}</th>
             <th className={th}>{t('emailops.col.packages', locale)}</th>
             <th className={clsx(th, 'w-full')}>{t('emailops.col.summary', locale)}</th>
+            <th className={th}>{t('emailops.col.client', locale)}</th>
             <th className={th}>{t('emailops.col.from', locale)}</th>
             <th className={th}>{t('emailops.col.missing', locale)}</th>
             <th className={th}>{t('emailops.col.review', locale)}</th>
@@ -60,6 +61,11 @@ export default function TicketTable({
                       {tk.department && <span className="shrink-0 rounded bg-surface px-1.5 py-px text-[10px] text-ink-tertiary">{tk.department}</span>}
                     </p>
                   </Link>
+                </td>
+                {/* Cliente (empresa) y su departamento (Noel, 15-oct): salen de los campos del parte. */}
+                <td className="max-w-[170px] px-3 py-2.5 align-top text-[12px]" title={[tk.fields?.cliente, tk.fields?.departamento_cliente].filter(Boolean).join(' · ')}>
+                  <p className="truncate text-ink">{tk.fields?.cliente ?? '—'}</p>
+                  {tk.fields?.departamento_cliente != null && <p className="truncate text-[10px] text-ink-muted">{String(tk.fields.departamento_cliente)}</p>}
                 </td>
                 <td className="max-w-[160px] truncate px-3 py-2.5 align-top text-[12px] text-ink-secondary" title={tk.original_sender || tk.from_address || ''}>
                   {tk.original_sender || tk.from_address || '—'}
