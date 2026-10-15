@@ -210,6 +210,25 @@ real de producción. Esto lo evita.
   defecto). Expediente MC Mutual N202600484 cargado como presentada con la
   oferta precargada (229 líneas sin precio): `evals/_scratch/cargar-mc-mutual.ts`.
 
+## Email Ops: ajustes de Noel para el arranque del lunes 19 (15-oct-2026)
+
+- Campos `cliente` y `departamento_cliente` al final de `COURIER_V1_FIELDS`
+  (no obligatorios); columna «Cliente» en `TicketTable`; detalle y Excel los
+  toman del esquema. Cuando Noel pase la lista de clientes, un directorio
+  normalizará nombres y dará los códigos de DL-Trans.
+- «Enséñale a MIRA» (`components/email-ops/TeachBox.tsx`): POST
+  `/api/email-ops/training` con `ticketId` + `note` (+ `as_rule`) monta el
+  ejemplo en el servidor (hilo entrante + parte actual + nota, source
+  'upload'); con `as_rule` la nota se añade a las reglas de la marca (tope
+  `MAX_RULES_CHARS`). «Guardar y reanalizar» = reprocess del parte.
+- Cotizar desde el parte apagado: `COTIZAR_EN_EMAIL_OPS` en TicketDetail.
+- Limpieza con fecha: `evals/_scratch/emailops-borrar-hasta.ts --hasta
+  YYYY-MM-DD [--escribir]` (la corre Carlos: el modo auto bloquea borrados
+  masivos de datos de cliente).
+- Qué se descarta sin pantalla: `autoReplyReason` deja los automáticos en
+  `status='ignored'` sin parte y NO se ven en la UI (pendiente decidir si se
+  enseñan como contador o pestaña).
+
 ## Email Ops → programa operativo: Direcline (13-oct-2026)
 
 - `lib/tms/direcline.ts`: SOAP .asmx «WsUtilidades» (doc v1.2 en el Escritorio
